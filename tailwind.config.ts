@@ -12,9 +12,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Source Sans 3', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],
         display: ['Merriweather', 'Georgia', 'serif'],
-        serif: ['Lora', 'ui-serif', 'Georgia', 'serif'],
+        serif: ['Merriweather', 'ui-serif', 'Georgia', 'serif'],
         mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
       },
       colors: {
@@ -39,6 +39,13 @@ export default {
         },
         surface: { elevated: 'hsl(var(--surface-elevated))' },
         gold: { glow: 'hsl(var(--gold-glow))' },
+        pastel: {
+          yellow: 'hsl(var(--pastel-yellow))',
+          red: 'hsl(var(--pastel-red))',
+          blue: 'hsl(var(--pastel-blue))',
+          green: 'hsl(var(--pastel-green))',
+          purple: 'hsl(var(--pastel-purple))',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -46,15 +53,15 @@ export default {
         sm: 'calc(var(--radius) - 4px)',
       },
       keyframes: {
-        'fade-in': { '0%': { opacity: '0', transform: 'translateY(8px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
-        'scale-in': { '0%': { transform: 'scale(0.96)', opacity: '0' }, '100%': { transform: 'scale(1)', opacity: '1' } },
+        'fade-in': { '0%': { opacity: '0', transform: 'translateY(4px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+        'scale-in': { '0%': { transform: 'scale(0.97)', opacity: '0' }, '100%': { transform: 'scale(1)', opacity: '1' } },
         'slide-up': { '0%': { transform: 'translateY(100%)' }, '100%': { transform: 'translateY(0)' } },
         'story-progress': { '0%': { width: '0%' }, '100%': { width: '100%' } },
       },
       animation: {
-        'fade-in': 'fade-in 0.4s ease-out',
-        'scale-in': 'scale-in 0.3s ease-out',
-        'slide-up': 'slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+        'fade-in': 'fade-in 0.3s ease-out',
+        'scale-in': 'scale-in 0.2s ease-out',
+        'slide-up': 'slide-up 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
         'story-progress': 'story-progress 5s linear',
       },
     },
