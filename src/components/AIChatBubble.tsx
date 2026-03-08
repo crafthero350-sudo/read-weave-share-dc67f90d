@@ -14,7 +14,7 @@ interface Message {
 export function AIChatBubble() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { role: "assistant", content: "Hi! I'm your book assistant 📚 I can summarize books, recommend reads, help you write stories, and more. What can I help you with?" },
+    { role: "assistant", content: "Hi! I'm **Lisa** 📚 your personal book companion. I can summarize books, recommend reads, help you write stories, and bring characters to life. What can I help you with?" },
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
