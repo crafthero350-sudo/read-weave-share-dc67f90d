@@ -108,6 +108,7 @@ export function StoriesRow() {
   const allStories = groups.flatMap((g) =>
     g.stories.map((s) => ({
       id: s.id,
+      userId: g.userId,
       username: g.username,
       avatar: (g.displayName || g.username).split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2),
       content: s.content || "",
@@ -188,6 +189,7 @@ export function StoriesRow() {
           stories={allStories as any}
           initialIndex={activeGroup}
           onClose={() => setActiveGroup(null)}
+          onDeleted={fetchStories}
         />
       )}
 

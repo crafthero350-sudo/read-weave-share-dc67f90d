@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react";
-import { X, Heart, MessageCircle, Send } from "lucide-react";
+import { X, Heart, Send, Trash2, Share2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 interface StoryData {
   id: string;
+  userId?: string;
   username: string;
   avatar: string;
   content: string;
@@ -18,16 +22,22 @@ interface StoryViewerProps {
   stories: StoryData[];
   initialIndex: number;
   onClose: () => void;
+  onDeleted?: () => void;
 }
 
-export function StoryViewer({ stories, initialIndex, onClose }: StoryViewerProps) {
+export function StoryViewer({ stories, initialIndex, onClose, onDeleted }: StoryViewerProps) {
+  const { user } = useAuth();
   const [index, setIndex] = useState(initialIndex);
   const [progress, setProgress] = useState(0);
+  const [paused, setPaused] = useState(false);
   const story = stories[index];
+
+  const isOwn = user && story?.userId === user.id;
 
   useEffect(() => {
     setProgress(0);
     const interval = setInterval(() => {
+      if (paused) return;
       setProgress((p) => {
         if (p >= 100) {
           if (index < stories.length - 1) {
@@ -42,7 +52,48 @@ export function StoryViewer({ stories, initialIndex, onClose }: StoryViewerProps
       });
     }, 100);
     return () => clearInterval(interval);
-  }, [index, stories.length, onClose]);
+  }, [index, stories.length, onClose, paused]);
+
+  const handleDelete = async () => {
+    if (!story) return;
+    setPaused(true);
+    const { error } = await supabase.from("stories").delete().eq("id", story.id);
+    if (error) {
+      toast.error("Failed to delete story");
+      setPaused(false);
+      return;
+    }
+    toast.success("Story deleted");
+    onDeleted?.();
+    if (stories.length <= 1) {
+      onClose();
+    } else if (index >= stories.length - 1) {
+      setIndex(Math.max(0, index - 1));
+    }
+    setPaused(false);
+  };
+
+  const handleShare = async () => {
+    setPaused(true);
+    const shareUrl = `${window.location.origin}`;
+    const text = story.content?.slice(0, 100) || "Check out this story!";
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: `Story by ${story.username}`, text, url: shareUrl });
+        setPaused(false);
+        return;
+      } catch (e: any) {
+        if (e?.name === "AbortError") { setPaused(false); return; }
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success("Story text copied!");
+    } catch {
+      toast.error("Could not share");
+    }
+    setPaused(false);
+  };
 
   if (!story) return null;
 
@@ -83,9 +134,27 @@ export function StoryViewer({ stories, initialIndex, onClose }: StoryViewerProps
             </div>
             <p className="text-sm font-medium text-white">{story.username}</p>
           </div>
-          <button onClick={onClose}>
-            <X className="w-5 h-5 text-white" />
-          </button>
+          <div className="flex items-center gap-2">
+            {isOwn && (
+              <>
+                <button
+                  onClick={handleShare}
+                  className="p-1.5 rounded-full bg-white/10 backdrop-blur-sm"
+                >
+                  <Share2 className="w-4 h-4 text-white" />
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="p-1.5 rounded-full bg-white/10 backdrop-blur-sm"
+                >
+                  <Trash2 className="w-4 h-4 text-white" />
+                </button>
+              </>
+            )}
+            <button onClick={onClose}>
+              <X className="w-5 h-5 text-white" />
+            </button>
+          </div>
         </div>
 
         {/* Content */}
@@ -111,13 +180,21 @@ export function StoryViewer({ stories, initialIndex, onClose }: StoryViewerProps
 
         {/* Actions */}
         <div className="flex items-center gap-4 px-4 pb-8 relative z-10">
-          <input
-            type="text"
-            placeholder="Send message"
-            className="flex-1 bg-white/10 text-white placeholder:text-white/40 rounded-full px-4 py-2.5 text-sm outline-none"
-          />
-          <Heart className="w-6 h-6 text-white" />
-          <Send className="w-6 h-6 text-white" />
+          {!isOwn ? (
+            <>
+              <input
+                type="text"
+                placeholder="Send message"
+                className="flex-1 bg-white/10 text-white placeholder:text-white/40 rounded-full px-4 py-2.5 text-sm outline-none"
+              />
+              <Heart className="w-6 h-6 text-white" />
+              <Send className="w-6 h-6 text-white" />
+            </>
+          ) : (
+            <div className="flex-1 text-center">
+              <p className="text-xs text-white/50">Your story</p>
+            </div>
+          )}
         </div>
 
         {/* Tap zones */}
