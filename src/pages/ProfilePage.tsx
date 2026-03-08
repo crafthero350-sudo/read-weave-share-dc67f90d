@@ -123,7 +123,7 @@ export default function ProfilePage() {
         {/* Action Buttons */}
         <div className="flex gap-1.5 mt-3">
           <button
-            onClick={() => navigate("/settings")}
+            onClick={() => setShowEditProfile(true)}
             className="flex-1 py-1.5 rounded-lg bg-secondary text-foreground text-[13px] font-semibold text-center"
           >
             Edit Profile
