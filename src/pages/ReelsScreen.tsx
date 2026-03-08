@@ -268,7 +268,7 @@ function ReelCard({ reel, isActive, onComment, onRefresh }: { reel: ReelData; is
 
         {reel.book && (
           <div className="flex items-center gap-1.5">
-            <span className="text-xs text-white/50">📖 {reel.book.title} · {reel.book.author}</span>
+            <span className="text-xs text-white/50 flex items-center gap-1"><img src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f4d6/512.png" alt="📖" className="w-3.5 h-3.5 inline" /> {reel.book.title} · {reel.book.author}</span>
           </div>
         )}
       </div>

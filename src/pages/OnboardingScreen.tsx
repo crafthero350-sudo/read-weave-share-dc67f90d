@@ -74,7 +74,7 @@ export default function OnboardingScreen() {
               <div className="absolute top-4 left-2 w-28 h-36 bg-primary/20 rounded-2xl rotate-[-12deg] border-2 border-primary/30" />
               <div className="absolute top-0 right-2 w-28 h-36 bg-accent/30 rounded-2xl rotate-[8deg] border-2 border-accent/40" />
               <div className="absolute top-2 left-1/2 -translate-x-1/2 w-28 h-36 bg-card rounded-2xl border-2 border-border shadow-sm flex items-center justify-center">
-                <span className="text-3xl">📚</span>
+                <img src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f4da/512.png" alt="📚" className="w-8 h-8" />
               </div>
             </motion.div>
           )}
