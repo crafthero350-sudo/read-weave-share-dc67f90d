@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Sparkles } from "lucide-react";
+import { NotionEmoji } from "@/components/NotionEmoji";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -167,8 +168,8 @@ export default function ReadingQuizPage() {
             animate={{ opacity: 1, scale: 1 }}
             className="text-center space-y-6"
           >
-            <div className="w-24 h-24 mx-auto rounded-full bg-primary/10 flex items-center justify-center text-5xl">
-              {p.emoji}
+            <div className="w-24 h-24 mx-auto rounded-full bg-primary/10 flex items-center justify-center">
+              <NotionEmoji emoji={p.emoji} size={48} />
             </div>
             <div>
               <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Your reading personality is</p>

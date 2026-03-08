@@ -189,7 +189,7 @@ function ReadingCard({
           </>
         )}
         {userBook.status === "finished" && (
-          <span className="text-[10px] text-muted-foreground">✓ Finished</span>
+          <span className="text-[10px] text-muted-foreground flex items-center gap-0.5"><img src="https://fonts.gstatic.com/s/e/notoemoji/latest/2714_fe0f/512.png" alt="✓" className="w-3 h-3 inline" /> Finished</span>
         )}
         {userBook.status === "want_to_read" && (
           <button

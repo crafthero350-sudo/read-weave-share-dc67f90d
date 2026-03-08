@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { NotionEmoji } from "@/components/NotionEmoji";
 
 interface BookData {
   id: string;
@@ -173,7 +174,7 @@ export default function SearchScreen() {
                 </div>
               )}
               {ub && ub.status === "finished" && (
-                <span className="inline-flex items-center gap-1 text-xs text-accent font-medium bg-accent/10 px-2 py-1 rounded-full">✓ Finished</span>
+                <span className="inline-flex items-center gap-1 text-xs text-accent font-medium bg-accent/10 px-2 py-1 rounded-full"><img src="https://fonts.gstatic.com/s/e/notoemoji/latest/2705/512.png" alt="✓" className="w-3.5 h-3.5" /> Finished</span>
               )}
             </div>
           </div>
@@ -258,7 +259,7 @@ export default function SearchScreen() {
         {/* Post/Reel search results */}
         {showPosts && postResults.length > 0 && (
           <section>
-            <h2 className="font-display text-lg font-bold mb-3">📝 Posts & Reels</h2>
+            <h2 className="font-display text-lg font-bold mb-3 flex items-center gap-2"><NotionEmoji emoji="📝" size={20} /> Posts & Reels</h2>
             <div className="space-y-2">
               {postResults.map((p) => (
                 <motion.div

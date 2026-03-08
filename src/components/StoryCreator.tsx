@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { NotionEmoji } from "@/components/NotionEmoji";
 
 const bgColors = [
   "#1a1a2e", "#16213e", "#0f3460", "#533483",
@@ -129,7 +130,7 @@ export function StoryCreator({ open, onClose, onCreated }: StoryCreatorProps) {
               {selectedStickers.length > 0 && (
                 <div className="flex justify-center gap-2 mt-4">
                   {selectedStickers.map((s, i) => (
-                    <span key={i} className="text-3xl">{s}</span>
+                    <NotionEmoji key={i} emoji={s} size={32} />
                   ))}
                 </div>
               )}
@@ -150,9 +151,9 @@ export function StoryCreator({ open, onClose, onCreated }: StoryCreatorProps) {
                     <button
                       key={s}
                       onClick={() => setSelectedStickers((prev) => prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s])}
-                      className={`text-2xl p-2 rounded-lg ${selectedStickers.includes(s) ? "bg-white/20" : ""}`}
+                      className={`p-2 rounded-lg flex items-center justify-center ${selectedStickers.includes(s) ? "bg-white/20" : ""}`}
                     >
-                      {s}
+                      <NotionEmoji emoji={s} size={28} />
                     </button>
                   ))}
                 </div>
