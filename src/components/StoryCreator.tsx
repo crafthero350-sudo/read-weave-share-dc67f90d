@@ -390,7 +390,7 @@ function EditorMode(props: EditorModeProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button
-              onClick={() => setTextStyle((s) => s === "normal" ? "bold" : s === "bold" ? "italic" : "normal")}
+              onClick={() => setTextStyle(textStyle === "normal" ? "bold" : textStyle === "bold" ? "italic" : "normal")}
               className="text-white p-2"
             >
               <Type className="w-5 h-5" />
