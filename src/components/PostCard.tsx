@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { CommentPanel } from "./CommentPanel";
 import { formatDistanceToNow } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 export interface PostData {
   id: string;
@@ -28,6 +29,7 @@ interface PostCardProps {
 }
 
 export function PostCard({ post, index, onRefresh }: PostCardProps) {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [liked, setLiked] = useState(post.user_liked || false);
   const [saved, setSaved] = useState(post.user_saved || false);
@@ -77,11 +79,13 @@ export function PostCard({ post, index, onRefresh }: PostCardProps) {
       >
         {/* Header */}
         <div className="flex items-center gap-3 px-4 mb-3">
-          <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center text-xs font-medium">
+          <button onClick={() => navigate(`/user/${post.user_id}`)} className="w-9 h-9 rounded-full bg-muted flex items-center justify-center text-xs font-medium">
             {initials}
-          </div>
+          </button>
           <div className="flex-1">
-            <p className="text-sm font-medium">{post.profile?.display_name || post.profile?.username || "User"}</p>
+            <button onClick={() => navigate(`/user/${post.user_id}`)} className="text-sm font-medium hover:underline">
+              {post.profile?.display_name || post.profile?.username || "User"}
+            </button>
             <p className="text-xs text-muted-foreground">{timeAgo}</p>
           </div>
           <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium bg-muted px-2 py-0.5 rounded-full">

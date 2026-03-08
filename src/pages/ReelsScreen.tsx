@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Heart, MessageCircle, Bookmark, Share, Volume2, VolumeX, Plus } from "lucide-react";
+import { Heart, MessageCircle, Bookmark, Share, Plus, UserPlus, UserCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useFollow } from "@/hooks/useFollow";
 import { CommentPanel } from "@/components/CommentPanel";
 import { CreateReelSheet } from "@/components/CreateReelSheet";
 import { formatDistanceToNow } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 interface ReelData {
   id: string;
@@ -97,7 +99,6 @@ export default function ReelsScreen() {
         className="h-screen overflow-y-scroll snap-y snap-mandatory bg-foreground"
         style={{ scrollSnapType: "y mandatory" }}
       >
-        {/* Header */}
         <div className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 py-3 pointer-events-none">
           <h1 className="text-lg font-semibold text-primary-foreground pointer-events-auto">Reels</h1>
           <button onClick={() => setShowCreate(true)} className="p-2 pointer-events-auto">
@@ -109,33 +110,20 @@ export default function ReelsScreen() {
           <div className="h-screen snap-start flex items-center justify-center">
             <div className="text-center">
               <p className="text-primary-foreground/60 text-sm">No reels yet</p>
-              <button
-                onClick={() => setShowCreate(true)}
-                className="mt-3 px-4 py-2 bg-primary-foreground text-foreground rounded-full text-sm font-medium"
-              >
+              <button onClick={() => setShowCreate(true)} className="mt-3 px-4 py-2 bg-primary-foreground text-foreground rounded-full text-sm font-medium">
                 Create First Reel
               </button>
             </div>
           </div>
         ) : (
           reels.map((reel, i) => (
-            <ReelCard
-              key={reel.id}
-              reel={reel}
-              isActive={i === currentIndex}
-              onComment={() => setShowComments(true)}
-              onRefresh={fetchReels}
-            />
+            <ReelCard key={reel.id} reel={reel} isActive={i === currentIndex} onComment={() => setShowComments(true)} onRefresh={fetchReels} />
           ))
         )}
       </div>
 
       {reels[currentIndex] && (
-        <CommentPanel
-          postId={reels[currentIndex].id}
-          open={showComments}
-          onClose={() => { setShowComments(false); fetchReels(); }}
-        />
+        <CommentPanel postId={reels[currentIndex].id} open={showComments} onClose={() => { setShowComments(false); fetchReels(); }} />
       )}
 
       <CreateReelSheet open={showCreate} onClose={() => setShowCreate(false)} onCreated={fetchReels} />
@@ -143,22 +131,13 @@ export default function ReelsScreen() {
   );
 }
 
-function ReelCard({
-  reel,
-  isActive,
-  onComment,
-  onRefresh,
-}: {
-  reel: ReelData;
-  isActive: boolean;
-  onComment: () => void;
-  onRefresh: () => void;
-}) {
+function ReelCard({ reel, isActive, onComment, onRefresh }: { reel: ReelData; isActive: boolean; onComment: () => void; onRefresh: () => void }) {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [liked, setLiked] = useState(reel.user_liked || false);
   const [saved, setSaved] = useState(reel.user_saved || false);
   const [likeCount, setLikeCount] = useState(reel.likes_count || 0);
-  const [showFullText, setShowFullText] = useState(false);
+  const { status, toggleFollow } = useFollow(user?.id !== reel.user_id ? reel.user_id : null);
 
   const toggleLike = async () => {
     if (!user) return;
@@ -185,7 +164,6 @@ function ReelCard({
   const initials = (reel.profile?.display_name || reel.profile?.username || "?")
     .split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
 
-  // Background gradient based on post type
   const gradients: Record<string, string> = {
     quote: "from-stone-900 via-stone-800 to-stone-950",
     review: "from-zinc-900 via-neutral-800 to-zinc-950",
@@ -195,26 +173,36 @@ function ReelCard({
 
   return (
     <div className="h-screen snap-start relative flex flex-col justify-end">
-      {/* Background */}
       <div className={`absolute inset-0 bg-gradient-to-b ${gradients[reel.type] || gradients.quote}`}>
-        {reel.image_url && (
-          <img src={reel.image_url} alt="" className="w-full h-full object-cover opacity-40" />
-        )}
+        {reel.image_url && <img src={reel.image_url} alt="" className="w-full h-full object-cover opacity-40" />}
       </div>
 
-      {/* Content area - centered text */}
       <div className="absolute inset-0 flex items-center justify-center px-12 pt-16 pb-48">
-        <p className={`text-primary-foreground text-center leading-relaxed ${
-          reel.type === "quote" ? "text-xl font-light italic" : "text-base"
-        }`}>
-          {reel.content.length > 200 && !showFullText
-            ? reel.content.slice(0, 200) + "..."
-            : reel.content}
+        <p className={`text-primary-foreground text-center leading-relaxed ${reel.type === "quote" ? "text-xl font-light italic" : "text-base"}`}>
+          {reel.content.length > 200 ? reel.content.slice(0, 200) + "..." : reel.content}
         </p>
       </div>
 
       {/* Right side actions */}
       <div className="absolute right-3 bottom-32 flex flex-col items-center gap-5 z-10">
+        {/* Profile avatar with follow */}
+        <div className="relative">
+          <button
+            onClick={() => navigate(`/user/${reel.user_id}`)}
+            className="w-10 h-10 rounded-full bg-primary-foreground/20 flex items-center justify-center text-xs font-medium text-primary-foreground"
+          >
+            {initials}
+          </button>
+          {user && user.id !== reel.user_id && status !== "following" && (
+            <button
+              onClick={toggleFollow}
+              className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-5 h-5 rounded-full bg-primary-foreground flex items-center justify-center"
+            >
+              <Plus className="w-3 h-3 text-foreground" />
+            </button>
+          )}
+        </div>
+
         <button onClick={toggleLike} className="flex flex-col items-center gap-1">
           <Heart className={`w-7 h-7 ${liked ? "fill-primary-foreground text-primary-foreground" : "text-primary-foreground"}`} />
           <span className="text-[11px] text-primary-foreground font-medium">{likeCount}</span>
@@ -223,9 +211,7 @@ function ReelCard({
           <MessageCircle className="w-7 h-7 text-primary-foreground" />
           <span className="text-[11px] text-primary-foreground font-medium">{reel.comments_count || 0}</span>
         </button>
-        <button>
-          <Share className="w-6 h-6 text-primary-foreground" />
-        </button>
+        <button><Share className="w-6 h-6 text-primary-foreground" /></button>
         <button onClick={toggleSave}>
           <Bookmark className={`w-6 h-6 ${saved ? "fill-primary-foreground text-primary-foreground" : "text-primary-foreground"}`} />
         </button>
@@ -234,15 +220,19 @@ function ReelCard({
       {/* Bottom info */}
       <div className="relative z-10 px-4 pb-24">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-9 h-9 rounded-full bg-primary-foreground/20 flex items-center justify-center text-xs font-medium text-primary-foreground">
-            {initials}
-          </div>
-          <span className="text-sm font-semibold text-primary-foreground">
-            {reel.profile?.display_name || reel.profile?.username || "User"}
-          </span>
-          <span className="text-[10px] uppercase tracking-wider text-primary-foreground/50 font-medium bg-primary-foreground/10 px-2 py-0.5 rounded-full">
-            {reel.type}
-          </span>
+          <button onClick={() => navigate(`/user/${reel.user_id}`)} className="flex items-center gap-2">
+            <span className="text-sm font-semibold text-primary-foreground">{reel.profile?.display_name || reel.profile?.username || "User"}</span>
+          </button>
+          {user && user.id !== reel.user_id && (
+            <button
+              onClick={toggleFollow}
+              className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                status === "following" ? "bg-primary-foreground/20 text-primary-foreground" : "bg-primary-foreground text-foreground"
+              }`}
+            >
+              {status === "following" ? "Following" : status === "requested" ? "Requested" : "Follow"}
+            </button>
+          )}
         </div>
 
         {reel.book && (

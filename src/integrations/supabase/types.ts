@@ -97,6 +97,27 @@ export type Database = {
         }
         Relationships: []
       }
+      close_friends: {
+        Row: {
+          created_at: string | null
+          friend_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          friend_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          friend_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       comments: {
         Row: {
           content: string
@@ -141,6 +162,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      follow_requests: {
+        Row: {
+          created_at: string | null
+          id: string
+          requester_id: string
+          status: string | null
+          target_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          requester_id: string
+          status?: string | null
+          target_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          requester_id?: string
+          status?: string | null
+          target_id?: string
+        }
+        Relationships: []
       }
       follows: {
         Row: {
@@ -256,6 +301,7 @@ export type Database = {
           created_at: string
           display_name: string | null
           id: string
+          is_private: boolean | null
           reading_personality: string | null
           reading_streak: number | null
           updated_at: string
@@ -268,6 +314,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          is_private?: boolean | null
           reading_personality?: string | null
           reading_streak?: number | null
           updated_at?: string
@@ -280,6 +327,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          is_private?: boolean | null
           reading_personality?: string | null
           reading_streak?: number | null
           updated_at?: string
@@ -287,6 +335,85 @@ export type Database = {
           username?: string | null
         }
         Relationships: []
+      }
+      stories: {
+        Row: {
+          background_color: string | null
+          content: string | null
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          image_url: string | null
+          privacy: string | null
+          shared_post_id: string | null
+          sticker_data: Json | null
+          text_style: string | null
+          user_id: string
+        }
+        Insert: {
+          background_color?: string | null
+          content?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          image_url?: string | null
+          privacy?: string | null
+          shared_post_id?: string | null
+          sticker_data?: Json | null
+          text_style?: string | null
+          user_id: string
+        }
+        Update: {
+          background_color?: string | null
+          content?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          image_url?: string | null
+          privacy?: string | null
+          shared_post_id?: string | null
+          sticker_data?: Json | null
+          text_style?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stories_shared_post_id_fkey"
+            columns: ["shared_post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      story_viewers: {
+        Row: {
+          created_at: string | null
+          id: string
+          story_id: string
+          viewer_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          story_id: string
+          viewer_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          story_id?: string
+          viewer_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "story_viewers_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_books: {
         Row: {
@@ -334,6 +461,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_settings: {
+        Row: {
+          created_at: string | null
+          dark_mode: boolean | null
+          id: string
+          message_privacy: string | null
+          notifications_enabled: boolean | null
+          post_privacy: string | null
+          story_privacy: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          dark_mode?: boolean | null
+          id?: string
+          message_privacy?: string | null
+          notifications_enabled?: boolean | null
+          post_privacy?: string | null
+          story_privacy?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          dark_mode?: boolean | null
+          id?: string
+          message_privacy?: string | null
+          notifications_enabled?: boolean | null
+          post_privacy?: string | null
+          story_privacy?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
     }
     Views: {
