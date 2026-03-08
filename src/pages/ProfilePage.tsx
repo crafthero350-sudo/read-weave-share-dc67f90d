@@ -32,6 +32,7 @@ export default function ProfilePage() {
   const [characters, setCharacters] = useState<SavedCharacter[]>([]);
   const [posts, setPosts] = useState<UserPost[]>([]);
   const [activeTab, setActiveTab] = useState<"posts" | "saved" | "characters">("posts");
+  const [showEditProfile, setShowEditProfile] = useState(false);
 
   useEffect(() => {
     if (!user) return;
