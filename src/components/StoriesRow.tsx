@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from "react";
 import { Plus } from "lucide-react";
 import { StoryViewer } from "./StoryViewer";
 import { StoryCreator } from "./StoryCreator";
-import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -50,7 +49,6 @@ export function StoriesRow() {
 
     const profileMap = new Map(profiles?.map((p) => [p.user_id, p]) || []);
 
-    // Filter by privacy: show stories from followed users + own
     let followingIds = new Set<string>();
     let closeFriendIds = new Set<string>();
     if (user) {
@@ -70,7 +68,6 @@ export function StoriesRow() {
       return false;
     });
 
-    // Group by user
     const groupMap = new Map<string, DBStory[]>();
     filtered.forEach((s) => {
       const existing = groupMap.get(s.user_id) || [];
@@ -80,7 +77,6 @@ export function StoriesRow() {
 
     const storyGroups: StoryGroup[] = [];
 
-    // Own stories first
     if (user && groupMap.has(user.id)) {
       const p = profileMap.get(user.id);
       storyGroups.push({
@@ -109,7 +105,6 @@ export function StoriesRow() {
 
   useEffect(() => { fetchStories(); }, [fetchStories]);
 
-  // Convert groups to flat story array for viewer
   const allStories = groups.flatMap((g) =>
     g.stories.map((s) => ({
       id: s.id,
@@ -126,46 +121,45 @@ export function StoriesRow() {
 
   return (
     <>
-      <div className="flex gap-4 overflow-x-auto px-4 py-3 scrollbar-hide">
-        {/* Create story button */}
+      <div className="flex gap-3 overflow-x-auto px-4 py-3 no-scrollbar">
+        {/* Your Story — Instagram style */}
         {user && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
+          <button
             onClick={() => setShowCreator(true)}
-            className="flex flex-col items-center gap-1.5 flex-shrink-0"
+            className="flex flex-col items-center gap-1 flex-shrink-0"
           >
-            <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center border-2 border-dashed border-muted-foreground/30">
-              <Plus className="w-6 h-6 text-muted-foreground" />
+            <div className="relative">
+              <div className="w-[62px] h-[62px] rounded-full bg-muted flex items-center justify-center text-lg font-semibold text-muted-foreground">
+                You
+              </div>
+              <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-primary flex items-center justify-center border-2 border-background">
+                <Plus className="w-3 h-3 text-primary-foreground" strokeWidth={3} />
+              </div>
             </div>
             <span className="text-[11px] text-muted-foreground w-16 truncate text-center">Your Story</span>
-          </motion.button>
+          </button>
         )}
 
         {groups.map((group, gi) => {
           const ini = (group.displayName || group.username).split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
-          // Calculate index offset
           let storyOffset = 0;
           for (let i = 0; i < gi; i++) storyOffset += groups[i].stories.length;
 
           return (
-            <motion.button
+            <button
               key={group.userId}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: (gi + 1) * 0.05 }}
               onClick={() => setActiveGroup(storyOffset)}
-              className="flex flex-col items-center gap-1.5 flex-shrink-0"
+              className="flex flex-col items-center gap-1 flex-shrink-0"
             >
               <div className="story-ring-active">
-                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center text-sm font-medium text-foreground">
+                <div className="w-[58px] h-[58px] rounded-full bg-muted flex items-center justify-center text-sm font-semibold text-foreground border-2 border-background">
                   {ini}
                 </div>
               </div>
               <span className="text-[11px] text-muted-foreground w-16 truncate text-center">
                 {user && group.userId === user.id ? "Your Story" : group.username}
               </span>
-            </motion.button>
+            </button>
           );
         })}
       </div>

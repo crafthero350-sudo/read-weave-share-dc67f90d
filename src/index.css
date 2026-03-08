@@ -7,58 +7,58 @@
 
 @layer base {
   :root {
-    /* Notion-style minimal palette */
-    --background: 40 10% 99%;
-    --foreground: 36 7% 19%;
-    --card: 40 13% 96%;
-    --card-foreground: 36 7% 19%;
+    --background: 0 0% 100%;
+    --foreground: 0 0% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 15%;
     --popover: 0 0% 100%;
-    --popover-foreground: 36 7% 19%;
-    --primary: 36 7% 19%;
-    --primary-foreground: 40 10% 99%;
-    --secondary: 40 6% 92%;
-    --secondary-foreground: 36 7% 19%;
-    --muted: 40 6% 92%;
-    --muted-foreground: 36 3% 47%;
-    --accent: 40 6% 92%;
-    --accent-foreground: 36 7% 19%;
-    --destructive: 0 72% 51%;
+    --popover-foreground: 0 0% 15%;
+    --primary: 214 100% 51%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 15%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 46%;
+    --accent: 0 0% 96%;
+    --accent-foreground: 0 0% 15%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 40 5% 90%;
-    --input: 40 5% 90%;
-    --ring: 36 7% 19%;
+    --border: 0 0% 91%;
+    --input: 0 0% 91%;
+    --ring: 214 100% 51%;
     --radius: 0.5rem;
 
-    --activity-none: 40 5% 93%;
+    --activity-none: 0 0% 93%;
     --activity-low: 48 60% 85%;
     --activity-medium: 48 70% 72%;
     --activity-high: 48 80% 60%;
     --activity-max: 48 90% 50%;
 
-    --story-ring: 36 7% 19%;
-    --surface-elevated: 40 13% 96%;
+    --story-ring-start: 37 100% 50%;
+    --story-ring-mid: 340 82% 52%;
+    --story-ring-end: 280 87% 44%;
+    --surface-elevated: 0 0% 98%;
     --gold-glow: 48 80% 60%;
 
-    --chart-1: 36 7% 30%;
+    --chart-1: 214 100% 51%;
     --chart-2: 48 60% 55%;
     --chart-3: 200 30% 50%;
     --chart-4: 340 40% 60%;
     --chart-5: 150 40% 50%;
 
-    --sidebar: 40 13% 96%;
-    --sidebar-foreground: 36 7% 19%;
-    --sidebar-primary: 36 7% 19%;
-    --sidebar-primary-foreground: 40 10% 99%;
-    --sidebar-accent: 40 6% 92%;
-    --sidebar-accent-foreground: 36 7% 19%;
-    --sidebar-border: 40 5% 90%;
-    --sidebar-ring: 36 7% 19%;
+    --sidebar: 0 0% 98%;
+    --sidebar-foreground: 0 0% 15%;
+    --sidebar-primary: 214 100% 51%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 96%;
+    --sidebar-accent-foreground: 0 0% 15%;
+    --sidebar-border: 0 0% 91%;
+    --sidebar-ring: 214 100% 51%;
 
     --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
     --font-serif: 'Merriweather', ui-serif, Georgia, serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-    /* Pastel accent tokens */
     --pastel-yellow: 48 100% 93%;
     --pastel-red: 0 100% 95%;
     --pastel-blue: 210 100% 95%;
@@ -67,25 +67,25 @@
   }
 
   .dark {
-    --background: 0 0% 6%;
-    --foreground: 40 10% 90%;
-    --card: 0 0% 9%;
-    --card-foreground: 40 10% 90%;
-    --popover: 0 0% 9%;
-    --popover-foreground: 40 10% 90%;
-    --primary: 40 10% 90%;
-    --primary-foreground: 0 0% 6%;
-    --secondary: 0 0% 14%;
-    --secondary-foreground: 40 10% 90%;
-    --muted: 0 0% 14%;
-    --muted-foreground: 40 5% 55%;
-    --accent: 0 0% 14%;
-    --accent-foreground: 40 10% 90%;
+    --background: 0 0% 0%;
+    --foreground: 0 0% 95%;
+    --card: 0 0% 0%;
+    --card-foreground: 0 0% 95%;
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 214 100% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 11%;
+    --secondary-foreground: 0 0% 95%;
+    --muted: 0 0% 11%;
+    --muted-foreground: 0 0% 64%;
+    --accent: 0 0% 11%;
+    --accent-foreground: 0 0% 95%;
     --destructive: 0 62% 30%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 18%;
-    --input: 0 0% 18%;
-    --ring: 40 10% 90%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 214 100% 55%;
 
     --activity-none: 0 0% 14%;
     --activity-low: 48 40% 25%;
@@ -93,24 +93,26 @@
     --activity-high: 48 60% 45%;
     --activity-max: 48 70% 55%;
 
-    --story-ring: 40 10% 60%;
-    --surface-elevated: 0 0% 11%;
+    --story-ring-start: 37 100% 50%;
+    --story-ring-mid: 340 82% 52%;
+    --story-ring-end: 280 87% 44%;
+    --surface-elevated: 0 0% 7%;
     --gold-glow: 48 60% 50%;
 
-    --chart-1: 48 60% 55%;
+    --chart-1: 214 100% 55%;
     --chart-2: 200 40% 50%;
-    --chart-3: 36 7% 60%;
+    --chart-3: 0 0% 60%;
     --chart-4: 340 40% 50%;
     --chart-5: 150 40% 45%;
 
-    --sidebar: 0 0% 8%;
-    --sidebar-foreground: 40 10% 90%;
-    --sidebar-primary: 40 10% 90%;
-    --sidebar-primary-foreground: 0 0% 6%;
-    --sidebar-accent: 0 0% 14%;
-    --sidebar-accent-foreground: 40 10% 90%;
-    --sidebar-border: 0 0% 18%;
-    --sidebar-ring: 40 10% 90%;
+    --sidebar: 0 0% 5%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 214 100% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 11%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 0 0% 15%;
+    --sidebar-ring: 214 100% 55%;
 
     --pastel-yellow: 48 60% 15%;
     --pastel-red: 0 50% 15%;
@@ -132,7 +134,7 @@
 
 @layer components {
   .bookapp-title {
-    font-family: 'Merriweather', 'Georgia', serif;
+    font-family: 'Inter', sans-serif;
     font-weight: 700;
     letter-spacing: -0.03em;
     color: hsl(var(--foreground));
@@ -148,14 +150,15 @@
     transform-origin: left center;
   }
 
+  /* Instagram-style gradient story ring */
   .story-ring {
-    @apply rounded-full p-[2px] border;
-    border-color: hsl(var(--border));
+    @apply rounded-full p-[2.5px];
+    background: hsl(var(--border));
   }
 
   .story-ring-active {
-    @apply rounded-full p-[2px] border;
-    border-color: hsl(var(--foreground));
+    @apply rounded-full p-[2.5px];
+    background: linear-gradient(135deg, hsl(var(--story-ring-start)), hsl(var(--story-ring-mid)), hsl(var(--story-ring-end)));
   }
 
   .bottom-nav-item {
@@ -167,7 +170,7 @@
   }
 
   .feed-card {
-    @apply border-b border-border pb-4 mb-4;
+    @apply border-b border-border;
   }
 
   .section-title {
@@ -180,16 +183,7 @@
   }
 
   .book-progress-fill {
-    @apply h-full rounded-full transition-all duration-500;
-    background: hsl(var(--foreground));
-  }
-
-  .gold-gradient {
-    background: hsl(var(--foreground));
-  }
-
-  .gold-shadow {
-    box-shadow: none;
+    @apply h-full rounded-full transition-all duration-500 bg-primary;
   }
 
   .no-scrollbar::-webkit-scrollbar {
