@@ -189,6 +189,7 @@ export function StoriesRow() {
           stories={allStories as any}
           initialIndex={activeGroup}
           onClose={() => setActiveGroup(null)}
+          onDeleted={fetchStories}
         />
       )}
 
