@@ -85,6 +85,10 @@ export default function HomeScreen() {
         </div>
       </header>
 
+      {/* Stories */}
+      <StoriesRow />
+      <div className="border-b border-border" />
+
       {/* Composer hint */}
       <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
         <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center text-[11px] font-semibold text-muted-foreground ring-1 ring-border">
