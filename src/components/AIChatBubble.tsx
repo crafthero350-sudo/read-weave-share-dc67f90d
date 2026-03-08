@@ -79,7 +79,7 @@ export function AIChatBubble() {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-20 right-3 left-3 z-50 max-w-md mx-auto bg-card rounded-2xl shadow-2xl border border-border flex flex-col"
+            className="fixed bottom-20 right-3 left-3 z-50 max-w-md mx-auto bg-background rounded-lg shadow-sm border border-border flex flex-col"
             style={{ maxHeight: "70vh" }}
           >
             {/* Header */}
