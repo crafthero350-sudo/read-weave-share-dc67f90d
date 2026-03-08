@@ -14,7 +14,7 @@ export function BottomNav() {
   const navigate = useNavigate();
 
   const hiddenPaths = ["/read/", "/auth", "/forgot-password", "/reset-password"];
-  if (hiddenPaths.some((p) => location.pathname.startsWith(p)) || location.pathname === "/reels") return null;
+  if (hiddenPaths.some((p) => location.pathname.startsWith(p)) || location.pathname === "/reels" || location.pathname.startsWith("/settings") || location.pathname.startsWith("/user/")) return null;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-background/90 backdrop-blur-lg border-t border-border z-40">
