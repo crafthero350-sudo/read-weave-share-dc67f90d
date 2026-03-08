@@ -25,6 +25,7 @@ import ReadingQuizPage from "@/pages/ReadingQuizPage";
 import SetupProfilePage from "@/pages/SetupProfilePage";
 import NotificationsPage from "@/pages/NotificationsPage";
 import MessagesPage from "@/pages/MessagesPage";
+import ChatPage from "@/pages/ChatPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
