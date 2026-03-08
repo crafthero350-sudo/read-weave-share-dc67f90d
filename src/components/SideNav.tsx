@@ -90,7 +90,7 @@ export function SideNav() {
         </div>
       </nav>
 
-      <CreatePostSheet open={showCreate} onClose={() => setShowCreate(false)} />
+      <CreatePostSheet open={showCreate} onClose={() => setShowCreate(false)} onCreated={() => setShowCreate(false)} />
     </>
   );
 }
