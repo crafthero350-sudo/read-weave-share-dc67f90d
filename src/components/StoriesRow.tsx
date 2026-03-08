@@ -154,8 +154,7 @@ export function StoriesRow() {
               onClick={() => setActiveGroup(storyOffset)}
               className="flex flex-col items-center gap-1 flex-shrink-0"
             >
-              {/* Gradient ring */}
-              <div className={`rounded-full p-[2.5px] bg-gradient-to-br ${gradient}`}>
+              <div className="story-ring-active">
                 <div className="w-[64px] h-[64px] rounded-full bg-background p-[2px]">
                   <div className="w-full h-full rounded-full bg-muted flex items-center justify-center text-sm font-semibold text-foreground">
                     {ini}
