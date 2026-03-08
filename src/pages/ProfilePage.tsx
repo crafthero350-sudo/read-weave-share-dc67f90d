@@ -168,7 +168,7 @@ export default function ProfilePage() {
       {activeTab === "posts" && (
         <div className="grid grid-cols-3 gap-px">
           {posts.map((p) => (
-            <div key={p.id} className="aspect-square bg-secondary">
+            <button key={p.id} className="aspect-square bg-secondary" onClick={() => navigate(`/?post=${p.id}`)}>
               {(p.image_url || p.book_cover) ? (
                 <img src={p.image_url || p.book_cover!} alt="" className="w-full h-full object-cover" />
               ) : (
@@ -176,7 +176,7 @@ export default function ProfilePage() {
                   <p className="text-[10px] text-muted-foreground text-center line-clamp-4">{p.content}</p>
                 </div>
               )}
-            </div>
+            </button>
           ))}
           {posts.length === 0 && (
             <div className="col-span-3 py-16 text-center">
