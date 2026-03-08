@@ -118,7 +118,7 @@ export default function UserProfilePage() {
         <div className="mt-3">
           <p className="text-[13px] font-semibold">{profile.display_name || "Reader"}</p>
           {profile.bio && <p className="text-[13px] text-muted-foreground mt-0.5">{profile.bio}</p>}
-          {profile.reading_personality && <p className="text-[13px] mt-0.5">📚 {profile.reading_personality}</p>}
+          {profile.reading_personality && <p className="text-[13px] mt-0.5 flex items-center gap-1.5"><NotionEmoji emoji="📚" size={16} /> {profile.reading_personality}</p>}
         </div>
 
         {/* Follow / Message buttons */}
