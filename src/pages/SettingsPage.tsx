@@ -43,6 +43,8 @@ export default function SettingsPage() {
   const [storyPrivacy, setStoryPrivacy] = useState("everyone");
   const [saving, setSaving] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [selectedAvatar, setSelectedAvatar] = useState<string | null>(null);
+  const [showAvatarPicker, setShowAvatarPicker] = useState(false);
 
   useEffect(() => {
     if (profile) {
