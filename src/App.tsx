@@ -101,6 +101,7 @@ const App = () => (
                 </Routes>
                 <BottomNav />
                 <AIChatBubble />
+              </div>
             </div>
           </AuthProvider>
         </BrowserRouter>
