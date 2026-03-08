@@ -37,6 +37,8 @@ export function PostCard({ post, index, onRefresh }: PostCardProps) {
   const [likeCount, setLikeCount] = useState(post.likes_count || 0);
   const [showComments, setShowComments] = useState(false);
   const [showHeart, setShowHeart] = useState(false);
+  const [muted, setMuted] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const toggleLike = async () => {
     if (!user) return;
