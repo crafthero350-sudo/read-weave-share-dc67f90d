@@ -1,11 +1,35 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, User, Shield, Heart, Bookmark, Users, Bell, Moon, Sun, LogOut, ChevronRight } from "lucide-react";
+import { ArrowLeft, User, Shield, Heart, Bookmark, Users, Bell, Moon, Sun, LogOut, ChevronRight, Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { toast } from "sonner";
+
+import avatar1 from "@/assets/avatars/avatar-1.png";
+import avatar2 from "@/assets/avatars/avatar-2.png";
+import avatar3 from "@/assets/avatars/avatar-3.png";
+import avatar4 from "@/assets/avatars/avatar-4.png";
+import avatar5 from "@/assets/avatars/avatar-5.png";
+import avatar6 from "@/assets/avatars/avatar-6.png";
+import avatar7 from "@/assets/avatars/avatar-7.png";
+import avatar8 from "@/assets/avatars/avatar-8.png";
+import avatar9 from "@/assets/avatars/avatar-9.png";
+import avatar10 from "@/assets/avatars/avatar-10.png";
+
+const avatarOptions = [
+  { id: "1", src: avatar1 },
+  { id: "2", src: avatar2 },
+  { id: "3", src: avatar3 },
+  { id: "4", src: avatar4 },
+  { id: "5", src: avatar5 },
+  { id: "6", src: avatar6 },
+  { id: "7", src: avatar7 },
+  { id: "8", src: avatar8 },
+  { id: "9", src: avatar9 },
+  { id: "10", src: avatar10 },
+];
 
 export default function SettingsPage() {
   const { user, profile, signOut, refreshProfile } = useAuth();
