@@ -212,33 +212,8 @@ export function PostCard({ post, index, onRefresh }: PostCardProps) {
           </div>
         )}
 
-        {/* Actions row — Instagram order: Heart, Comment, Send ... Bookmark */}
-        <div className="flex items-center justify-between px-3 py-2">
-          <div className="flex items-center gap-4">
-            <button onClick={toggleLike} className="active:scale-110 transition-transform">
-              <Heart className={`w-6 h-6 transition-colors ${liked ? "fill-red-500 text-red-500" : "text-foreground"}`} strokeWidth={1.5} />
-            </button>
-            <button onClick={() => setShowComments(true)}>
-              <MessageCircle className="w-6 h-6 text-foreground" strokeWidth={1.5} />
-            </button>
-            <button onClick={handleShare}>
-              <Send className="w-6 h-6 text-foreground" strokeWidth={1.5} style={{ transform: "rotate(-25deg) translateY(-1px)" }} />
-            </button>
-          </div>
-          <button onClick={toggleSave} className="active:scale-110 transition-transform">
-            <Bookmark className={`w-6 h-6 transition-colors ${saved ? "fill-foreground text-foreground" : "text-foreground"}`} strokeWidth={1.5} />
-          </button>
-        </div>
-
-        {/* Likes count */}
-        {likeCount > 0 && (
-          <p className="px-3 text-[13px] font-semibold leading-tight text-foreground">
-            {likeCount.toLocaleString()} {likeCount === 1 ? "like" : "likes"}
-          </p>
-        )}
-
         {/* Caption / Edit mode */}
-        <div className="px-3 mt-0.5">
+        <div className="px-3 mt-2">
           {editing ? (
             <div className="space-y-2 py-1">
               <textarea
@@ -270,6 +245,31 @@ export function PostCard({ post, index, onRefresh }: PostCardProps) {
         {/* Edited indicator */}
         {wasEdited && !editing && (
           <p className="px-3 mt-0.5 text-[10px] text-muted-foreground italic">Edited</p>
+        )}
+
+        {/* Actions row — below content */}
+        <div className="flex items-center justify-between px-3 py-2">
+          <div className="flex items-center gap-4">
+            <button onClick={toggleLike} className="active:scale-110 transition-transform">
+              <Heart className={`w-6 h-6 transition-colors ${liked ? "fill-red-500 text-red-500" : "text-foreground"}`} strokeWidth={1.5} />
+            </button>
+            <button onClick={() => setShowComments(true)}>
+              <MessageCircle className="w-6 h-6 text-foreground" strokeWidth={1.5} />
+            </button>
+            <button onClick={handleShare}>
+              <Send className="w-6 h-6 text-foreground" strokeWidth={1.5} style={{ transform: "rotate(-25deg) translateY(-1px)" }} />
+            </button>
+          </div>
+          <button onClick={toggleSave} className="active:scale-110 transition-transform">
+            <Bookmark className={`w-6 h-6 transition-colors ${saved ? "fill-foreground text-foreground" : "text-foreground"}`} strokeWidth={1.5} />
+          </button>
+        </div>
+
+        {/* Likes count */}
+        {likeCount > 0 && (
+          <p className="px-3 text-[13px] font-semibold leading-tight text-foreground">
+            {likeCount.toLocaleString()} {likeCount === 1 ? "like" : "likes"}
+          </p>
         )}
 
         {/* View comments */}
