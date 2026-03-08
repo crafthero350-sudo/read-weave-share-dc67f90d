@@ -143,6 +143,7 @@ export default function HomeScreen() {
       </div>
 
       <CreatePostSheet open={showCreate} onClose={() => setShowCreate(false)} onCreated={fetchPosts} />
+      <StoryCreator open={showStoryCreator} onClose={() => setShowStoryCreator(false)} onCreated={fetchPosts} />
     </div>
   );
 }
