@@ -4,7 +4,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useState } from "react";
 import { CreatePostSheet } from "@/components/CreatePostSheet";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
-import bookappLogo from "@/assets/bookapp-logo.png";
 
 const navItems = [
   { path: "/", icon: Home, label: "Home" },
@@ -39,7 +38,7 @@ export function SideNav() {
           >
             BookApp
           </h1>
-          <img src={bookappLogo} alt="BookApp" className="xl:hidden w-7 h-7 rounded" />
+          <span className="xl:hidden text-xl font-bold italic text-foreground" style={{ fontFamily: "'Merriweather', serif" }}>B</span>
         </div>
 
         {/* Nav Items */}
