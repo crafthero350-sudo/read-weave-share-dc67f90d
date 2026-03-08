@@ -93,6 +93,7 @@ const App = () => (
                 <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
                 <Route path="/quiz" element={<ProtectedRoute><ReadingQuizPage /></ProtectedRoute>} />
                 <Route path="/user/:userId" element={<ProtectedRoute><UserProfilePage /></ProtectedRoute>} />
+                <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
               <BottomNav />
