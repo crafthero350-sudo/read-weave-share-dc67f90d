@@ -219,14 +219,17 @@ export default function SetupProfilePage() {
             </div>
 
             {/* Next button */}
-            <button
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              whileHover={{ scale: 1.01 }}
               onClick={() => selectedAvatar && setStep("username")}
               disabled={!selectedAvatar}
-              className="w-full py-3 rounded-xl bg-foreground text-background font-semibold text-sm disabled:opacity-30 transition-opacity flex items-center justify-center gap-2"
+              className="w-full py-3.5 rounded-xl bg-foreground text-background font-semibold text-sm disabled:opacity-30 transition-all flex items-center justify-center gap-2 shadow-lg"
             >
+              <Sparkles className="w-4 h-4" />
               Continue
               <ArrowRight className="w-4 h-4" />
-            </button>
+            </motion.button>
           </motion.div>
         ) : (
           <motion.div
