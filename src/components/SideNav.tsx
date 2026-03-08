@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState } from "react";
 import { CreatePostSheet } from "@/components/CreatePostSheet";
+import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import bookappLogo from "@/assets/bookapp-logo.png";
 
 const navItems = [
