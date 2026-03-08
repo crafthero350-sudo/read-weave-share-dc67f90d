@@ -14,6 +14,7 @@ export default function HomeScreen() {
   const [posts, setPosts] = useState<PostData[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
+  const unreadCount = useUnreadMessages();
 
   const fetchPosts = useCallback(async () => {
     const { data: postsData } = await supabase
