@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { ArrowLeft, User, Shield, Heart, Bookmark, Users, Bell, Moon, Sun, LogOut, ChevronRight, Check } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { ArrowLeft, User, Shield, Heart, Bookmark, Users, Bell, Moon, Sun, LogOut, ChevronRight, Check, Grid3X3, FolderOpen, MessageSquare, Quote, BookOpen, Film } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
@@ -304,6 +304,7 @@ function SavedLikedSection({ type, onBack }: { type: "liked" | "saved"; onBack: 
   const { user } = useAuth();
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -312,14 +313,14 @@ function SavedLikedSection({ type, onBack }: { type: "liked" | "saved"; onBack: 
         const { data: likes } = await supabase.from("likes").select("post_id").eq("user_id", user.id).not("post_id", "is", null);
         if (likes?.length) {
           const postIds = likes.map((l) => l.post_id!);
-          const { data } = await supabase.from("posts").select("id, content, type, created_at").in("id", postIds).order("created_at", { ascending: false });
+          const { data } = await supabase.from("posts").select("id, content, type, created_at, image_url, book_id").in("id", postIds).order("created_at", { ascending: false });
           setPosts(data || []);
         }
       } else {
         const { data: bookmarks } = await supabase.from("bookmarks").select("post_id").eq("user_id", user.id);
         if (bookmarks?.length) {
           const postIds = bookmarks.map((b) => b.post_id);
-          const { data } = await supabase.from("posts").select("id, content, type, created_at").in("id", postIds).order("created_at", { ascending: false });
+          const { data } = await supabase.from("posts").select("id, content, type, created_at, image_url, book_id").in("id", postIds).order("created_at", { ascending: false });
           setPosts(data || []);
         }
       }
@@ -328,26 +329,139 @@ function SavedLikedSection({ type, onBack }: { type: "liked" | "saved"; onBack: 
     fetchData();
   }, [user, type]);
 
+  const categories = useMemo(() => {
+    const typeMap: Record<string, { label: string; icon: any; color: string }> = {
+      discussion: { label: "Discussions", icon: MessageSquare, color: "bg-blue-500/10 text-blue-500" },
+      quote: { label: "Quotes", icon: Quote, color: "bg-amber-500/10 text-amber-500" },
+      review: { label: "Reviews", icon: BookOpen, color: "bg-emerald-500/10 text-emerald-500" },
+      reel: { label: "Reels", icon: Film, color: "bg-purple-500/10 text-purple-500" },
+    };
+    const grouped: Record<string, any[]> = {};
+    posts.forEach((p) => {
+      const key = p.type || "discussion";
+      if (!grouped[key]) grouped[key] = [];
+      grouped[key].push(p);
+    });
+    return Object.entries(grouped).map(([key, items]) => ({
+      key,
+      ...(typeMap[key] || { label: key, icon: FolderOpen, color: "bg-muted text-muted-foreground" }),
+      count: items.length,
+      preview: items[0]?.image_url || null,
+      posts: items,
+    }));
+  }, [posts]);
+
+  const filteredPosts = activeCategory ? categories.find((c) => c.key === activeCategory)?.posts || [] : posts;
+  const activeCategoryData = activeCategory ? categories.find((c) => c.key === activeCategory) : null;
+
   return (
     <div className="min-h-screen bg-background pb-20">
       <header className="sticky top-0 z-30 bg-background/90 backdrop-blur-lg border-b border-border">
         <div className="flex items-center gap-3 px-4 py-3">
-          <button onClick={onBack} className="p-1"><ArrowLeft className="w-5 h-5" /></button>
-          <h1 className="text-sm font-semibold">{type === "liked" ? "Liked Posts" : "Saved Posts"}</h1>
+          <button onClick={activeCategory ? () => setActiveCategory(null) : onBack} className="p-1">
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <h1 className="text-sm font-semibold">
+            {activeCategory ? activeCategoryData?.label : type === "liked" ? "Liked Posts" : "Saved Posts"}
+          </h1>
+          {activeCategory && (
+            <span className="text-xs text-muted-foreground ml-auto">{filteredPosts.length} posts</span>
+          )}
         </div>
       </header>
+
       <div className="px-4 pt-4">
         {loading ? (
-          <div className="flex justify-center py-12"><div className="w-6 h-6 border-2 border-foreground border-t-transparent rounded-full animate-spin" /></div>
+          <div className="flex justify-center py-12">
+            <div className="w-6 h-6 border-2 border-foreground border-t-transparent rounded-full animate-spin" />
+          </div>
         ) : posts.length === 0 ? (
-          <p className="text-center text-muted-foreground text-sm mt-12">No {type} posts yet</p>
-        ) : (
-          posts.map((p) => (
-            <div key={p.id} className="py-3 border-b border-border">
-              <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium bg-muted px-2 py-0.5 rounded-full">{p.type}</span>
-              <p className="text-sm mt-1.5 line-clamp-2">{p.content}</p>
+          <div className="text-center mt-16">
+            <Bookmark className="w-12 h-12 mx-auto text-muted-foreground mb-3" strokeWidth={1} />
+            <p className="text-sm text-muted-foreground">No {type} posts yet</p>
+          </div>
+        ) : !activeCategory ? (
+          /* Collections Grid */
+          <>
+            {/* All Posts tile */}
+            <motion.button
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              onClick={() => setActiveCategory("__all")}
+              className="w-full mb-4 rounded-xl border border-border overflow-hidden"
+            >
+              <div className="grid grid-cols-3 gap-px bg-border h-28">
+                {posts.slice(0, 3).map((p, i) => (
+                  <div key={i} className="bg-secondary flex items-center justify-center">
+                    {p.image_url ? (
+                      <img src={p.image_url} className="w-full h-full object-cover" alt="" />
+                    ) : (
+                      <p className="text-[9px] text-muted-foreground text-center px-2 line-clamp-3">{p.content}</p>
+                    )}
+                  </div>
+                ))}
+                {posts.length < 3 && Array.from({ length: 3 - posts.length }).map((_, i) => (
+                  <div key={`e-${i}`} className="bg-secondary" />
+                ))}
+              </div>
+              <div className="flex items-center justify-between px-3.5 py-2.5">
+                <div className="flex items-center gap-2">
+                  <Grid3X3 className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
+                  <span className="text-sm font-medium">All Posts</span>
+                </div>
+                <span className="text-xs text-muted-foreground">{posts.length}</span>
+              </div>
+            </motion.button>
+
+            {/* Category tiles */}
+            <div className="grid grid-cols-2 gap-3">
+              {categories.map((cat, i) => {
+                const Icon = cat.icon;
+                return (
+                  <motion.button
+                    key={cat.key}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.05 }}
+                    onClick={() => setActiveCategory(cat.key)}
+                    className="rounded-xl border border-border overflow-hidden text-left"
+                  >
+                    <div className="h-24 bg-secondary flex items-center justify-center">
+                      {cat.preview ? (
+                        <img src={cat.preview} className="w-full h-full object-cover" alt="" />
+                      ) : (
+                        <Icon className={`w-8 h-8 ${cat.color}`} strokeWidth={1.2} />
+                      )}
+                    </div>
+                    <div className="px-3 py-2">
+                      <p className="text-xs font-medium">{cat.label}</p>
+                      <p className="text-[10px] text-muted-foreground">{cat.count} posts</p>
+                    </div>
+                  </motion.button>
+                );
+              })}
             </div>
-          ))
+          </>
+        ) : (
+          /* Posts Grid inside category */
+          <div className="grid grid-cols-3 gap-px">
+            {(activeCategory === "__all" ? posts : filteredPosts).map((p) => (
+              <motion.div
+                key={p.id}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="aspect-square bg-secondary"
+              >
+                {p.image_url ? (
+                  <img src={p.image_url} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center p-2">
+                    <p className="text-[10px] text-muted-foreground text-center line-clamp-4">{p.content}</p>
+                  </div>
+                )}
+              </motion.div>
+            ))}
+          </div>
         )}
       </div>
     </div>
