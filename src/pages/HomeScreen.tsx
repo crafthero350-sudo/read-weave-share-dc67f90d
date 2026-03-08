@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Heart, Send, PlusSquare } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { StoriesRow } from "@/components/StoriesRow";
 import { PostCard, type PostData } from "@/components/PostCard";
 import { CreatePostSheet } from "@/components/CreatePostSheet";
