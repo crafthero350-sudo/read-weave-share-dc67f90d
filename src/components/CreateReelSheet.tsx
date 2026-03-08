@@ -144,6 +144,14 @@ export function CreateReelSheet({ open, onClose, onCreated }: CreateReelSheetPro
                 ))}
               </select>
 
+              {/* Image upload */}
+              <div>
+                <label className="flex items-center gap-2 px-4 py-3 bg-muted rounded-xl cursor-pointer text-sm text-muted-foreground">
+                  📷 {imageFile ? imageFile.name : "Add image (optional)"}
+                  <input type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files?.[0] || null)} className="hidden" />
+                </label>
+              </div>
+
               <textarea
                 placeholder={
                   type === "quote"
