@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Heart, Send, PlusSquare } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { StoriesRow } from "@/components/StoriesRow";
 import { PostCard, type PostData } from "@/components/PostCard";
 import { CreatePostSheet } from "@/components/CreatePostSheet";
@@ -7,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function HomeScreen() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [posts, setPosts] = useState<PostData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -84,7 +86,7 @@ export default function HomeScreen() {
             <button onClick={() => setShowCreate(true)} className="p-2">
               <PlusSquare className="w-6 h-6 text-foreground" strokeWidth={1.5} />
             </button>
-            <button className="p-2">
+            <button className="p-2" onClick={() => navigate("/notifications")}>
               <Heart className="w-6 h-6 text-foreground" strokeWidth={1.5} />
             </button>
             <button className="p-2">
