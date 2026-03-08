@@ -20,12 +20,13 @@ import AuthPage from "@/pages/AuthPage";
 import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
 import ResetPasswordPage from "@/pages/ResetPasswordPage";
 import ReadingQuizPage from "@/pages/ReadingQuizPage";
+import SetupProfilePage from "@/pages/SetupProfilePage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
+  const { user, profile, loading } = useAuth();
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -34,6 +35,23 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
     );
   }
   if (!user) return <Navigate to="/auth" replace />;
+  // Redirect to setup if profile has no avatar (new user)
+  if (profile && !profile.avatar_url) return <Navigate to="/setup" replace />;
+  return <>{children}</>;
+}
+
+function SetupRoute({ children }: { children: React.ReactNode }) {
+  const { user, profile, loading } = useAuth();
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-6 h-6 border-2 border-foreground border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+  if (!user) return <Navigate to="/auth" replace />;
+  // If already set up, go home
+  if (profile?.avatar_url) return <Navigate to="/" replace />;
   return <>{children}</>;
 }
 
@@ -64,6 +82,7 @@ const App = () => (
                 <Route path="/auth" element={<AuthRoute><AuthPage /></AuthRoute>} />
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                 <Route path="/reset-password" element={<ResetPasswordPage />} />
+                <Route path="/setup" element={<SetupRoute><SetupProfilePage /></SetupRoute>} />
                 <Route path="/" element={<ProtectedRoute><HomeScreen /></ProtectedRoute>} />
                 <Route path="/reels" element={<ProtectedRoute><ReelsScreen /></ProtectedRoute>} />
                 <Route path="/reading" element={<Navigate to="/search" replace />} />
