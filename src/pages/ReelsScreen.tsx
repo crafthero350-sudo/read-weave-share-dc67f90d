@@ -193,14 +193,6 @@ function ReelCard({ reel, isActive, onComment, onRefresh }: { reel: ReelData; is
         )}
       </div>
 
-      {/* Content centered */}
-      <div className="absolute inset-0 flex items-center justify-center px-16 pt-20 pb-52">
-        <p className={`text-white text-center leading-relaxed ${
-          reel.type === "quote" ? "text-xl font-light italic" : "text-base"
-        }`}>
-          {reel.content.length > 250 ? reel.content.slice(0, 250) + "…" : reel.content}
-        </p>
-      </div>
 
       {/* Right side actions — Instagram style */}
       <div className="absolute right-3 bottom-28 flex flex-col items-center gap-5 z-10">
