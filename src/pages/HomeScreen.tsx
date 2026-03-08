@@ -15,7 +15,7 @@ export default function HomeScreen() {
   const fetchPosts = useCallback(async () => {
     const { data: postsData } = await supabase
       .from("posts")
-      .select("*")
+      .select("*, updated_at")
       .order("created_at", { ascending: false })
       .limit(50);
 
