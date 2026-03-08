@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Heart, MessageCircle, Send, Bookmark, MoreHorizontal } from "lucide-react";
+import { useState, useRef } from "react";
+import { Heart, MessageCircle, Send, Bookmark, MoreHorizontal, Volume2, VolumeX } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { CommentPanel } from "./CommentPanel";
@@ -37,6 +37,8 @@ export function PostCard({ post, index, onRefresh }: PostCardProps) {
   const [likeCount, setLikeCount] = useState(post.likes_count || 0);
   const [showComments, setShowComments] = useState(false);
   const [showHeart, setShowHeart] = useState(false);
+  const [muted, setMuted] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const toggleLike = async () => {
     if (!user) return;
@@ -85,7 +87,14 @@ export function PostCard({ post, index, onRefresh }: PostCardProps) {
   const initials = displayName.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
   const avatarUrl = post.profile?.avatar_url;
 
-  const hasImage = post.image_url || post.book?.cover_url;
+  const mediaUrl = post.image_url || post.book?.cover_url || "";
+  const hasMedia = !!mediaUrl;
+  const isVideo = mediaUrl.match(/\.(mp4|mov|webm|avi|mkv)(\?|$)/i);
+
+  const toggleMute = () => {
+    setMuted((m) => !m);
+    if (videoRef.current) videoRef.current.muted = !videoRef.current.muted;
+  };
 
   return (
     <>
@@ -117,18 +126,43 @@ export function PostCard({ post, index, onRefresh }: PostCardProps) {
           </button>
         </div>
 
-        {/* Image — full width */}
-        {hasImage && (
+        {/* Media — full width, supports image + video */}
+        {hasMedia && (
           <div
             className="w-full aspect-square bg-muted relative select-none"
             onDoubleClick={handleDoubleTap}
           >
-            <img
-              src={post.image_url || post.book?.cover_url || ""}
-              alt=""
-              className="w-full h-full object-cover"
-              draggable={false}
-            />
+            {isVideo ? (
+              <>
+                <video
+                  ref={videoRef}
+                  src={mediaUrl}
+                  className="w-full h-full object-cover"
+                  autoPlay
+                  loop
+                  muted={muted}
+                  playsInline
+                />
+                {/* Mute/Unmute button */}
+                <button
+                  onClick={toggleMute}
+                  className="absolute bottom-3 right-3 w-7 h-7 rounded-full bg-black/60 flex items-center justify-center"
+                >
+                  {muted ? (
+                    <VolumeX className="w-3.5 h-3.5 text-white" strokeWidth={2} />
+                  ) : (
+                    <Volume2 className="w-3.5 h-3.5 text-white" strokeWidth={2} />
+                  )}
+                </button>
+              </>
+            ) : (
+              <img
+                src={mediaUrl}
+                alt=""
+                className="w-full h-full object-cover"
+                draggable={false}
+              />
+            )}
             {/* Double-tap heart animation */}
             {showHeart && (
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
