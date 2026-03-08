@@ -208,33 +208,31 @@ function GalleryMode({ onClose, onSelectImage, onTextMode, onCameraMode, fileInp
       </div>
 
       {/* Photo grid - placeholder with camera + upload buttons */}
-      <div className="flex-1 overflow-y-auto px-1">
-        <div className="grid grid-cols-3 gap-0.5">
-          {/* Camera tile */}
+      <div className="flex-1 overflow-y-auto px-4">
+        <div className="flex flex-col items-center justify-center h-full gap-4">
+          {/* Camera button */}
           <button
             onClick={onCameraMode}
-            className="aspect-square bg-neutral-900 flex items-center justify-center border border-neutral-800"
+            className="w-24 h-24 rounded-2xl bg-neutral-800 border border-neutral-700 flex flex-col items-center justify-center gap-2"
           >
-            <Camera className="w-8 h-8 text-white/60" />
+            <Camera className="w-10 h-10 text-white/70" />
+            <span className="text-white/50 text-[11px] font-medium">Camera</span>
           </button>
-          {/* Upload tiles */}
-          {[...Array(8)].map((_, i) => (
-            <label
-              key={i}
-              className="aspect-square bg-neutral-900 flex items-center justify-center cursor-pointer border border-neutral-800 hover:bg-neutral-800 transition-colors"
-            >
-              <input
-                type="file"
-                accept="image/*,video/*"
-                className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) onSelectImage(file);
-                }}
-              />
-              <Image className="w-6 h-6 text-white/20" />
-            </label>
-          ))}
+
+          {/* Upload from gallery */}
+          <label className="w-24 h-24 rounded-2xl bg-neutral-800 border border-neutral-700 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-neutral-700 transition-colors">
+            <input
+              type="file"
+              accept="image/*,video/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) onSelectImage(file);
+              }}
+            />
+            <Image className="w-10 h-10 text-white/70" />
+            <span className="text-white/50 text-[11px] font-medium">Gallery</span>
+          </label>
         </div>
       </div>
 
