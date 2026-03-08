@@ -212,7 +212,7 @@ export function PostCard({ post, index, onRefresh }: PostCardProps) {
           </div>
         )}
 
-        {/* Actions row */}
+        {/* Actions row — Instagram order: Heart, Comment, Send ... Bookmark */}
         <div className="flex items-center justify-between px-3 py-2">
           <div className="flex items-center gap-4">
             <button onClick={toggleLike} className="active:scale-110 transition-transform">
@@ -222,7 +222,7 @@ export function PostCard({ post, index, onRefresh }: PostCardProps) {
               <MessageCircle className="w-6 h-6 text-foreground" strokeWidth={1.5} />
             </button>
             <button onClick={handleShare}>
-              <Send className="w-6 h-6 text-foreground -rotate-[20deg]" strokeWidth={1.5} />
+              <Send className="w-6 h-6 text-foreground" strokeWidth={1.5} style={{ transform: "rotate(-25deg) translateY(-1px)" }} />
             </button>
           </div>
           <button onClick={toggleSave} className="active:scale-110 transition-transform">
