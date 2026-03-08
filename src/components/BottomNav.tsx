@@ -1,9 +1,9 @@
-import { Home, BookOpen, User, Search, Film } from "lucide-react";
+import { Home, BookOpen, User, Search, Sparkles } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const navItems = [
   { path: "/", icon: Home, label: "Home" },
-  { path: "/reels", icon: Film, label: "Reels" },
+  { path: "/ai", icon: Sparkles, label: "AI" },
   { path: "/reading", icon: BookOpen, label: "Reading" },
   { path: "/search", icon: Search, label: "Search" },
   { path: "/profile", icon: User, label: "Profile" },
@@ -15,6 +15,7 @@ export function BottomNav() {
 
   const hiddenPaths = ["/read/", "/auth", "/forgot-password", "/reset-password"];
   if (hiddenPaths.some((p) => location.pathname.startsWith(p)) || location.pathname === "/reels" || location.pathname.startsWith("/settings") || location.pathname.startsWith("/user/")) return null;
+
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-background/90 backdrop-blur-lg border-t border-border z-40">

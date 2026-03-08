@@ -15,6 +15,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
+        display: ["Playfair Display", "Georgia", "serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -59,6 +60,9 @@ export default {
         },
         surface: {
           elevated: "hsl(var(--surface-elevated))",
+        },
+        gold: {
+          glow: "hsl(var(--gold-glow))",
         },
       },
       borderRadius: {
