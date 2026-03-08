@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Heart, MessageCircle, Bookmark, Share, Plus, UserPlus, UserCheck } from "lucide-react";
+import { Heart, MessageCircle, Bookmark, Share, Plus, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
