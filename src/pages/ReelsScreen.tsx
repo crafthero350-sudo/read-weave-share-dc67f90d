@@ -35,6 +35,7 @@ export default function ReelsScreen() {
   const [loading, setLoading] = useState(true);
   const [showComments, setShowComments] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
+  const [showStory, setShowStory] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const fetchReels = useCallback(async () => {
