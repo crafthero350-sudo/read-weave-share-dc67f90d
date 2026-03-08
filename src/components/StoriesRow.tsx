@@ -26,9 +26,6 @@ interface DBStory {
   expires_at: string;
 }
 
-// Monoline story ring - uses semantic token
-
-
 export function StoriesRow() {
   const { user } = useAuth();
   const [groups, setGroups] = useState<StoryGroup[]>([]);
@@ -122,9 +119,26 @@ export function StoriesRow() {
     }))
   );
 
+  const renderAvatar = (avatarUrl: string | null, initials: string, size: number = 64) => {
+    if (avatarUrl) {
+      return (
+        <img
+          src={avatarUrl}
+          alt=""
+          className="w-full h-full rounded-full object-cover"
+        />
+      );
+    }
+    return (
+      <div className="w-full h-full rounded-full bg-muted flex items-center justify-center text-sm font-semibold text-foreground">
+        {initials}
+      </div>
+    );
+  };
+
   return (
     <>
-      <div className="flex gap-3.5 overflow-x-auto px-4 py-3 no-scrollbar">
+      <div className="flex gap-3 overflow-x-auto px-4 py-3 no-scrollbar">
         {/* Your Story */}
         {user && (
           <button
@@ -132,11 +146,11 @@ export function StoriesRow() {
             className="flex flex-col items-center gap-1 flex-shrink-0"
           >
             <div className="relative">
-              <div className="w-[68px] h-[68px] rounded-full bg-muted flex items-center justify-center text-lg font-semibold text-muted-foreground">
-                You
+              <div className="w-[66px] h-[66px] rounded-full bg-muted flex items-center justify-center overflow-hidden">
+                {renderAvatar(null, "You")}
               </div>
-              <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-primary flex items-center justify-center border-2 border-background">
-                <Plus className="w-3 h-3 text-primary-foreground" strokeWidth={3} />
+              <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-foreground flex items-center justify-center border-2 border-background">
+                <Plus className="w-3 h-3 text-background" strokeWidth={3} />
               </div>
             </div>
             <span className="text-[11px] text-foreground w-[72px] truncate text-center">Your story</span>
@@ -155,9 +169,9 @@ export function StoriesRow() {
               className="flex flex-col items-center gap-1 flex-shrink-0"
             >
               <div className="story-ring-active">
-                <div className="w-[64px] h-[64px] rounded-full bg-background p-[2px]">
-                  <div className="w-full h-full rounded-full bg-muted flex items-center justify-center text-sm font-semibold text-foreground">
-                    {ini}
+                <div className="w-[62px] h-[62px] rounded-full bg-background p-[2px]">
+                  <div className="w-full h-full rounded-full overflow-hidden">
+                    {renderAvatar(group.avatarUrl, ini)}
                   </div>
                 </div>
               </div>
