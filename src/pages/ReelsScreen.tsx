@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { StoryCreator } from "@/components/StoryCreator";
 import { Heart, MessageCircle, Bookmark, Send, Plus, ArrowLeft, MoreHorizontal, Camera } from "lucide-react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
@@ -34,6 +35,7 @@ export default function ReelsScreen() {
   const [loading, setLoading] = useState(true);
   const [showComments, setShowComments] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
+  const [showStory, setShowStory] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const fetchReels = useCallback(async () => {
@@ -116,7 +118,7 @@ export default function ReelsScreen() {
           <div className="h-screen snap-start flex items-center justify-center">
             <div className="text-center">
               <p className="text-white/50 text-sm mb-3">No reels yet</p>
-              <button onClick={() => setShowCreate(true)} className="px-5 py-2.5 bg-white text-black rounded-lg text-sm font-medium">
+              <button onClick={() => setShowStory(true)} className="px-5 py-2.5 bg-white text-black rounded-lg text-sm font-medium">
                 Create First Reel
               </button>
             </div>
@@ -133,6 +135,7 @@ export default function ReelsScreen() {
       )}
 
       <CreateReelSheet open={showCreate} onClose={() => setShowCreate(false)} onCreated={fetchReels} />
+      <StoryCreator open={showStory} onClose={() => setShowStory(false)} onCreated={fetchReels} />
     </>
   );
 }
