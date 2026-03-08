@@ -84,8 +84,8 @@ export function AIChatBubble() {
           >
             {/* Header */}
             <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
-              <div className="w-9 h-9 rounded-full overflow-hidden border border-primary">
-                <img src={aiCharacter} alt="AI" className="w-full h-full object-cover" />
+              <div className="w-8 h-8 rounded-full overflow-hidden border border-border">
+                <img src={aiCharacter} alt="Lisa" className="w-full h-full object-cover" />
               </div>
               <div className="flex-1">
                 <p className="text-sm font-semibold font-display">Lisa</p>
