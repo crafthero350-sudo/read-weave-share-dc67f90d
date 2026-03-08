@@ -21,6 +21,7 @@ import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
 import ResetPasswordPage from "@/pages/ResetPasswordPage";
 import ReadingQuizPage from "@/pages/ReadingQuizPage";
 import SetupProfilePage from "@/pages/SetupProfilePage";
+import NotificationsPage from "@/pages/NotificationsPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
