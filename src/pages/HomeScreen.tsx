@@ -129,7 +129,7 @@ export default function HomeScreen() {
           <div className="text-center py-16 px-4">
             <p className="text-muted-foreground text-sm">No posts yet. Share your first book thought!</p>
             <button
-              onClick={() => setShowCreate(true)}
+              onClick={() => setShowStoryCreator(true)}
               className="mt-4 px-6 py-2 bg-foreground text-background rounded-lg text-sm font-medium"
             >
               Create Post
