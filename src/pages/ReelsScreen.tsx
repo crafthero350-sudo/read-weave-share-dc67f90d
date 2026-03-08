@@ -100,7 +100,10 @@ export default function ReelsScreen() {
         style={{ scrollSnapType: "y mandatory" }}
       >
         <div className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 py-3 pointer-events-none">
-          <h1 className="text-lg font-semibold text-primary-foreground pointer-events-auto">Reels</h1>
+          <button onClick={() => navigate("/")} className="pointer-events-auto">
+            <ArrowLeft className="w-5 h-5 text-primary-foreground" />
+          </button>
+          <h1 className="text-lg font-semibold text-primary-foreground">Reels</h1>
           <button onClick={() => setShowCreate(true)} className="p-2 pointer-events-auto">
             <Plus className="w-5 h-5 text-primary-foreground" />
           </button>
