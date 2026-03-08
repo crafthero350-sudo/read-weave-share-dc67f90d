@@ -291,7 +291,7 @@ export default function SettingsPage() {
           </button>
         </div>
 
-        <button onClick={handleSignOut} className="flex items-center gap-3 w-full py-3.5 text-destructive">
+        <button onClick={handleSignOut} className="flex items-center gap-3 w-full py-3.5 text-muted-foreground">
           <LogOut className="w-5 h-5" strokeWidth={1.5} />
           <span className="text-sm font-medium">Log Out</span>
         </button>
