@@ -2,7 +2,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
 import { BottomNav } from "@/components/BottomNav";
 import { SideNav } from "@/components/SideNav";
 import { AIChatBubble } from "@/components/AIChatBubble";
@@ -23,6 +24,7 @@ import ResetPasswordPage from "@/pages/ResetPasswordPage";
 import ReadingQuizPage from "@/pages/ReadingQuizPage";
 import SetupProfilePage from "@/pages/SetupProfilePage";
 import NotificationsPage from "@/pages/NotificationsPage";
+import MessagesPage from "@/pages/MessagesPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
