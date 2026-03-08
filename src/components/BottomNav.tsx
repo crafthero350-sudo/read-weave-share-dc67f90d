@@ -16,6 +16,7 @@ export function BottomNav() {
   const hiddenPaths = ["/read/", "/auth", "/forgot-password", "/reset-password"];
   if (hiddenPaths.some((p) => location.pathname.startsWith(p)) || location.pathname === "/reels" || location.pathname.startsWith("/settings") || location.pathname.startsWith("/user/")) return null;
 
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-background/90 backdrop-blur-lg border-t border-border z-40">
       <div className="flex items-center justify-around py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">

@@ -68,6 +68,7 @@ const App = () => (
                 <Route path="/search" element={<ProtectedRoute><SearchScreen /></ProtectedRoute>} />
                 <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
                 <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+                <Route path="/ai" element={<ProtectedRoute><AIFeaturesPage /></ProtectedRoute>} />
                 <Route path="/user/:userId" element={<ProtectedRoute><UserProfilePage /></ProtectedRoute>} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
