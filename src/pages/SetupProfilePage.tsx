@@ -96,8 +96,31 @@ export default function SetupProfilePage() {
       if (error) throw error;
 
       await refreshProfile();
+      
+      // Fire confetti! 🎉
+      confetti({
+        particleCount: 150,
+        spread: 80,
+        origin: { y: 0.6 },
+        colors: ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff6eb4'],
+      });
+      setTimeout(() => {
+        confetti({
+          particleCount: 80,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+        });
+        confetti({
+          particleCount: 80,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+        });
+      }, 300);
+
       toast.success("Profile set up! 🎉");
-      navigate("/", { replace: true });
+      setTimeout(() => navigate("/", { replace: true }), 1200);
     } catch (err: any) {
       toast.error(err.message || "Something went wrong");
     } finally {
