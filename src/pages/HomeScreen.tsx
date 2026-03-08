@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
-import { Heart, PlusSquare, Send } from "lucide-react";
+import { Menu, Search } from "lucide-react";
 import { StoriesRow } from "@/components/StoriesRow";
 import { PostCard, type PostData } from "@/components/PostCard";
 import { CreatePostSheet } from "@/components/CreatePostSheet";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import bookappLogo from "@/assets/bookapp-logo.png";
 
 export default function HomeScreen() {
   const { user } = useAuth();
@@ -71,27 +72,28 @@ export default function HomeScreen() {
 
   return (
     <div className="min-h-screen bg-background pb-14">
-      {/* Instagram-style Header */}
+      {/* Threads-style Header */}
       <header className="sticky top-0 z-30 bg-background border-b border-border">
         <div className="flex items-center justify-between px-4 h-12">
+          <button className="p-1">
+            <Menu className="w-6 h-6 text-foreground" strokeWidth={1.5} />
+          </button>
           <h1 className="font-display text-[22px] font-bold italic tracking-tight">BookApp</h1>
-          <div className="flex items-center gap-1">
-            <button onClick={() => setShowCreate(true)} className="p-2">
-              <PlusSquare className="w-6 h-6 text-foreground" strokeWidth={1.5} />
-            </button>
-            <button className="p-2">
-              <Heart className="w-6 h-6 text-foreground" strokeWidth={1.5} />
-            </button>
-            <button className="p-2">
-              <Send className="w-6 h-6 text-foreground -rotate-[20deg]" strokeWidth={1.5} />
-            </button>
-          </div>
+          <button className="p-1">
+            <Search className="w-6 h-6 text-foreground" strokeWidth={1.5} />
+          </button>
         </div>
       </header>
 
-      {/* Stories */}
-      <StoriesRow />
-      <div className="border-b border-border" />
+      {/* Composer hint */}
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
+        <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center text-[11px] font-semibold text-muted-foreground ring-1 ring-border">
+          You
+        </div>
+        <button onClick={() => setShowCreate(true)} className="flex-1 text-left">
+          <span className="text-muted-foreground text-[15px]">What's new?</span>
+        </button>
+      </div>
 
       {/* Feed */}
       <div>
@@ -104,7 +106,7 @@ export default function HomeScreen() {
             <p className="text-muted-foreground text-sm">No posts yet. Share your first book thought!</p>
             <button
               onClick={() => setShowCreate(true)}
-              className="mt-4 px-6 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium"
+              className="mt-4 px-6 py-2 bg-foreground text-background rounded-full text-sm font-medium"
             >
               Create Post
             </button>
