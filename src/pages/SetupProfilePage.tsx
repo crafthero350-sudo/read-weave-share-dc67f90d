@@ -291,19 +291,28 @@ export default function SetupProfilePage() {
 
             {/* Actions */}
             <div className="flex gap-3">
-              <button
+              <motion.button
+                whileTap={{ scale: 0.97 }}
                 onClick={() => setStep("avatar")}
-                className="flex-1 py-3 rounded-xl border border-border text-foreground font-medium text-sm"
+                className="flex-1 py-3.5 rounded-xl border border-border text-foreground font-medium text-sm flex items-center justify-center gap-2"
               >
+                <ArrowLeft className="w-4 h-4" />
                 Back
-              </button>
-              <button
+              </motion.button>
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                whileHover={{ scale: 1.01 }}
                 onClick={handleSubmit}
                 disabled={!username || username.length < 3 || !!usernameError || submitting}
-                className="flex-1 py-3 rounded-xl bg-foreground text-background font-semibold text-sm disabled:opacity-30 transition-opacity"
+                className="flex-1 py-3.5 rounded-xl bg-foreground text-background font-semibold text-sm disabled:opacity-30 transition-all shadow-lg flex items-center justify-center gap-2"
               >
+                {submitting ? (
+                  <div className="w-4 h-4 border-2 border-background border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Sparkles className="w-4 h-4" />
+                )}
                 {submitting ? "Setting up..." : "Get Started"}
-              </button>
+              </motion.button>
             </div>
           </motion.div>
         )}
