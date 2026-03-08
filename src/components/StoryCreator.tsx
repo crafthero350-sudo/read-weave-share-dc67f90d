@@ -151,9 +151,9 @@ export function StoryCreator({ open, onClose, onCreated }: StoryCreatorProps) {
                     <button
                       key={s}
                       onClick={() => setSelectedStickers((prev) => prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s])}
-                      className={`text-2xl p-2 rounded-lg ${selectedStickers.includes(s) ? "bg-white/20" : ""}`}
+                      className={`p-2 rounded-lg flex items-center justify-center ${selectedStickers.includes(s) ? "bg-white/20" : ""}`}
                     >
-                      {s}
+                      <NotionEmoji emoji={s} size={28} />
                     </button>
                   ))}
                 </div>
