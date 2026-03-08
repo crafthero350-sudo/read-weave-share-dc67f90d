@@ -1,11 +1,35 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, User, Shield, Heart, Bookmark, Users, Bell, Moon, Sun, LogOut, ChevronRight } from "lucide-react";
+import { ArrowLeft, User, Shield, Heart, Bookmark, Users, Bell, Moon, Sun, LogOut, ChevronRight, Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { toast } from "sonner";
+
+import avatar1 from "@/assets/avatars/avatar-1.png";
+import avatar2 from "@/assets/avatars/avatar-2.png";
+import avatar3 from "@/assets/avatars/avatar-3.png";
+import avatar4 from "@/assets/avatars/avatar-4.png";
+import avatar5 from "@/assets/avatars/avatar-5.png";
+import avatar6 from "@/assets/avatars/avatar-6.png";
+import avatar7 from "@/assets/avatars/avatar-7.png";
+import avatar8 from "@/assets/avatars/avatar-8.png";
+import avatar9 from "@/assets/avatars/avatar-9.png";
+import avatar10 from "@/assets/avatars/avatar-10.png";
+
+const avatarOptions = [
+  { id: "1", src: avatar1 },
+  { id: "2", src: avatar2 },
+  { id: "3", src: avatar3 },
+  { id: "4", src: avatar4 },
+  { id: "5", src: avatar5 },
+  { id: "6", src: avatar6 },
+  { id: "7", src: avatar7 },
+  { id: "8", src: avatar8 },
+  { id: "9", src: avatar9 },
+  { id: "10", src: avatar10 },
+];
 
 export default function SettingsPage() {
   const { user, profile, signOut, refreshProfile } = useAuth();
@@ -19,6 +43,8 @@ export default function SettingsPage() {
   const [storyPrivacy, setStoryPrivacy] = useState("everyone");
   const [saving, setSaving] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [selectedAvatar, setSelectedAvatar] = useState<string | null>(null);
+  const [showAvatarPicker, setShowAvatarPicker] = useState(false);
 
   useEffect(() => {
     if (profile) {
@@ -45,14 +71,27 @@ export default function SettingsPage() {
     if (!user) return;
     setSaving(true);
     try {
+      let avatarUrl = profile?.avatar_url;
+
+      // Upload new avatar if selected
+      if (selectedAvatar) {
+        const avatarSrc = avatarOptions.find((a) => a.id === selectedAvatar)!.src;
+        const res = await fetch(avatarSrc);
+        const blob = await res.blob();
+        const path = `${user.id}/avatar.png`;
+        await supabase.storage.from("media").upload(path, blob, { upsert: true });
+        const { data: urlData } = supabase.storage.from("media").getPublicUrl(path);
+        avatarUrl = urlData.publicUrl + "?t=" + Date.now(); // cache bust
+      }
+
       await supabase.from("profiles").update({
         display_name: displayName.trim(),
         username: username.trim(),
         bio: bio.trim(),
         is_private: isPrivate,
+        avatar_url: avatarUrl,
       }).eq("user_id", user.id);
 
-      // Upsert settings
       await supabase.from("user_settings").upsert({
         user_id: user.id,
         story_privacy: storyPrivacy,
@@ -60,7 +99,9 @@ export default function SettingsPage() {
 
       await refreshProfile();
       toast.success("Profile updated!");
-      setEditMode(false);
+      setActiveSection(null);
+      setSelectedAvatar(null);
+      setShowAvatarPicker(false);
     } catch (err: any) {
       toast.error(err.message || "Failed to save");
     } finally {
@@ -76,12 +117,17 @@ export default function SettingsPage() {
   const initials = (profile?.display_name || profile?.username || "?")
     .split(" ").map((w: string) => w[0]).join("").toUpperCase().slice(0, 2);
 
+  // Current avatar preview src
+  const currentAvatarPreview = selectedAvatar
+    ? avatarOptions.find((a) => a.id === selectedAvatar)?.src
+    : profile?.avatar_url;
+
   if (activeSection === "edit") {
     return (
       <div className="min-h-screen bg-background pb-20">
         <header className="sticky top-0 z-30 bg-background/90 backdrop-blur-lg border-b border-border">
           <div className="flex items-center justify-between px-4 py-3">
-            <button onClick={() => setActiveSection(null)} className="p-1"><ArrowLeft className="w-5 h-5" /></button>
+            <button onClick={() => { setActiveSection(null); setSelectedAvatar(null); setShowAvatarPicker(false); }} className="p-1"><ArrowLeft className="w-5 h-5" /></button>
             <h1 className="text-sm font-semibold">Edit Profile</h1>
             <button onClick={saveProfile} disabled={saving} className="text-sm font-semibold text-foreground disabled:text-muted-foreground">
               {saving ? "Saving..." : "Save"}
@@ -89,20 +135,62 @@ export default function SettingsPage() {
           </div>
         </header>
         <div className="px-4 pt-6 space-y-4">
-          <div className="flex justify-center">
-            <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center text-2xl font-semibold">{initials}</div>
+          {/* Avatar with change button */}
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-border bg-muted flex items-center justify-center">
+              {currentAvatarPreview ? (
+                <img src={currentAvatarPreview} alt="" className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-2xl font-semibold text-foreground">{initials}</span>
+              )}
+            </div>
+            <button
+              onClick={() => setShowAvatarPicker(!showAvatarPicker)}
+              className="text-xs font-semibold text-foreground"
+            >
+              Change Avatar
+            </button>
           </div>
+
+          {/* Avatar picker grid */}
+          {showAvatarPicker && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              className="grid grid-cols-5 gap-2.5 pb-2"
+            >
+              {avatarOptions.map((av) => (
+                <button
+                  key={av.id}
+                  onClick={() => setSelectedAvatar(av.id)}
+                  className="relative"
+                >
+                  <div className={`w-full aspect-square rounded-full overflow-hidden border-2 transition-all ${
+                    selectedAvatar === av.id ? "border-foreground scale-105" : "border-border"
+                  }`}>
+                    <img src={av.src} alt="" className="w-full h-full object-cover" />
+                  </div>
+                  {selectedAvatar === av.id && (
+                    <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-foreground flex items-center justify-center">
+                      <Check className="w-2.5 h-2.5 text-background" strokeWidth={3} />
+                    </div>
+                  )}
+                </button>
+              ))}
+            </motion.div>
+          )}
+
           <div>
             <label className="text-xs text-muted-foreground mb-1 block">Display Name</label>
-            <input value={displayName} onChange={(e) => setDisplayName(e.target.value)} className="w-full bg-muted rounded-xl px-4 py-3 text-sm outline-none" />
+            <input value={displayName} onChange={(e) => setDisplayName(e.target.value)} className="w-full bg-muted rounded-xl px-4 py-3 text-sm outline-none text-foreground" />
           </div>
           <div>
             <label className="text-xs text-muted-foreground mb-1 block">Username</label>
-            <input value={username} onChange={(e) => setUsername(e.target.value)} className="w-full bg-muted rounded-xl px-4 py-3 text-sm outline-none" />
+            <input value={username} onChange={(e) => setUsername(e.target.value)} className="w-full bg-muted rounded-xl px-4 py-3 text-sm outline-none text-foreground" />
           </div>
           <div>
             <label className="text-xs text-muted-foreground mb-1 block">Bio</label>
-            <textarea value={bio} onChange={(e) => setBio(e.target.value)} rows={3} className="w-full bg-muted rounded-xl px-4 py-3 text-sm outline-none resize-none" />
+            <textarea value={bio} onChange={(e) => setBio(e.target.value)} rows={3} className="w-full bg-muted rounded-xl px-4 py-3 text-sm outline-none resize-none text-foreground" />
           </div>
         </div>
       </div>
