@@ -109,7 +109,7 @@ export function AIChatBubble() {
                   >
                     {msg.role === "assistant" ? (
                       <div className="prose prose-sm max-w-none dark:prose-invert prose-p:my-1 prose-headings:my-2 prose-li:my-0.5">
-                        <ReactMarkdown>{msg.content}</ReactMarkdown>
+                        <ReactMarkdown components={{ img: ({ alt, src }) => <img src={src} alt={alt || ""} className="inline-block align-text-bottom w-[18px] h-[18px]" draggable={false} /> }}>{msg.content}</ReactMarkdown>
                       </div>
                     ) : (
                       msg.content
