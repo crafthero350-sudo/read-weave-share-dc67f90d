@@ -6,6 +6,7 @@ import { useFollow } from "@/hooks/useFollow";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { EditProfileDialog } from "@/components/EditProfileDialog";
 
 interface SavedCharacter {
   id: string;
