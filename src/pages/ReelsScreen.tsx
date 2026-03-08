@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Heart, MessageCircle, Bookmark, Share, Plus, ArrowLeft } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Heart, MessageCircle, Bookmark, Send, Plus, ArrowLeft, MoreHorizontal, Camera } from "lucide-react";
+import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useFollow } from "@/hooks/useFollow";
@@ -8,6 +8,7 @@ import { CommentPanel } from "@/components/CommentPanel";
 import { CreateReelSheet } from "@/components/CreateReelSheet";
 import { formatDistanceToNow } from "date-fns";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface ReelData {
   id: string;
@@ -86,8 +87,8 @@ export default function ReelsScreen() {
 
   if (loading) {
     return (
-      <div className="h-screen bg-foreground flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+      <div className="h-screen bg-black flex items-center justify-center">
+        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -97,24 +98,25 @@ export default function ReelsScreen() {
       <div
         ref={containerRef}
         onScroll={handleScroll}
-        className="h-screen overflow-y-scroll snap-y snap-mandatory bg-foreground"
+        className="h-screen overflow-y-scroll snap-y snap-mandatory bg-black"
         style={{ scrollSnapType: "y mandatory" }}
       >
+        {/* Top bar */}
         <div className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 py-3 pointer-events-none">
-          <button onClick={() => navigate("/")} className="pointer-events-auto">
-            <ArrowLeft className="w-5 h-5 text-primary-foreground" />
+          <button onClick={() => navigate("/")} className="pointer-events-auto p-1">
+            <ArrowLeft className="w-5 h-5 text-white" strokeWidth={1.5} />
           </button>
-          <h1 className="text-lg font-semibold text-primary-foreground">Reels</h1>
-          <button onClick={() => setShowCreate(true)} className="p-2 pointer-events-auto">
-            <Plus className="w-5 h-5 text-primary-foreground" />
+          <h1 className="text-base font-semibold text-white">Reels</h1>
+          <button onClick={() => setShowCreate(true)} className="pointer-events-auto p-1">
+            <Camera className="w-5 h-5 text-white" strokeWidth={1.5} />
           </button>
         </div>
 
         {reels.length === 0 ? (
           <div className="h-screen snap-start flex items-center justify-center">
             <div className="text-center">
-              <p className="text-primary-foreground/60 text-sm">No reels yet</p>
-              <button onClick={() => setShowCreate(true)} className="mt-3 px-4 py-2 bg-primary-foreground text-foreground rounded-full text-sm font-medium">
+              <p className="text-white/50 text-sm mb-3">No reels yet</p>
+              <button onClick={() => setShowCreate(true)} className="px-5 py-2.5 bg-white text-black rounded-lg text-sm font-medium">
                 Create First Reel
               </button>
             </div>
@@ -157,81 +159,100 @@ function ReelCard({ reel, isActive, onComment, onRefresh }: { reel: ReelData; is
 
   const toggleSave = async () => {
     if (!user) return;
-    setSaved(!saved);
-    if (!saved) {
+    const newSaved = !saved;
+    setSaved(newSaved);
+    if (newSaved) {
       await supabase.from("bookmarks").insert({ user_id: user.id, post_id: reel.id });
+      toast.success("Saved");
     } else {
       await supabase.from("bookmarks").delete().eq("user_id", user.id).eq("post_id", reel.id);
+    }
+  };
+
+  const handleShare = async () => {
+    try {
+      await navigator.share?.({ title: "Reel", text: reel.content.slice(0, 100), url: window.location.origin });
+    } catch {
+      await navigator.clipboard?.writeText(reel.content);
+      toast.success("Copied to clipboard");
     }
   };
 
   const initials = (reel.profile?.display_name || reel.profile?.username || "?")
     .split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
 
-  const gradients: Record<string, string> = {
-    quote: "from-stone-900 via-stone-800 to-stone-950",
-    review: "from-zinc-900 via-neutral-800 to-zinc-950",
-    recommendation: "from-neutral-900 via-stone-800 to-neutral-950",
-    discussion: "from-gray-900 via-zinc-800 to-gray-950",
-  };
+  const formatCount = (n: number) => n >= 1000 ? (n / 1000).toFixed(1) + "K" : n.toString();
 
   return (
-    <div className="h-screen snap-start relative flex flex-col justify-end">
-      <div className={`absolute inset-0 bg-gradient-to-b ${gradients[reel.type] || gradients.quote}`}>
-        {reel.image_url && <img src={reel.image_url} alt="" className="w-full h-full object-cover opacity-40" />}
+    <div className="h-screen snap-start relative flex flex-col justify-end overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-neutral-900 via-neutral-800 to-black">
+        {reel.image_url && <img src={reel.image_url} alt="" className="w-full h-full object-cover opacity-50" />}
+        {reel.book?.cover_url && !reel.image_url && (
+          <img src={reel.book.cover_url} alt="" className="w-full h-full object-cover opacity-30 blur-sm scale-110" />
+        )}
       </div>
 
-      <div className="absolute inset-0 flex items-center justify-center px-12 pt-16 pb-48">
-        <p className={`text-primary-foreground text-center leading-relaxed ${reel.type === "quote" ? "text-xl font-light italic" : "text-base"}`}>
-          {reel.content.length > 200 ? reel.content.slice(0, 200) + "..." : reel.content}
+      {/* Content centered */}
+      <div className="absolute inset-0 flex items-center justify-center px-16 pt-20 pb-52">
+        <p className={`text-white text-center leading-relaxed ${
+          reel.type === "quote" ? "text-xl font-light italic" : "text-base"
+        }`}>
+          {reel.content.length > 250 ? reel.content.slice(0, 250) + "…" : reel.content}
         </p>
       </div>
 
-      {/* Right side actions */}
-      <div className="absolute right-3 bottom-32 flex flex-col items-center gap-5 z-10">
-        {/* Profile avatar with follow */}
+      {/* Right side actions — Instagram style */}
+      <div className="absolute right-3 bottom-28 flex flex-col items-center gap-5 z-10">
         <div className="relative">
           <button
             onClick={() => navigate(`/user/${reel.user_id}`)}
-            className="w-10 h-10 rounded-full bg-primary-foreground/20 flex items-center justify-center text-xs font-medium text-primary-foreground"
+            className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-[11px] font-semibold text-white border border-white/30"
           >
             {initials}
           </button>
           {user && user.id !== reel.user_id && status !== "following" && (
             <button
               onClick={toggleFollow}
-              className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-5 h-5 rounded-full bg-primary-foreground flex items-center justify-center"
+              className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-5 h-5 rounded-full bg-red-500 flex items-center justify-center"
             >
-              <Plus className="w-3 h-3 text-foreground" />
+              <Plus className="w-3 h-3 text-white" strokeWidth={2.5} />
             </button>
           )}
         </div>
 
         <button onClick={toggleLike} className="flex flex-col items-center gap-1">
-          <Heart className={`w-7 h-7 ${liked ? "fill-primary-foreground text-primary-foreground" : "text-primary-foreground"}`} />
-          <span className="text-[11px] text-primary-foreground font-medium">{likeCount}</span>
+          <Heart className={`w-7 h-7 ${liked ? "fill-red-500 text-red-500" : "text-white"}`} strokeWidth={1.5} />
+          <span className="text-[11px] text-white font-medium">{formatCount(likeCount)}</span>
         </button>
         <button onClick={onComment} className="flex flex-col items-center gap-1">
-          <MessageCircle className="w-7 h-7 text-primary-foreground" />
-          <span className="text-[11px] text-primary-foreground font-medium">{reel.comments_count || 0}</span>
+          <MessageCircle className="w-7 h-7 text-white" strokeWidth={1.5} />
+          <span className="text-[11px] text-white font-medium">{formatCount(reel.comments_count || 0)}</span>
         </button>
-        <button><Share className="w-6 h-6 text-primary-foreground" /></button>
+        <button onClick={handleShare} className="flex flex-col items-center gap-1">
+          <Send className="w-7 h-7 text-white -rotate-45" strokeWidth={1.5} />
+        </button>
         <button onClick={toggleSave}>
-          <Bookmark className={`w-6 h-6 ${saved ? "fill-primary-foreground text-primary-foreground" : "text-primary-foreground"}`} />
+          <Bookmark className={`w-7 h-7 ${saved ? "fill-white text-white" : "text-white"}`} strokeWidth={1.5} />
+        </button>
+        <button>
+          <MoreHorizontal className="w-6 h-6 text-white" strokeWidth={1.5} />
         </button>
       </div>
 
       {/* Bottom info */}
-      <div className="relative z-10 px-4 pb-24">
-        <div className="flex items-center gap-3 mb-2">
-          <button onClick={() => navigate(`/user/${reel.user_id}`)} className="flex items-center gap-2">
-            <span className="text-sm font-semibold text-primary-foreground">{reel.profile?.display_name || reel.profile?.username || "User"}</span>
+      <div className="relative z-10 px-4 pb-8">
+        <div className="flex items-center gap-2 mb-1.5">
+          <button onClick={() => navigate(`/user/${reel.user_id}`)} className="text-sm font-semibold text-white">
+            {reel.profile?.username || reel.profile?.display_name || "user"}
           </button>
           {user && user.id !== reel.user_id && (
             <button
               onClick={toggleFollow}
-              className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                status === "following" ? "bg-primary-foreground/20 text-primary-foreground" : "bg-primary-foreground text-foreground"
+              className={`text-xs font-medium px-2.5 py-0.5 rounded ${
+                status === "following"
+                  ? "bg-white/10 text-white/80 border border-white/20"
+                  : "bg-white/20 text-white border border-white/30"
               }`}
             >
               {status === "following" ? "Following" : status === "requested" ? "Requested" : "Follow"}
@@ -239,15 +260,13 @@ function ReelCard({ reel, isActive, onComment, onRefresh }: { reel: ReelData; is
           )}
         </div>
 
+        <p className="text-sm text-white/80 line-clamp-2 mb-1">{reel.content.slice(0, 100)}</p>
+
         {reel.book && (
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-xs text-primary-foreground/70">📖 {reel.book.title} — {reel.book.author}</span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs text-white/50">📖 {reel.book.title} · {reel.book.author}</span>
           </div>
         )}
-
-        <p className="text-xs text-primary-foreground/50">
-          {formatDistanceToNow(new Date(reel.created_at), { addSuffix: true })}
-        </p>
       </div>
     </div>
   );

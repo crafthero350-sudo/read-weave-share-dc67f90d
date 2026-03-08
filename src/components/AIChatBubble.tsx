@@ -65,9 +65,9 @@ export function AIChatBubble() {
             animate={{ scale: 1 }}
             exit={{ scale: 0 }}
             onClick={() => setOpen(true)}
-            className="fixed bottom-20 right-4 z-50 w-14 h-14 rounded-full shadow-lg overflow-hidden border-2 border-primary"
+            className="fixed bottom-20 right-4 z-50 w-12 h-12 rounded-full shadow-sm overflow-hidden border border-border bg-card"
           >
-            <img src={aiCharacter} alt="AI Assistant" className="w-full h-full object-cover" />
+            <img src={aiCharacter} alt="Lisa" className="w-full h-full object-cover" />
           </motion.button>
         )}
       </AnimatePresence>
@@ -79,13 +79,13 @@ export function AIChatBubble() {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-20 right-3 left-3 z-50 max-w-md mx-auto bg-card rounded-2xl shadow-2xl border border-border flex flex-col"
+            className="fixed bottom-20 right-3 left-3 z-50 max-w-md mx-auto bg-background rounded-lg shadow-sm border border-border flex flex-col"
             style={{ maxHeight: "70vh" }}
           >
             {/* Header */}
             <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
-              <div className="w-9 h-9 rounded-full overflow-hidden border border-primary">
-                <img src={aiCharacter} alt="AI" className="w-full h-full object-cover" />
+              <div className="w-8 h-8 rounded-full overflow-hidden border border-border">
+                <img src={aiCharacter} alt="Lisa" className="w-full h-full object-cover" />
               </div>
               <div className="flex-1">
                 <p className="text-sm font-semibold font-display">Lisa</p>
