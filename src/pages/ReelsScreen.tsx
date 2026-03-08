@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Heart, MessageCircle, Bookmark, Share, Plus, UserPlus, UserCheck } from "lucide-react";
+import { Heart, MessageCircle, Bookmark, Share, Plus, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -27,6 +27,7 @@ interface ReelData {
 
 export default function ReelsScreen() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [reels, setReels] = useState<ReelData[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -100,7 +101,10 @@ export default function ReelsScreen() {
         style={{ scrollSnapType: "y mandatory" }}
       >
         <div className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 py-3 pointer-events-none">
-          <h1 className="text-lg font-semibold text-primary-foreground pointer-events-auto">Reels</h1>
+          <button onClick={() => navigate("/")} className="pointer-events-auto">
+            <ArrowLeft className="w-5 h-5 text-primary-foreground" />
+          </button>
+          <h1 className="text-lg font-semibold text-primary-foreground">Reels</h1>
           <button onClick={() => setShowCreate(true)} className="p-2 pointer-events-auto">
             <Plus className="w-5 h-5 text-primary-foreground" />
           </button>
