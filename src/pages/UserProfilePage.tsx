@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { ArrowLeft, Grid3X3, Lock, MoreHorizontal } from "lucide-react";
+import { NotionEmoji } from "@/components/NotionEmoji";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
