@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { StoryCreator } from "@/components/StoryCreator";
 import { Heart, MessageCircle, Bookmark, Send, Plus, ArrowLeft, MoreHorizontal, Camera } from "lucide-react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
