@@ -95,8 +95,12 @@ export default function UserProfilePage() {
       <div className="px-4 pt-4">
         {/* Profile Info */}
         <div className="flex items-center gap-6">
-          <div className="w-20 h-20 rounded-full bg-secondary flex items-center justify-center text-2xl font-bold flex-shrink-0">
-            {initials}
+          <div className="w-20 h-20 rounded-full bg-secondary flex items-center justify-center text-2xl font-bold flex-shrink-0 overflow-hidden">
+            {profile.avatar_url ? (
+              <img src={profile.avatar_url} alt={profile.display_name || "avatar"} className="w-full h-full object-cover" />
+            ) : (
+              initials
+            )}
           </div>
           <div className="flex-1 flex justify-around">
             <div className="text-center">
