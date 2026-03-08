@@ -9,7 +9,7 @@ import { NotionEmoji } from "@/components/NotionEmoji";
 const bgColors = [
   "#1a1a2e", "#16213e", "#0f3460", "#533483",
   "#e94560", "#f97316", "#22c55e", "#06b6d4",
-  "#ec4899", "#8b5cf6", "#1e1e1e", "#fafafa",
+  "#ec4899", "#8b5cf6", "#1e1e1e", "#374151",
 ];
 
 const stickers = ["📚", "❤️", "🔥", "⭐", "💡", "🎯", "✨", "📖", "🧠", "💬", "🌟", "👏"];
