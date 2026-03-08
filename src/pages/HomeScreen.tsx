@@ -87,7 +87,7 @@ export default function HomeScreen() {
             BookApp
           </h1>
           <div className="flex items-center gap-1 md:hidden">
-            <button onClick={() => setShowCreate(true)} className="p-2">
+            <button onClick={() => setShowStoryCreator(true)} className="p-2">
               <PlusSquare className="w-6 h-6 text-foreground" strokeWidth={1.5} />
             </button>
             <button className="p-2" onClick={() => navigate("/notifications")}>
