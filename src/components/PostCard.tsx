@@ -36,6 +36,7 @@ export function PostCard({ post, index, onRefresh }: PostCardProps) {
   const [saved, setSaved] = useState(post.user_saved || false);
   const [likeCount, setLikeCount] = useState(post.likes_count);
   const [showComments, setShowComments] = useState(false);
+  const [showHeart, setShowHeart] = useState(false);
 
   const toggleLike = async () => {
     if (!user) return;
@@ -70,8 +71,12 @@ export function PostCard({ post, index, onRefresh }: PostCardProps) {
     }
   };
 
-  const handleDoubleTapLike = () => {
-    if (!liked) toggleLike();
+  const handleDoubleTap = () => {
+    if (!liked && user) {
+      toggleLike();
+      setShowHeart(true);
+      setTimeout(() => setShowHeart(false), 800);
+    }
   };
 
   const timeAgo = formatDistanceToNow(new Date(post.created_at), { addSuffix: false });
@@ -84,42 +89,49 @@ export function PostCard({ post, index, onRefresh }: PostCardProps) {
   return (
     <>
       <article className="border-b border-border">
-        {/* Header */}
+        {/* Header — avatar + username + more */}
         <div className="flex items-center gap-3 px-3 py-2.5">
           <button
             onClick={() => navigate(`/user/${post.user_id}`)}
-            className="story-ring-active flex-shrink-0"
+            className="flex-shrink-0"
           >
-            <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-[11px] font-semibold text-foreground border-[1.5px] border-background">
+            <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-[11px] font-semibold text-foreground ring-1 ring-border">
               {initials}
             </div>
           </button>
           <button onClick={() => navigate(`/user/${post.user_id}`)} className="flex-1 text-left">
-            <span className="text-[13px] font-semibold leading-none">{username}</span>
+            <span className="text-[13px] font-semibold">{username}</span>
           </button>
           <button className="p-1">
             <MoreHorizontal className="w-5 h-5 text-foreground" strokeWidth={1.5} />
           </button>
         </div>
 
-        {/* Image — full width, square aspect */}
+        {/* Image — full width, square */}
         {hasImage && (
           <div
-            className="w-full aspect-square bg-secondary"
-            onDoubleClick={handleDoubleTapLike}
+            className="w-full aspect-square bg-muted relative select-none"
+            onDoubleClick={handleDoubleTap}
           >
             <img
               src={post.book?.cover_url || post.image_url || ""}
               alt=""
               className="w-full h-full object-cover"
+              draggable={false}
             />
+            {/* Double-tap heart animation */}
+            {showHeart && (
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <Heart className="w-20 h-20 text-white fill-white animate-scale-in drop-shadow-lg" />
+              </div>
+            )}
           </div>
         )}
 
-        {/* Actions — Instagram exact layout */}
+        {/* Actions row */}
         <div className="flex items-center justify-between px-3 py-2">
           <div className="flex items-center gap-4">
-            <button onClick={toggleLike} className="active:scale-125 transition-transform">
+            <button onClick={toggleLike} className="active:scale-110 transition-transform">
               <Heart
                 className={`w-6 h-6 transition-colors ${liked ? "fill-destructive text-destructive" : "text-foreground"}`}
                 strokeWidth={1.5}
@@ -140,10 +152,10 @@ export function PostCard({ post, index, onRefresh }: PostCardProps) {
           </button>
         </div>
 
-        {/* Likes */}
+        {/* Liked by */}
         {likeCount > 0 && (
-          <p className="px-3 text-[13px] font-semibold leading-tight">
-            {likeCount.toLocaleString()} {likeCount === 1 ? "like" : "likes"}
+          <p className="px-3 text-[13px] leading-tight">
+            Liked by <span className="font-semibold">{username}</span>{likeCount > 1 && ` and ${(likeCount - 1).toLocaleString()} others`}
           </p>
         )}
 
@@ -151,14 +163,12 @@ export function PostCard({ post, index, onRefresh }: PostCardProps) {
         <div className="px-3 mt-0.5">
           <p className="text-[13px] leading-snug">
             <span className="font-semibold mr-1.5">{username}</span>
-            <span className={post.type === "quote" ? "italic" : ""}>{post.content}</span>
+            <span>{post.content}</span>
+            {post.book && (
+              <span className="text-muted-foreground"> #{post.book.title.replace(/\s+/g, '')}</span>
+            )}
           </p>
         </div>
-
-        {/* Book tag */}
-        {post.book && (
-          <p className="px-3 mt-1 text-[11px] text-muted-foreground">📖 {post.book.title} — {post.book.author}</p>
-        )}
 
         {/* View comments */}
         {(post.comments_count || 0) > 0 && (
