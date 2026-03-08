@@ -66,7 +66,7 @@ const App = () => (
                 <Route path="/reset-password" element={<ResetPasswordPage />} />
                 <Route path="/" element={<ProtectedRoute><HomeScreen /></ProtectedRoute>} />
                 <Route path="/reels" element={<ProtectedRoute><ReelsScreen /></ProtectedRoute>} />
-                <Route path="/reading" element={<ProtectedRoute><ReadingNowScreen /></ProtectedRoute>} />
+                <Route path="/reading" element={<Navigate to="/search" replace />} />
                 <Route path="/read/:id" element={<ProtectedRoute><ReaderView /></ProtectedRoute>} />
                 <Route path="/search" element={<ProtectedRoute><SearchScreen /></ProtectedRoute>} />
                 <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
