@@ -6,6 +6,7 @@ import { useFollow } from "@/hooks/useFollow";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { EditProfileDialog } from "@/components/EditProfileDialog";
 
 interface SavedCharacter {
   id: string;
@@ -31,6 +32,7 @@ export default function ProfilePage() {
   const [characters, setCharacters] = useState<SavedCharacter[]>([]);
   const [posts, setPosts] = useState<UserPost[]>([]);
   const [activeTab, setActiveTab] = useState<"posts" | "saved" | "characters">("posts");
+  const [showEditProfile, setShowEditProfile] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -121,7 +123,7 @@ export default function ProfilePage() {
         {/* Action Buttons */}
         <div className="flex gap-1.5 mt-3">
           <button
-            onClick={() => navigate("/settings")}
+            onClick={() => setShowEditProfile(true)}
             className="flex-1 py-1.5 rounded-lg bg-secondary text-foreground text-[13px] font-semibold text-center"
           >
             Edit Profile
@@ -223,6 +225,7 @@ export default function ProfilePage() {
           )}
         </div>
       )}
+      <EditProfileDialog open={showEditProfile} onClose={() => setShowEditProfile(false)} />
     </div>
   );
 }
