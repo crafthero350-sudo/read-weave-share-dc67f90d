@@ -29,6 +29,7 @@ interface PostCardProps {
 }
 
 export function PostCard({ post, index, onRefresh }: PostCardProps) {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [liked, setLiked] = useState(post.user_liked || false);
   const [saved, setSaved] = useState(post.user_saved || false);
