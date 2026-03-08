@@ -86,7 +86,7 @@ export default function HomeScreen() {
             <button onClick={() => setShowCreate(true)} className="p-2">
               <PlusSquare className="w-6 h-6 text-foreground" strokeWidth={1.5} />
             </button>
-            <button className="p-2">
+            <button className="p-2" onClick={() => navigate("/notifications")}>
               <Heart className="w-6 h-6 text-foreground" strokeWidth={1.5} />
             </button>
             <button className="p-2">
