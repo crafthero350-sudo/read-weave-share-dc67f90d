@@ -174,7 +174,7 @@ export default function SearchScreen() {
                 </div>
               )}
               {ub && ub.status === "finished" && (
-                <span className="inline-flex items-center gap-1 text-xs text-accent font-medium bg-accent/10 px-2 py-1 rounded-full">✓ Finished</span>
+                <span className="inline-flex items-center gap-1 text-xs text-accent font-medium bg-accent/10 px-2 py-1 rounded-full"><img src="https://fonts.gstatic.com/s/e/notoemoji/latest/2705/512.png" alt="✓" className="w-3.5 h-3.5" /> Finished</span>
               )}
             </div>
           </div>
