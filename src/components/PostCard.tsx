@@ -73,11 +73,24 @@ export function PostCard({ post, index, onRefresh }: PostCardProps) {
   };
 
   const handleShare = async () => {
+    const shareUrl = `${window.location.origin}/?post=${post.id}`;
+    const shareText = post.content.slice(0, 200);
+    const shareTitle = `Post by ${post.profile?.display_name || "User"}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: shareTitle, text: shareText, url: shareUrl });
+        return;
+      } catch (e: any) {
+        if (e?.name === "AbortError") return;
+      }
+    }
+    // Fallback: copy link
     try {
-      await navigator.share?.({ title: `Post by ${post.profile?.display_name || "User"}`, text: post.content.slice(0, 100), url: window.location.origin });
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success("Link copied to clipboard!");
     } catch {
-      await navigator.clipboard?.writeText(post.content);
-      toast.success("Copied to clipboard");
+      toast.error("Could not share");
     }
   };
 
