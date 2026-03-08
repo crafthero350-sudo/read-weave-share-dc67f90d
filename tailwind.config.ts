@@ -39,6 +39,11 @@ export default {
         },
         surface: { elevated: 'hsl(var(--surface-elevated))' },
         gold: { glow: 'hsl(var(--gold-glow))' },
+        'story-ring': {
+          start: 'hsl(var(--story-ring-start))',
+          mid: 'hsl(var(--story-ring-mid))',
+          end: 'hsl(var(--story-ring-end))',
+        },
         pastel: {
           yellow: 'hsl(var(--pastel-yellow))',
           red: 'hsl(var(--pastel-red))',
