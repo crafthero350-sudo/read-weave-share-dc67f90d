@@ -57,10 +57,10 @@ export default function ReelsScreen() {
         : Promise.resolve({ data: [] }),
     ]);
 
-    const profileMap = new Map(profilesRes.data?.map((p) => [p.user_id, p]) || []);
-    const booksMap = new Map(booksRes.data?.map((b) => [b.id, b]) || []);
-    const likedIds = new Set(likesRes.data?.map((l) => l.post_id) || []);
-    const savedIds = new Set(bookmarksRes.data?.map((b) => b.post_id) || []);
+    const profileMap = new Map<string, any>(profilesRes.data?.map((p) => [p.user_id, p] as [string, any]) || []);
+    const booksMap = new Map<string, any>(booksRes.data?.map((b) => [b.id, b] as [string, any]) || []);
+    const likedIds = new Set(likesRes.data?.map((l: any) => l.post_id) || []);
+    const savedIds = new Set(bookmarksRes.data?.map((b: any) => b.post_id) || []);
 
     setReels(postsData.map((p) => ({
       ...p,
@@ -68,7 +68,7 @@ export default function ReelsScreen() {
       book: p.book_id ? booksMap.get(p.book_id) || null : null,
       user_liked: likedIds.has(p.id),
       user_saved: savedIds.has(p.id),
-    })));
+    } as ReelData)));
     setLoading(false);
   }, [user]);
 
