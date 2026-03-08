@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { NotionEmoji } from "@/components/NotionEmoji";
 
 const bgColors = [
   "#1a1a2e", "#16213e", "#0f3460", "#533483",
