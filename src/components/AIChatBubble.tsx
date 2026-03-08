@@ -65,9 +65,9 @@ export function AIChatBubble() {
             animate={{ scale: 1 }}
             exit={{ scale: 0 }}
             onClick={() => setOpen(true)}
-            className="fixed bottom-20 right-4 z-50 w-14 h-14 rounded-full shadow-lg overflow-hidden border-2 border-primary"
+            className="fixed bottom-20 right-4 z-50 w-12 h-12 rounded-full shadow-sm overflow-hidden border border-border bg-card"
           >
-            <img src={aiCharacter} alt="AI Assistant" className="w-full h-full object-cover" />
+            <img src={aiCharacter} alt="Lisa" className="w-full h-full object-cover" />
           </motion.button>
         )}
       </AnimatePresence>
