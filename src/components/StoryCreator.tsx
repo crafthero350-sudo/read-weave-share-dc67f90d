@@ -130,7 +130,7 @@ export function StoryCreator({ open, onClose, onCreated }: StoryCreatorProps) {
               {selectedStickers.length > 0 && (
                 <div className="flex justify-center gap-2 mt-4">
                   {selectedStickers.map((s, i) => (
-                    <span key={i} className="text-3xl">{s}</span>
+                    <NotionEmoji key={i} emoji={s} size={32} />
                   ))}
                 </div>
               )}
