@@ -10,6 +10,7 @@ const navItems = [
   { path: "/search", icon: Search, label: "Search" },
   { path: "/reading", icon: BookOpen, label: "Reading" },
   { path: "/reels", icon: Film, label: "Reels" },
+  { path: "/messages", icon: Send, label: "Messages" },
   { path: "/notifications", icon: Heart, label: "Notifications" },
   { path: "create", icon: PlusSquare, label: "Create" },
   { path: "/profile", icon: User, label: "Profile" },
