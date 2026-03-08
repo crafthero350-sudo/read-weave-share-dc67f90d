@@ -40,15 +40,28 @@ export function CreateReelSheet({ open, onClose, onCreated }: CreateReelSheetPro
     }
   }, [open]);
 
+  const [imageFile, setImageFile] = useState<File | null>(null);
+
   const handleSubmit = async () => {
     if (!content.trim() || !user) return;
     setSubmitting(true);
     try {
+      let imageUrl: string | null = null;
+      if (imageFile) {
+        const ext = imageFile.name.split(".").pop();
+        const path = `${user.id}/reels/${Date.now()}.${ext}`;
+        const { error: uploadErr } = await supabase.storage.from("media").upload(path, imageFile);
+        if (uploadErr) throw uploadErr;
+        const { data: urlData } = supabase.storage.from("media").getPublicUrl(path);
+        imageUrl = urlData.publicUrl;
+      }
+
       const { error } = await supabase.from("posts").insert({
         user_id: user.id,
         type,
         content: content.trim(),
         book_id: bookId,
+        image_url: imageUrl,
       });
       if (error) throw error;
 
