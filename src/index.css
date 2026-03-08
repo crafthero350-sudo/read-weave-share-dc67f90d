@@ -10,7 +10,6 @@
 
 @layer base {
   :root {
-    /* Notion-style minimal palette */
     --background: 0 0% 100%;
     --foreground: 265 4% 12.9%;
     --card: 0 0% 100%;
@@ -38,8 +37,8 @@
     --activity-high: 48 80% 60%;
     --activity-max: 48 90% 50%;
 
-    --story-ring: 36 7% 19%;
-    --surface-elevated: 40 13% 96%;
+    --story-ring: 265 4% 12.9%;
+    --surface-elevated: 248 0.7% 96.8%;
     --gold-glow: 48 80% 60%;
 
     --chart-1: 41 22.2% 64.6%;
@@ -61,7 +60,6 @@
     --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
-    /* Pastel accent tokens */
     --pastel-yellow: 48 100% 93%;
     --pastel-red: 0 100% 95%;
     --pastel-blue: 210 100% 95%;
@@ -106,7 +104,7 @@
     --activity-high: 48 60% 45%;
     --activity-max: 48 70% 55%;
 
-    --story-ring: 40 10% 60%;
+    --story-ring: 248 0.3% 98.4%;
     --surface-elevated: 0 0% 11%;
     --gold-glow: 48 60% 50%;
 

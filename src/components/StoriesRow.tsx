@@ -26,14 +26,8 @@ interface DBStory {
   expires_at: string;
 }
 
-// Instagram-style gradient ring colors per position
-const ringGradients = [
-  "from-yellow-400 via-red-500 to-purple-600",
-  "from-pink-500 via-rose-500 to-orange-400",
-  "from-amber-400 via-orange-500 to-red-500",
-  "from-blue-400 via-purple-500 to-pink-500",
-  "from-green-400 via-teal-500 to-blue-500",
-];
+// Monoline story ring - uses semantic token
+
 
 export function StoriesRow() {
   const { user } = useAuth();
@@ -153,7 +147,6 @@ export function StoriesRow() {
           const ini = (group.displayName || group.username).split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
           let storyOffset = 0;
           for (let i = 0; i < gi; i++) storyOffset += groups[i].stories.length;
-          const gradient = ringGradients[gi % ringGradients.length];
 
           return (
             <button
@@ -161,8 +154,7 @@ export function StoriesRow() {
               onClick={() => setActiveGroup(storyOffset)}
               className="flex flex-col items-center gap-1 flex-shrink-0"
             >
-              {/* Gradient ring */}
-              <div className={`rounded-full p-[2.5px] bg-gradient-to-br ${gradient}`}>
+              <div className="story-ring-active">
                 <div className="w-[64px] h-[64px] rounded-full bg-background p-[2px]">
                   <div className="w-full h-full rounded-full bg-muted flex items-center justify-center text-sm font-semibold text-foreground">
                     {ini}
