@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, ArrowRight, BookOpen } from "lucide-react";
+import { Check, ArrowRight, ArrowLeft, BookOpen, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import confetti from "canvas-confetti";
 
 import avatar1 from "@/assets/avatars/avatar-1.png";
 import avatar2 from "@/assets/avatars/avatar-2.png";
@@ -95,8 +96,31 @@ export default function SetupProfilePage() {
       if (error) throw error;
 
       await refreshProfile();
+      
+      // Fire confetti! 🎉
+      confetti({
+        particleCount: 150,
+        spread: 80,
+        origin: { y: 0.6 },
+        colors: ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff6eb4'],
+      });
+      setTimeout(() => {
+        confetti({
+          particleCount: 80,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+        });
+        confetti({
+          particleCount: 80,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+        });
+      }, 300);
+
       toast.success("Profile set up! 🎉");
-      navigate("/", { replace: true });
+      setTimeout(() => navigate("/", { replace: true }), 1200);
     } catch (err: any) {
       toast.error(err.message || "Something went wrong");
     } finally {
@@ -144,9 +168,10 @@ export default function SetupProfilePage() {
         {step === "avatar" ? (
           <motion.div
             key="avatar"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0, x: -40, scale: 0.96 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: -40, scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className="flex-1 px-6"
           >
             {/* Selected avatar preview */}
@@ -194,21 +219,25 @@ export default function SetupProfilePage() {
             </div>
 
             {/* Next button */}
-            <button
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              whileHover={{ scale: 1.01 }}
               onClick={() => selectedAvatar && setStep("username")}
               disabled={!selectedAvatar}
-              className="w-full py-3 rounded-xl bg-foreground text-background font-semibold text-sm disabled:opacity-30 transition-opacity flex items-center justify-center gap-2"
+              className="w-full py-3.5 rounded-xl bg-foreground text-background font-semibold text-sm disabled:opacity-30 transition-all flex items-center justify-center gap-2 shadow-lg"
             >
+              <Sparkles className="w-4 h-4" />
               Continue
               <ArrowRight className="w-4 h-4" />
-            </button>
+            </motion.button>
           </motion.div>
         ) : (
           <motion.div
             key="username"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0, x: 40, scale: 0.96 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: 40, scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className="flex-1 px-6"
           >
             {/* Preview */}
@@ -262,19 +291,28 @@ export default function SetupProfilePage() {
 
             {/* Actions */}
             <div className="flex gap-3">
-              <button
+              <motion.button
+                whileTap={{ scale: 0.97 }}
                 onClick={() => setStep("avatar")}
-                className="flex-1 py-3 rounded-xl border border-border text-foreground font-medium text-sm"
+                className="flex-1 py-3.5 rounded-xl border border-border text-foreground font-medium text-sm flex items-center justify-center gap-2"
               >
+                <ArrowLeft className="w-4 h-4" />
                 Back
-              </button>
-              <button
+              </motion.button>
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                whileHover={{ scale: 1.01 }}
                 onClick={handleSubmit}
                 disabled={!username || username.length < 3 || !!usernameError || submitting}
-                className="flex-1 py-3 rounded-xl bg-foreground text-background font-semibold text-sm disabled:opacity-30 transition-opacity"
+                className="flex-1 py-3.5 rounded-xl bg-foreground text-background font-semibold text-sm disabled:opacity-30 transition-all shadow-lg flex items-center justify-center gap-2"
               >
+                {submitting ? (
+                  <div className="w-4 h-4 border-2 border-background border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Sparkles className="w-4 h-4" />
+                )}
                 {submitting ? "Setting up..." : "Get Started"}
-              </button>
+              </motion.button>
             </div>
           </motion.div>
         )}
