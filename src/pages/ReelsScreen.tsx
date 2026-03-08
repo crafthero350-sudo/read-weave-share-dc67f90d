@@ -135,6 +135,7 @@ export default function ReelsScreen() {
       )}
 
       <CreateReelSheet open={showCreate} onClose={() => setShowCreate(false)} onCreated={fetchReels} />
+      <StoryCreator open={showStory} onClose={() => setShowStory(false)} onCreated={fetchReels} />
     </>
   );
 }
