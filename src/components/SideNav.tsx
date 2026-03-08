@@ -23,6 +23,7 @@ export function SideNav() {
   const { profile } = useAuth();
   const [showCreate, setShowCreate] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const unreadCount = useUnreadMessages();
 
   const hiddenPaths = ["/auth", "/forgot-password", "/reset-password", "/welcome", "/setup"];
   if (hiddenPaths.some((p) => location.pathname.startsWith(p))) return null;
