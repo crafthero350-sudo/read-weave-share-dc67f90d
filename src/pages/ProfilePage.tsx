@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Settings, Grid3X3, Bookmark, Film, Trash2, Sparkles } from "lucide-react";
+import { NotionEmoji } from "@/components/NotionEmoji";
 import { useAuth } from "@/contexts/AuthContext";
 import { useFollow } from "@/hooks/useFollow";
 import { supabase } from "@/integrations/supabase/client";
