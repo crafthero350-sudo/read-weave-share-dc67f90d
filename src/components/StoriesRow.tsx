@@ -147,7 +147,6 @@ export function StoriesRow() {
           const ini = (group.displayName || group.username).split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
           let storyOffset = 0;
           for (let i = 0; i < gi; i++) storyOffset += groups[i].stories.length;
-          const gradient = ringGradients[gi % ringGradients.length];
 
           return (
             <button
