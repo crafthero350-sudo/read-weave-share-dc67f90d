@@ -259,7 +259,7 @@ export default function SearchScreen() {
         {/* Post/Reel search results */}
         {showPosts && postResults.length > 0 && (
           <section>
-            <h2 className="font-display text-lg font-bold mb-3">📝 Posts & Reels</h2>
+            <h2 className="font-display text-lg font-bold mb-3 flex items-center gap-2"><NotionEmoji emoji="📝" size={20} /> Posts & Reels</h2>
             <div className="space-y-2">
               {postResults.map((p) => (
                 <motion.div
