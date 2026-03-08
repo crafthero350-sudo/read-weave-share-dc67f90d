@@ -2,7 +2,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
 import { BottomNav } from "@/components/BottomNav";
 import { SideNav } from "@/components/SideNav";
 import { AIChatBubble } from "@/components/AIChatBubble";
@@ -23,6 +24,7 @@ import ResetPasswordPage from "@/pages/ResetPasswordPage";
 import ReadingQuizPage from "@/pages/ReadingQuizPage";
 import SetupProfilePage from "@/pages/SetupProfilePage";
 import NotificationsPage from "@/pages/NotificationsPage";
+import MessagesPage from "@/pages/MessagesPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -81,24 +83,27 @@ const App = () => (
             <SideNav />
             <div className="md:ml-[72px] xl:ml-[220px] bg-background min-h-screen relative">
               <div className="max-w-lg mx-auto">
-                <Routes>
-                  <Route path="/welcome" element={<OnboardingScreen />} />
-                  <Route path="/auth" element={<AuthRoute><AuthPage /></AuthRoute>} />
-                  <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-                  <Route path="/reset-password" element={<ResetPasswordPage />} />
-                  <Route path="/setup" element={<SetupRoute><SetupProfilePage /></SetupRoute>} />
-                  <Route path="/" element={<ProtectedRoute><HomeScreen /></ProtectedRoute>} />
-                  <Route path="/reels" element={<ProtectedRoute><ReelsScreen /></ProtectedRoute>} />
-                  <Route path="/reading" element={<ProtectedRoute><ReadingNowScreen /></ProtectedRoute>} />
-                  <Route path="/read/:id" element={<ProtectedRoute><ReaderView /></ProtectedRoute>} />
-                  <Route path="/search" element={<ProtectedRoute><SearchScreen /></ProtectedRoute>} />
-                  <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-                  <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
-                  <Route path="/quiz" element={<ProtectedRoute><ReadingQuizPage /></ProtectedRoute>} />
-                  <Route path="/user/:userId" element={<ProtectedRoute><UserProfilePage /></ProtectedRoute>} />
-                  <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
+                <AnimatePresence mode="wait">
+                  <Routes>
+                    <Route path="/welcome" element={<OnboardingScreen />} />
+                    <Route path="/auth" element={<AuthRoute><AuthPage /></AuthRoute>} />
+                    <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                    <Route path="/reset-password" element={<ResetPasswordPage />} />
+                    <Route path="/setup" element={<SetupRoute><SetupProfilePage /></SetupRoute>} />
+                    <Route path="/" element={<ProtectedRoute><HomeScreen /></ProtectedRoute>} />
+                    <Route path="/reels" element={<ProtectedRoute><ReelsScreen /></ProtectedRoute>} />
+                    <Route path="/reading" element={<ProtectedRoute><ReadingNowScreen /></ProtectedRoute>} />
+                    <Route path="/read/:id" element={<ProtectedRoute><ReaderView /></ProtectedRoute>} />
+                    <Route path="/search" element={<ProtectedRoute><SearchScreen /></ProtectedRoute>} />
+                    <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+                    <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+                    <Route path="/quiz" element={<ProtectedRoute><ReadingQuizPage /></ProtectedRoute>} />
+                    <Route path="/user/:userId" element={<ProtectedRoute><UserProfilePage /></ProtectedRoute>} />
+                    <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
+                    <Route path="/messages" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </AnimatePresence>
                 <BottomNav />
                 <AIChatBubble />
               </div>
