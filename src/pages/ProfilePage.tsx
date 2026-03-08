@@ -1,10 +1,8 @@
 import { useState, useEffect } from "react";
-import { Settings, Flame, BookOpen, Quote, Brain, Sparkles, Trash2 } from "lucide-react";
-import { ActivityGraph } from "@/components/ActivityGraph";
+import { Settings, Grid3X3, Bookmark, Film, Trash2, Sparkles } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useFollow } from "@/hooks/useFollow";
 import { supabase } from "@/integrations/supabase/client";
-import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -16,12 +14,22 @@ interface SavedCharacter {
   image_url: string;
 }
 
+interface UserPost {
+  id: string;
+  image_url: string | null;
+  book_id: string | null;
+  content: string;
+  book_cover?: string | null;
+}
+
 export default function ProfilePage() {
   const { profile, user } = useAuth();
   const navigate = useNavigate();
   const [stats, setStats] = useState({ booksRead: 0, posts: 0, discussions: 0 });
   const { followersCount, followingCount } = useFollow(user?.id || null);
   const [characters, setCharacters] = useState<SavedCharacter[]>([]);
+  const [posts, setPosts] = useState<UserPost[]>([]);
+  const [activeTab, setActiveTab] = useState<"posts" | "saved" | "characters">("posts");
 
   useEffect(() => {
     if (!user) return;
@@ -31,6 +39,18 @@ export default function ProfilePage() {
       supabase.from("comments").select("id", { count: "exact", head: true }).eq("user_id", user.id),
     ]).then(([booksRes, postsRes, commentsRes]) => {
       setStats({ booksRead: booksRes.count || 0, posts: postsRes.count || 0, discussions: commentsRes.count || 0 });
+    });
+
+    // Fetch user posts for grid
+    supabase.from("posts").select("id, image_url, book_id, content").eq("user_id", user.id).order("created_at", { ascending: false }).then(async ({ data }) => {
+      if (!data) return;
+      const bookIds = data.map(p => p.book_id).filter(Boolean) as string[];
+      let bookCovers = new Map<string, string>();
+      if (bookIds.length > 0) {
+        const { data: books } = await supabase.from("books").select("id, cover_url").in("id", bookIds);
+        books?.forEach(b => { if (b.cover_url) bookCovers.set(b.id, b.cover_url); });
+      }
+      setPosts(data.map(p => ({ ...p, book_cover: p.book_id ? bookCovers.get(p.book_id) || null : null })));
     });
 
     supabase.from("saved_characters").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).then(({ data }) => {
@@ -48,90 +68,156 @@ export default function ProfilePage() {
     .split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <header className="sticky top-0 z-30 bg-background/90 backdrop-blur-lg border-b border-border">
-        <div className="flex items-center justify-between px-4 py-3">
-          <h1 className="font-display text-2xl font-bold">Profile</h1>
-          <button onClick={() => navigate("/settings")} className="p-2"><Settings className="w-5 h-5" strokeWidth={1.5} /></button>
+    <div className="min-h-screen bg-background pb-14">
+      {/* Header */}
+      <header className="sticky top-0 z-30 bg-background border-b border-border">
+        <div className="flex items-center justify-between px-4 h-11">
+          <h1 className="text-[15px] font-bold">{profile?.username || "Profile"}</h1>
+          <button onClick={() => navigate("/settings")} className="p-1">
+            <Settings className="w-6 h-6 text-foreground" strokeWidth={1.5} />
+          </button>
         </div>
       </header>
 
-      <div className="px-4 pt-6 space-y-8">
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-4">
-          <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center text-2xl font-bold text-primary">
+      <div className="px-4 pt-4">
+        {/* Profile Info — Instagram layout */}
+        <div className="flex items-center gap-6">
+          {/* Avatar */}
+          <div className="w-20 h-20 rounded-full bg-secondary flex items-center justify-center text-2xl font-bold text-foreground flex-shrink-0">
             {initials}
           </div>
-          <div className="flex-1">
-            <h2 className="text-lg font-semibold">{profile?.display_name || "Reader"}</h2>
-            <p className="text-sm text-muted-foreground">@{profile?.username || "user"}</p>
-            <div className="flex items-center gap-4 mt-1">
-              <span className="text-sm"><strong>{stats.posts}</strong> <span className="text-muted-foreground text-xs">posts</span></span>
-              <span className="text-sm"><strong>{followersCount}</strong> <span className="text-muted-foreground text-xs">followers</span></span>
-              <span className="text-sm"><strong>{followingCount}</strong> <span className="text-muted-foreground text-xs">following</span></span>
+
+          {/* Stats row */}
+          <div className="flex-1 flex justify-around">
+            <div className="text-center">
+              <p className="text-lg font-bold leading-tight">{stats.posts}</p>
+              <p className="text-[11px] text-muted-foreground">posts</p>
             </div>
-            <div className="flex items-center gap-1 mt-1">
-              <Flame className="w-4 h-4 text-accent" />
-              <span className="text-sm font-medium">{profile?.reading_streak || 0} Day Streak</span>
+            <div className="text-center">
+              <p className="text-lg font-bold leading-tight">{followersCount}</p>
+              <p className="text-[11px] text-muted-foreground">followers</p>
+            </div>
+            <div className="text-center">
+              <p className="text-lg font-bold leading-tight">{followingCount}</p>
+              <p className="text-[11px] text-muted-foreground">following</p>
             </div>
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="grid grid-cols-3 gap-3">
-          {[
-            { icon: BookOpen, label: "Books Read", value: stats.booksRead.toString() },
-            { icon: Quote, label: "Posts", value: stats.posts.toString() },
-            { icon: Brain, label: "Comments", value: stats.discussions.toString() },
-          ].map((stat) => (
-            <div key={stat.label} className="bg-card rounded-2xl p-4 text-center border border-border">
-              <stat.icon className="w-5 h-5 mx-auto mb-1.5 text-muted-foreground" strokeWidth={1.5} />
-              <p className="text-lg font-semibold">{stat.value}</p>
-              <p className="text-[11px] text-muted-foreground">{stat.label}</p>
+        {/* Name & Bio */}
+        <div className="mt-3">
+          <p className="text-[13px] font-semibold">{profile?.display_name || "Reader"}</p>
+          {profile?.bio && <p className="text-[13px] text-muted-foreground mt-0.5">{profile.bio}</p>}
+          {profile?.reading_personality && (
+            <p className="text-[13px] mt-0.5">📚 {profile.reading_personality}</p>
+          )}
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex gap-1.5 mt-3">
+          <button
+            onClick={() => navigate("/settings")}
+            className="flex-1 py-1.5 rounded-lg bg-secondary text-foreground text-[13px] font-semibold text-center"
+          >
+            Edit Profile
+          </button>
+          <button
+            onClick={() => navigate("/quiz")}
+            className="flex-1 py-1.5 rounded-lg bg-secondary text-foreground text-[13px] font-semibold text-center flex items-center justify-center gap-1"
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            {profile?.reading_personality ? "Retake Quiz" : "Take Quiz"}
+          </button>
+        </div>
+      </div>
+
+      {/* Tabs — Grid | Saved | Characters */}
+      <div className="flex border-b border-border mt-4">
+        <button
+          onClick={() => setActiveTab("posts")}
+          className={`flex-1 py-3 flex justify-center border-b-[1.5px] transition-colors ${
+            activeTab === "posts" ? "border-foreground text-foreground" : "border-transparent text-muted-foreground"
+          }`}
+        >
+          <Grid3X3 className="w-5 h-5" strokeWidth={1.5} />
+        </button>
+        <button
+          onClick={() => setActiveTab("saved")}
+          className={`flex-1 py-3 flex justify-center border-b-[1.5px] transition-colors ${
+            activeTab === "saved" ? "border-foreground text-foreground" : "border-transparent text-muted-foreground"
+          }`}
+        >
+          <Bookmark className="w-5 h-5" strokeWidth={1.5} />
+        </button>
+        <button
+          onClick={() => setActiveTab("characters")}
+          className={`flex-1 py-3 flex justify-center border-b-[1.5px] transition-colors ${
+            activeTab === "characters" ? "border-foreground text-foreground" : "border-transparent text-muted-foreground"
+          }`}
+        >
+          <Film className="w-5 h-5" strokeWidth={1.5} />
+        </button>
+      </div>
+
+      {/* Tab Content */}
+      {activeTab === "posts" && (
+        <div className="grid grid-cols-3 gap-px">
+          {posts.map((p) => (
+            <div key={p.id} className="aspect-square bg-secondary">
+              {(p.image_url || p.book_cover) ? (
+                <img src={p.image_url || p.book_cover!} alt="" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center p-2">
+                  <p className="text-[10px] text-muted-foreground text-center line-clamp-4">{p.content}</p>
+                </div>
+              )}
             </div>
           ))}
-        </motion.div>
-
-        {/* Reading Personality */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="bg-card rounded-2xl p-5 border border-border">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-xs text-muted-foreground uppercase tracking-wider">Reading Personality</p>
-            <button onClick={() => navigate("/quiz")} className="text-xs text-accent font-semibold flex items-center gap-1">
-              <Sparkles className="w-3 h-3" /> {profile?.reading_personality ? "Retake" : "Take Quiz"}
-            </button>
-          </div>
-          <p className="text-lg font-display font-bold">{profile?.reading_personality || "Not yet discovered"}</p>
-          <p className="text-sm text-muted-foreground mt-1">
-            {profile?.reading_personality
-              ? "Your unique reading identity based on your preferences and habits."
-              : "Take the quiz to discover your reading personality!"}
-          </p>
-        </motion.div>
-
-        {/* Saved Characters */}
-        {characters.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <h3 className="font-display text-lg font-bold mb-3">Saved Characters</h3>
-            <div className="grid grid-cols-2 gap-3">
-              {characters.map((char) => (
-                <div key={char.id} className="bg-card rounded-2xl overflow-hidden border border-border relative group">
-                  <img src={char.image_url} alt={char.character_name} className="w-full aspect-square object-cover" />
-                  <div className="p-3">
-                    <p className="font-semibold text-sm truncate">{char.character_name}</p>
-                    <p className="text-[10px] text-muted-foreground truncate">{char.book_title}</p>
-                  </div>
-                  <button
-                    onClick={() => deleteCharacter(char.id)}
-                    className="absolute top-2 right-2 p-1.5 rounded-full bg-background/80 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <Trash2 className="w-3.5 h-3.5 text-destructive" />
-                  </button>
-                </div>
-              ))}
+          {posts.length === 0 && (
+            <div className="col-span-3 py-16 text-center">
+              <Grid3X3 className="w-10 h-10 mx-auto text-muted-foreground mb-2" strokeWidth={1} />
+              <p className="text-sm text-muted-foreground">No posts yet</p>
             </div>
-          </motion.div>
-        )}
+          )}
+        </div>
+      )}
 
-        <ActivityGraph />
-      </div>
+      {activeTab === "saved" && (
+        <div className="grid grid-cols-3 gap-px">
+          <div className="col-span-3 py-16 text-center">
+            <Bookmark className="w-10 h-10 mx-auto text-muted-foreground mb-2" strokeWidth={1} />
+            <p className="text-sm text-muted-foreground">Saved posts will appear here</p>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "characters" && (
+        <div className="grid grid-cols-3 gap-px">
+          {characters.map((char) => (
+            <div key={char.id} className="aspect-square bg-secondary relative group">
+              <img src={char.image_url} alt={char.character_name} className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/40 transition-colors flex items-center justify-center">
+                <div className="opacity-0 group-hover:opacity-100 transition-opacity text-center text-background">
+                  <p className="text-xs font-semibold">{char.character_name}</p>
+                  <p className="text-[10px]">{char.book_title}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => deleteCharacter(char.id)}
+                className="absolute top-1 right-1 p-1 rounded-full bg-background/80 opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <Trash2 className="w-3 h-3 text-destructive" />
+              </button>
+            </div>
+          ))}
+          {characters.length === 0 && (
+            <div className="col-span-3 py-16 text-center">
+              <Film className="w-10 h-10 mx-auto text-muted-foreground mb-2" strokeWidth={1} />
+              <p className="text-sm text-muted-foreground">No saved characters yet</p>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

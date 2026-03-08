@@ -1,11 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
-import { Heart, Plus, Send } from "lucide-react";
+import { Heart, Plus, Send, Camera } from "lucide-react";
 import { StoriesRow } from "@/components/StoriesRow";
 import { PostCard, type PostData } from "@/components/PostCard";
 import { CreatePostSheet } from "@/components/CreatePostSheet";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import bookappLogo from "@/assets/bookapp-logo.png";
 
 export default function HomeScreen() {
   const { user } = useAuth();
@@ -71,42 +70,40 @@ export default function HomeScreen() {
   useEffect(() => { fetchPosts(); }, [fetchPosts]);
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      {/* Header — thin, clean */}
+    <div className="min-h-screen bg-background pb-14">
+      {/* Instagram-style Header */}
       <header className="sticky top-0 z-30 bg-background border-b border-border">
         <div className="flex items-center justify-between px-4 h-11">
-          <div className="flex items-center gap-1.5">
-            <img src={bookappLogo} alt="BookApp" className="w-6 h-6" />
-            <h1 className="bookapp-title text-lg">BookApp</h1>
-          </div>
-          <div className="flex items-center gap-0.5">
-            <button onClick={() => setShowCreate(true)} className="p-2 text-foreground">
-              <Plus className="w-5 h-5" strokeWidth={1.5} />
-            </button>
-            <button className="p-2 text-foreground">
-              <Heart className="w-5 h-5" strokeWidth={1.5} />
-            </button>
-            <button className="p-2 text-foreground">
-              <Send className="w-5 h-5 -rotate-45" strokeWidth={1.5} />
-            </button>
-          </div>
+          <button onClick={() => setShowCreate(true)} className="p-1">
+            <Camera className="w-6 h-6 text-foreground" strokeWidth={1.5} />
+          </button>
+          <h1 className="text-xl font-semibold italic tracking-tight">Bookova</h1>
+          <button className="p-1">
+            <Send className="w-6 h-6 text-foreground" strokeWidth={1.5} />
+          </button>
         </div>
       </header>
 
       {/* Stories */}
       <StoriesRow />
-
       <div className="border-b border-border" />
 
       {/* Feed */}
       <div>
         {loading ? (
           <div className="flex justify-center py-12">
-            <div className="w-5 h-5 border border-foreground border-t-transparent rounded-full animate-spin" />
+            <div className="w-6 h-6 border-2 border-foreground/30 border-t-foreground rounded-full animate-spin" />
           </div>
         ) : posts.length === 0 ? (
           <div className="text-center py-16 px-4">
-            <p className="text-muted-foreground text-sm">No posts yet. Be the first to share!</p>
+            <Camera className="w-12 h-12 mx-auto text-muted-foreground mb-3" strokeWidth={1} />
+            <p className="text-muted-foreground text-sm">No posts yet. Share your first book thought!</p>
+            <button
+              onClick={() => setShowCreate(true)}
+              className="mt-4 px-6 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium"
+            >
+              Create Post
+            </button>
           </div>
         ) : (
           posts.map((post, i) => (
