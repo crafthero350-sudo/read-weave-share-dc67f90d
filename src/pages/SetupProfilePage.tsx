@@ -231,9 +231,10 @@ export default function SetupProfilePage() {
         ) : (
           <motion.div
             key="username"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0, x: 40, scale: 0.96 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: 40, scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className="flex-1 px-6"
           >
             {/* Preview */}
