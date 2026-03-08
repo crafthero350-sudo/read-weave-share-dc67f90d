@@ -109,7 +109,7 @@ export default function ReelsScreen() {
             <ArrowLeft className="w-5 h-5 text-white" strokeWidth={1.5} />
           </button>
           <h1 className="text-base font-semibold text-white">Reels</h1>
-          <button onClick={() => setShowCreate(true)} className="pointer-events-auto p-1">
+          <button onClick={() => setShowStory(true)} className="pointer-events-auto p-1">
             <Camera className="w-5 h-5 text-white" strokeWidth={1.5} />
           </button>
         </div>
