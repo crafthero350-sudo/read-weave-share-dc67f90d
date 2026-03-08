@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400&family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,69 +6,68 @@
 
 @layer base {
   :root {
-    --background: 36 45% 93%;
-    --foreground: 20 27% 9%;
-    --card: 36 40% 96%;
-    --card-foreground: 20 27% 9%;
-    --popover: 36 40% 96%;
-    --popover-foreground: 20 27% 9%;
-    --primary: 39 90% 41%;
-    --primary-foreground: 36 45% 96%;
-    --secondary: 30 20% 88%;
-    --secondary-foreground: 20 27% 9%;
-    --muted: 30 20% 88%;
-    --muted-foreground: 25 20% 45%;
-    --accent: 25 76% 31%;
-    --accent-foreground: 36 45% 96%;
+    --background: 0 0% 100%;
+    --foreground: 0 0% 13%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 13%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 13%;
+    --primary: 16 100% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 20 15% 95%;
+    --secondary-foreground: 0 0% 13%;
+    --muted: 20 10% 95%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 16 100% 60%;
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
-    --border: 30 25% 82%;
-    --input: 30 25% 82%;
-    --ring: 39 90% 41%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 16 100% 60%;
     --radius: 0.75rem;
 
-    /* BookApp custom tokens */
-    --activity-none: 30 20% 90%;
-    --activity-low: 39 50% 75%;
-    --activity-medium: 39 70% 55%;
-    --activity-high: 39 90% 41%;
-    --activity-max: 25 76% 31%;
+    --activity-none: 0 0% 93%;
+    --activity-low: 16 60% 80%;
+    --activity-medium: 16 80% 65%;
+    --activity-high: 16 100% 60%;
+    --activity-max: 16 100% 45%;
 
-    --story-ring: 39 60% 70%;
-    --surface-elevated: 36 35% 95%;
-    --gold-glow: 39 90% 50%;
+    --story-ring: 16 80% 65%;
+    --surface-elevated: 0 0% 98%;
+    --gold-glow: 16 100% 68%;
   }
 
   .dark {
-    --background: 20 27% 9%;
-    --foreground: 36 30% 90%;
-    --card: 20 25% 13%;
-    --card-foreground: 36 30% 90%;
-    --popover: 20 25% 13%;
-    --popover-foreground: 36 30% 90%;
-    --primary: 39 90% 50%;
-    --primary-foreground: 20 27% 9%;
-    --secondary: 20 20% 18%;
-    --secondary-foreground: 36 30% 90%;
-    --muted: 20 20% 18%;
-    --muted-foreground: 30 15% 55%;
-    --accent: 39 80% 45%;
-    --accent-foreground: 20 27% 9%;
+    --background: 0 0% 8%;
+    --foreground: 0 0% 92%;
+    --card: 0 0% 12%;
+    --card-foreground: 0 0% 92%;
+    --popover: 0 0% 12%;
+    --popover-foreground: 0 0% 92%;
+    --primary: 16 100% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 16%;
+    --secondary-foreground: 0 0% 92%;
+    --muted: 0 0% 16%;
+    --muted-foreground: 0 0% 55%;
+    --accent: 16 100% 55%;
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
-    --border: 20 20% 22%;
-    --input: 20 20% 22%;
-    --ring: 39 90% 50%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 16 100% 60%;
 
-    --activity-none: 20 20% 18%;
-    --activity-low: 39 40% 25%;
-    --activity-medium: 39 60% 40%;
-    --activity-high: 39 80% 55%;
-    --activity-max: 39 90% 70%;
+    --activity-none: 0 0% 16%;
+    --activity-low: 16 50% 25%;
+    --activity-medium: 16 70% 40%;
+    --activity-high: 16 90% 55%;
+    --activity-max: 16 100% 65%;
 
-    --story-ring: 39 50% 40%;
-    --surface-elevated: 20 22% 14%;
-    --gold-glow: 39 90% 55%;
+    --story-ring: 16 60% 45%;
+    --surface-elevated: 0 0% 13%;
+    --gold-glow: 16 100% 60%;
   }
 
   * {
@@ -82,11 +81,10 @@
 
 @layer components {
   .bookapp-title {
-    font-family: 'Playfair Display', 'Georgia', serif;
-    font-style: italic;
-    font-weight: 500;
+    font-family: 'Merriweather', 'Georgia', serif;
+    font-weight: 700;
     letter-spacing: -0.02em;
-    color: hsl(var(--accent));
+    color: hsl(var(--primary));
   }
 
   .page-flip {
@@ -122,7 +120,7 @@
 
   .section-title {
     @apply text-xl font-semibold tracking-tight;
-    font-family: 'Playfair Display', serif;
+    font-family: 'Merriweather', serif;
   }
 
   .book-progress-bar {
