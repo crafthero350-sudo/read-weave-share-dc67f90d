@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { StoriesRow } from "@/components/StoriesRow";
 import { PostCard, type PostData } from "@/components/PostCard";
 import { CreatePostSheet } from "@/components/CreatePostSheet";
+import { StoryCreator } from "@/components/StoryCreator";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
@@ -14,6 +15,7 @@ export default function HomeScreen() {
   const [posts, setPosts] = useState<PostData[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
+  const [showStoryCreator, setShowStoryCreator] = useState(false);
   const unreadCount = useUnreadMessages();
 
   const fetchPosts = useCallback(async () => {
