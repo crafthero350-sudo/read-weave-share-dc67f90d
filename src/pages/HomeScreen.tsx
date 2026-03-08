@@ -82,13 +82,18 @@ export default function HomeScreen() {
           <h1 className="text-[22px] font-bold italic tracking-tight text-foreground" style={{ fontFamily: "'Merriweather', serif" }}>
             BookApp
           </h1>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 md:hidden">
             <button onClick={() => setShowCreate(true)} className="p-2">
               <PlusSquare className="w-6 h-6 text-foreground" strokeWidth={1.5} />
             </button>
             <button className="p-2" onClick={() => navigate("/notifications")}>
               <Heart className="w-6 h-6 text-foreground" strokeWidth={1.5} />
             </button>
+            <button className="p-2">
+              <Send className="w-6 h-6 text-foreground -rotate-[20deg]" strokeWidth={1.5} />
+            </button>
+          </div>
+          <div className="hidden md:flex items-center gap-1">
             <button className="p-2">
               <Send className="w-6 h-6 text-foreground -rotate-[20deg]" strokeWidth={1.5} />
             </button>
