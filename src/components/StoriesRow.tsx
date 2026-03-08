@@ -26,6 +26,15 @@ interface DBStory {
   expires_at: string;
 }
 
+// Instagram-style gradient ring colors per position
+const ringGradients = [
+  "from-yellow-400 via-red-500 to-purple-600",
+  "from-pink-500 via-rose-500 to-orange-400",
+  "from-amber-400 via-orange-500 to-red-500",
+  "from-blue-400 via-purple-500 to-pink-500",
+  "from-green-400 via-teal-500 to-blue-500",
+];
+
 export function StoriesRow() {
   const { user } = useAuth();
   const [groups, setGroups] = useState<StoryGroup[]>([]);
@@ -121,22 +130,22 @@ export function StoriesRow() {
 
   return (
     <>
-      <div className="flex gap-3 overflow-x-auto px-4 py-3 no-scrollbar">
-        {/* Your Story — Instagram style */}
+      <div className="flex gap-3.5 overflow-x-auto px-4 py-3 no-scrollbar">
+        {/* Your Story */}
         {user && (
           <button
             onClick={() => setShowCreator(true)}
             className="flex flex-col items-center gap-1 flex-shrink-0"
           >
             <div className="relative">
-              <div className="w-[62px] h-[62px] rounded-full bg-muted flex items-center justify-center text-lg font-semibold text-muted-foreground">
+              <div className="w-[68px] h-[68px] rounded-full bg-muted flex items-center justify-center text-lg font-semibold text-muted-foreground">
                 You
               </div>
               <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-primary flex items-center justify-center border-2 border-background">
                 <Plus className="w-3 h-3 text-primary-foreground" strokeWidth={3} />
               </div>
             </div>
-            <span className="text-[11px] text-muted-foreground w-16 truncate text-center">Your Story</span>
+            <span className="text-[11px] text-foreground w-[72px] truncate text-center">Your story</span>
           </button>
         )}
 
@@ -144,6 +153,7 @@ export function StoriesRow() {
           const ini = (group.displayName || group.username).split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
           let storyOffset = 0;
           for (let i = 0; i < gi; i++) storyOffset += groups[i].stories.length;
+          const gradient = ringGradients[gi % ringGradients.length];
 
           return (
             <button
@@ -151,13 +161,16 @@ export function StoriesRow() {
               onClick={() => setActiveGroup(storyOffset)}
               className="flex flex-col items-center gap-1 flex-shrink-0"
             >
-              <div className="story-ring-active">
-                <div className="w-[58px] h-[58px] rounded-full bg-muted flex items-center justify-center text-sm font-semibold text-foreground border-2 border-background">
-                  {ini}
+              {/* Gradient ring */}
+              <div className={`rounded-full p-[2.5px] bg-gradient-to-br ${gradient}`}>
+                <div className="w-[64px] h-[64px] rounded-full bg-background p-[2px]">
+                  <div className="w-full h-full rounded-full bg-muted flex items-center justify-center text-sm font-semibold text-foreground">
+                    {ini}
+                  </div>
                 </div>
               </div>
-              <span className="text-[11px] text-muted-foreground w-16 truncate text-center">
-                {user && group.userId === user.id ? "Your Story" : group.username}
+              <span className="text-[11px] text-foreground w-[72px] truncate text-center">
+                {user && group.userId === user.id ? "Your story" : group.username}
               </span>
             </button>
           );

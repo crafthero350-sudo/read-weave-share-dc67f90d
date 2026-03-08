@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Heart, Plus, Send, Camera } from "lucide-react";
+import { Heart, PlusSquare, Send } from "lucide-react";
 import { StoriesRow } from "@/components/StoriesRow";
 import { PostCard, type PostData } from "@/components/PostCard";
 import { CreatePostSheet } from "@/components/CreatePostSheet";
@@ -73,14 +73,19 @@ export default function HomeScreen() {
     <div className="min-h-screen bg-background pb-14">
       {/* Instagram-style Header */}
       <header className="sticky top-0 z-30 bg-background border-b border-border">
-        <div className="flex items-center justify-between px-4 h-11">
-          <button onClick={() => setShowCreate(true)} className="p-1">
-            <Camera className="w-6 h-6 text-foreground" strokeWidth={1.5} />
-          </button>
-          <h1 className="text-xl font-semibold italic tracking-tight">Bookova</h1>
-          <button className="p-1">
-            <Send className="w-6 h-6 text-foreground" strokeWidth={1.5} />
-          </button>
+        <div className="flex items-center justify-between px-4 h-12">
+          <h1 className="font-display text-[22px] font-bold italic tracking-tight">BookApp</h1>
+          <div className="flex items-center gap-1">
+            <button onClick={() => setShowCreate(true)} className="p-2">
+              <PlusSquare className="w-6 h-6 text-foreground" strokeWidth={1.5} />
+            </button>
+            <button className="p-2">
+              <Heart className="w-6 h-6 text-foreground" strokeWidth={1.5} />
+            </button>
+            <button className="p-2">
+              <Send className="w-6 h-6 text-foreground -rotate-[20deg]" strokeWidth={1.5} />
+            </button>
+          </div>
         </div>
       </header>
 
@@ -96,7 +101,6 @@ export default function HomeScreen() {
           </div>
         ) : posts.length === 0 ? (
           <div className="text-center py-16 px-4">
-            <Camera className="w-12 h-12 mx-auto text-muted-foreground mb-3" strokeWidth={1} />
             <p className="text-muted-foreground text-sm">No posts yet. Share your first book thought!</p>
             <button
               onClick={() => setShowCreate(true)}
