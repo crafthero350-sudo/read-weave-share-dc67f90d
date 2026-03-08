@@ -7,6 +7,7 @@ import { BottomNav } from "@/components/BottomNav";
 import { AIChatBubble } from "@/components/AIChatBubble";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import OnboardingScreen from "@/pages/OnboardingScreen";
 import HomeScreen from "@/pages/HomeScreen";
 import ReadingNowScreen from "@/pages/ReadingNowScreen";
 import ReaderView from "@/pages/ReaderView";
@@ -18,6 +19,7 @@ import UserProfilePage from "@/pages/UserProfilePage";
 import AuthPage from "@/pages/AuthPage";
 import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
 import ResetPasswordPage from "@/pages/ResetPasswordPage";
+import ReadingQuizPage from "@/pages/ReadingQuizPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -58,6 +60,7 @@ const App = () => (
           <AuthProvider>
             <div className="max-w-lg mx-auto bg-background min-h-screen relative">
               <Routes>
+                <Route path="/welcome" element={<OnboardingScreen />} />
                 <Route path="/auth" element={<AuthRoute><AuthPage /></AuthRoute>} />
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                 <Route path="/reset-password" element={<ResetPasswordPage />} />
@@ -68,6 +71,7 @@ const App = () => (
                 <Route path="/search" element={<ProtectedRoute><SearchScreen /></ProtectedRoute>} />
                 <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
                 <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+                <Route path="/quiz" element={<ProtectedRoute><ReadingQuizPage /></ProtectedRoute>} />
                 <Route path="/user/:userId" element={<ProtectedRoute><UserProfilePage /></ProtectedRoute>} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
