@@ -510,7 +510,7 @@ function CloseFriendsSection({ onBack }: { onBack: () => void }) {
       <header className="sticky top-0 z-30 bg-background/90 backdrop-blur-lg border-b border-border">
         <div className="flex items-center gap-3 px-4 py-3">
           <button onClick={onBack} className="p-1"><ArrowLeft className="w-5 h-5" /></button>
-          <h1 className="text-sm font-semibold">Close Friends</h1>
+          <h1 className="text-sm font-semibold">Privacy</h1>
         </div>
       </header>
       <div className="px-4 pt-4">
