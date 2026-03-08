@@ -339,6 +339,39 @@ export type Database = {
         }
         Relationships: []
       }
+      saved_characters: {
+        Row: {
+          book_author: string
+          book_title: string
+          character_name: string
+          created_at: string | null
+          description: string | null
+          id: string
+          image_url: string
+          user_id: string
+        }
+        Insert: {
+          book_author: string
+          book_title: string
+          character_name: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url: string
+          user_id: string
+        }
+        Update: {
+          book_author?: string
+          book_title?: string
+          character_name?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       stories: {
         Row: {
           background_color: string | null
