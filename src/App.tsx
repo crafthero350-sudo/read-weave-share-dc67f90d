@@ -102,6 +102,7 @@ const App = () => (
                     <Route path="/user/:userId" element={<ProtectedRoute><UserProfilePage /></ProtectedRoute>} />
                     <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
                     <Route path="/messages" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} />
+                    <Route path="/chat/:userId" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </AnimatePresence>
