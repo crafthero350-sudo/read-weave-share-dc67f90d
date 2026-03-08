@@ -26,14 +26,8 @@ interface DBStory {
   expires_at: string;
 }
 
-// Instagram-style gradient ring colors per position
-const ringGradients = [
-  "from-yellow-400 via-red-500 to-purple-600",
-  "from-pink-500 via-rose-500 to-orange-400",
-  "from-amber-400 via-orange-500 to-red-500",
-  "from-blue-400 via-purple-500 to-pink-500",
-  "from-green-400 via-teal-500 to-blue-500",
-];
+// Monoline story ring - uses semantic token
+
 
 export function StoriesRow() {
   const { user } = useAuth();
