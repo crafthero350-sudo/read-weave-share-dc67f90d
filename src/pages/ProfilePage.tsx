@@ -1,15 +1,17 @@
 import { useState, useEffect } from "react";
-import { Settings, Flame, BookOpen, Quote, Brain, LogOut } from "lucide-react";
+import { Settings, Flame, BookOpen, Quote, Brain } from "lucide-react";
 import { ActivityGraph } from "@/components/ActivityGraph";
 import { useAuth } from "@/contexts/AuthContext";
+import { useFollow } from "@/hooks/useFollow";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
 export default function ProfilePage() {
-  const { profile, signOut, user } = useAuth();
+  const { profile, user } = useAuth();
   const navigate = useNavigate();
   const [stats, setStats] = useState({ booksRead: 0, posts: 0, discussions: 0 });
+  const { followersCount, followingCount } = useFollow(user?.id || null);
 
   useEffect(() => {
     if (!user) return;
@@ -26,11 +28,6 @@ export default function ProfilePage() {
     });
   }, [user]);
 
-  const handleSignOut = async () => {
-    await signOut();
-    navigate("/auth");
-  };
-
   const initials = (profile?.display_name || profile?.username || "?")
     .split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
 
@@ -39,14 +36,9 @@ export default function ProfilePage() {
       <header className="sticky top-0 z-30 bg-background/90 backdrop-blur-lg border-b border-border">
         <div className="flex items-center justify-between px-4 py-3">
           <h1 className="text-2xl font-semibold tracking-tight">Profile</h1>
-          <div className="flex items-center gap-1">
-            <button onClick={handleSignOut} className="p-2">
-              <LogOut className="w-5 h-5" strokeWidth={1.5} />
-            </button>
-            <button className="p-2">
-              <Settings className="w-5 h-5" strokeWidth={1.5} />
-            </button>
-          </div>
+          <button onClick={() => navigate("/settings")} className="p-2">
+            <Settings className="w-5 h-5" strokeWidth={1.5} />
+          </button>
         </div>
       </header>
 
@@ -55,12 +47,17 @@ export default function ProfilePage() {
           <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center text-2xl font-semibold">
             {initials}
           </div>
-          <div>
+          <div className="flex-1">
             <h2 className="text-lg font-semibold">{profile?.display_name || "Reader"}</h2>
             <p className="text-sm text-muted-foreground">@{profile?.username || "user"}</p>
+            <div className="flex items-center gap-4 mt-1">
+              <span className="text-sm"><strong>{stats.posts}</strong> <span className="text-muted-foreground text-xs">posts</span></span>
+              <span className="text-sm"><strong>{followersCount}</strong> <span className="text-muted-foreground text-xs">followers</span></span>
+              <span className="text-sm"><strong>{followingCount}</strong> <span className="text-muted-foreground text-xs">following</span></span>
+            </div>
             <div className="flex items-center gap-1 mt-1">
               <Flame className="w-4 h-4 text-foreground" />
-              <span className="text-sm font-medium">{profile?.reading_streak || 0} Day Reading Streak</span>
+              <span className="text-sm font-medium">{profile?.reading_streak || 0} Day Streak</span>
             </div>
           </div>
         </motion.div>
