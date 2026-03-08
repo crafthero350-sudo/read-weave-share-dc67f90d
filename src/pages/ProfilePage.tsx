@@ -83,8 +83,12 @@ export default function ProfilePage() {
         {/* Profile Info — Instagram layout */}
         <div className="flex items-center gap-6">
           {/* Avatar */}
-          <div className="w-20 h-20 rounded-full bg-secondary flex items-center justify-center text-2xl font-bold text-foreground flex-shrink-0">
-            {initials}
+          <div className="w-20 h-20 rounded-full bg-secondary flex items-center justify-center text-2xl font-bold text-foreground flex-shrink-0 overflow-hidden ring-2 ring-border">
+            {profile?.avatar_url ? (
+              <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
+            ) : (
+              <span>{initials}</span>
+            )}
           </div>
 
           {/* Stats row */}

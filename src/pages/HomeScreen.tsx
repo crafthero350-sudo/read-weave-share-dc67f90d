@@ -15,7 +15,7 @@ export default function HomeScreen() {
   const fetchPosts = useCallback(async () => {
     const { data: postsData } = await supabase
       .from("posts")
-      .select("*")
+      .select("*, updated_at")
       .order("created_at", { ascending: false })
       .limit(50);
 
@@ -59,6 +59,7 @@ export default function HomeScreen() {
       ...p,
       likes_count: p.likes_count || 0,
       comments_count: p.comments_count || 0,
+      updated_at: p.updated_at,
       profile: profileMap.get(p.user_id),
       book: p.book_id ? booksMap.get(p.book_id) || null : null,
       user_liked: likedPostIds.has(p.id),

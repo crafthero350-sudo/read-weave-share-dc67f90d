@@ -411,7 +411,13 @@ function CloseFriendsSection({ onBack }: { onBack: () => void }) {
             return (
               <div key={f.user_id} className="flex items-center justify-between py-3 border-b border-border">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-xs font-medium">{ini}</div>
+                  <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-xs font-medium overflow-hidden">
+                    {f.avatar_url ? (
+                      <img src={f.avatar_url} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      ini
+                    )}
+                  </div>
                   <div>
                     <p className="text-sm font-medium">{f.display_name || "User"}</p>
                     <p className="text-xs text-muted-foreground">@{f.username || "user"}</p>
