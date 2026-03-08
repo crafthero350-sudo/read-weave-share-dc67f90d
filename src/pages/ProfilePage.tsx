@@ -225,6 +225,7 @@ export default function ProfilePage() {
           )}
         </div>
       )}
+      <EditProfileDialog open={showEditProfile} onClose={() => setShowEditProfile(false)} />
     </div>
   );
 }
