@@ -250,7 +250,7 @@ export default function SettingsPage() {
     { icon: Shield, label: "Privacy", key: "privacy" },
     { icon: Heart, label: "Liked Posts", key: "liked" },
     { icon: Bookmark, label: "Saved Posts", key: "saved" },
-    { icon: Users, label: "Close Friends", key: "close_friends" },
+    { icon: Users, label: "الخصوصية", key: "close_friends" },
   ];
 
   return (
