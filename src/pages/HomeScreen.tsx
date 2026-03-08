@@ -6,6 +6,7 @@ import { PostCard, type PostData } from "@/components/PostCard";
 import { CreatePostSheet } from "@/components/CreatePostSheet";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 
 export default function HomeScreen() {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ export default function HomeScreen() {
   const [posts, setPosts] = useState<PostData[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
+  const unreadCount = useUnreadMessages();
 
   const fetchPosts = useCallback(async () => {
     const { data: postsData } = await supabase
@@ -89,13 +91,23 @@ export default function HomeScreen() {
             <button className="p-2" onClick={() => navigate("/notifications")}>
               <Heart className="w-6 h-6 text-foreground" strokeWidth={1.5} />
             </button>
-            <button className="p-2" onClick={() => navigate("/messages")}>
+            <button className="p-2 relative" onClick={() => navigate("/messages")}>
               <Send className="w-6 h-6 text-foreground -rotate-[20deg]" strokeWidth={1.5} />
+              {unreadCount > 0 && (
+                <span className="absolute top-0.5 right-0.5 w-[16px] h-[16px] rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
             </button>
           </div>
           <div className="hidden md:flex items-center gap-1">
-            <button className="p-2" onClick={() => navigate("/messages")}>
+            <button className="p-2 relative" onClick={() => navigate("/messages")}>
               <Send className="w-6 h-6 text-foreground -rotate-[20deg]" strokeWidth={1.5} />
+              {unreadCount > 0 && (
+                <span className="absolute top-0.5 right-0.5 w-[16px] h-[16px] rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
             </button>
           </div>
         </div>

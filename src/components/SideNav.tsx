@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState } from "react";
 import { CreatePostSheet } from "@/components/CreatePostSheet";
+import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import bookappLogo from "@/assets/bookapp-logo.png";
 
 const navItems = [
@@ -22,6 +23,7 @@ export function SideNav() {
   const { profile } = useAuth();
   const [showCreate, setShowCreate] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const unreadCount = useUnreadMessages();
 
   const hiddenPaths = ["/auth", "/forgot-password", "/reset-password", "/welcome", "/setup"];
   if (hiddenPaths.some((p) => location.pathname.startsWith(p))) return null;
@@ -60,13 +62,20 @@ export function SideNav() {
                   active ? "font-semibold" : ""
                 }`}
               >
-                <item.icon
-                  className={`w-[26px] h-[26px] flex-shrink-0 ${
-                    active ? "text-foreground" : "text-foreground/70"
-                  } group-hover:text-foreground transition-colors`}
-                  strokeWidth={active ? 2.2 : 1.5}
-                  fill={active && item.icon === Home ? "currentColor" : "none"}
-                />
+                <div className="relative flex-shrink-0">
+                  <item.icon
+                    className={`w-[26px] h-[26px] ${
+                      active ? "text-foreground" : "text-foreground/70"
+                    } group-hover:text-foreground transition-colors`}
+                    strokeWidth={active ? 2.2 : 1.5}
+                    fill={active && item.icon === Home ? "currentColor" : "none"}
+                  />
+                  {item.path === "/messages" && unreadCount > 0 && (
+                    <span className="absolute -top-1.5 -right-1.5 w-[18px] h-[18px] rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center">
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </span>
+                  )}
+                </div>
                 <span
                   className={`hidden xl:block text-[15px] ${
                     active ? "text-foreground font-semibold" : "text-foreground/70"
