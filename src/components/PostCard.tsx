@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Heart, MessageCircle, Send, Bookmark, MoreHorizontal, Volume2, VolumeX } from "lucide-react";
+import { Heart, MessageCircle, Send, Bookmark, MoreHorizontal, Volume2, VolumeX, Pencil, Trash2, X, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { CommentPanel } from "./CommentPanel";
@@ -14,6 +14,7 @@ export interface PostData {
   likes_count: number;
   comments_count: number;
   created_at: string;
+  updated_at?: string;
   user_id: string;
   book_id: string | null;
   image_url?: string | null;
@@ -38,7 +39,14 @@ export function PostCard({ post, index, onRefresh }: PostCardProps) {
   const [showComments, setShowComments] = useState(false);
   const [showHeart, setShowHeart] = useState(false);
   const [muted, setMuted] = useState(true);
+  const [showMenu, setShowMenu] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editContent, setEditContent] = useState(post.content);
+  const [deleting, setDeleting] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  const isOwner = user?.id === post.user_id;
+  const wasEdited = post.updated_at && post.created_at && new Date(post.updated_at).getTime() - new Date(post.created_at).getTime() > 2000;
 
   const toggleLike = async () => {
     if (!user) return;
@@ -81,6 +89,35 @@ export function PostCard({ post, index, onRefresh }: PostCardProps) {
     }
   };
 
+  const handleDelete = async () => {
+    if (!user || !isOwner) return;
+    setDeleting(true);
+    try {
+      const { error } = await supabase.from("posts").delete().eq("id", post.id).eq("user_id", user.id);
+      if (error) throw error;
+      toast.success("Post deleted");
+      onRefresh?.();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete");
+    } finally {
+      setDeleting(false);
+      setShowMenu(false);
+    }
+  };
+
+  const handleEdit = async () => {
+    if (!user || !isOwner || !editContent.trim()) return;
+    try {
+      const { error } = await supabase.from("posts").update({ content: editContent.trim() }).eq("id", post.id).eq("user_id", user.id);
+      if (error) throw error;
+      toast.success("Post updated");
+      setEditing(false);
+      onRefresh?.();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update");
+    }
+  };
+
   const timeAgo = formatDistanceToNow(new Date(post.created_at), { addSuffix: false });
   const displayName = post.profile?.display_name || post.profile?.username || "User";
   const username = post.profile?.username || displayName;
@@ -99,18 +136,11 @@ export function PostCard({ post, index, onRefresh }: PostCardProps) {
   return (
     <>
       <article className="border-b border-border">
-        {/* Header — avatar + username + time + more */}
+        {/* Header */}
         <div className="flex items-center gap-2.5 px-3 py-2">
-          <button
-            onClick={() => navigate(`/user/${post.user_id}`)}
-            className="flex-shrink-0"
-          >
+          <button onClick={() => navigate(`/user/${post.user_id}`)} className="flex-shrink-0">
             {avatarUrl ? (
-              <img
-                src={avatarUrl}
-                alt={username}
-                className="w-8 h-8 rounded-full object-cover ring-1 ring-border"
-              />
+              <img src={avatarUrl} alt={username} className="w-8 h-8 rounded-full object-cover ring-1 ring-border" />
             ) : (
               <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-[11px] font-semibold text-foreground ring-1 ring-border">
                 {initials}
@@ -121,49 +151,59 @@ export function PostCard({ post, index, onRefresh }: PostCardProps) {
             <span className="text-[13px] font-semibold text-foreground">{username}</span>
             <span className="text-[12px] text-muted-foreground">• {timeAgo}</span>
           </button>
-          <button className="p-1">
-            <MoreHorizontal className="w-5 h-5 text-foreground" strokeWidth={1.5} />
-          </button>
+          <div className="relative">
+            <button onClick={() => setShowMenu(!showMenu)} className="p-1">
+              <MoreHorizontal className="w-5 h-5 text-foreground" strokeWidth={1.5} />
+            </button>
+            {showMenu && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />
+                <div className="absolute right-0 top-8 z-50 bg-card border border-border rounded-xl shadow-lg min-w-[160px] py-1 overflow-hidden">
+                  {isOwner && (
+                    <>
+                      <button
+                        onClick={() => { setEditing(true); setEditContent(post.content); setShowMenu(false); }}
+                        className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
+                      >
+                        <Pencil className="w-4 h-4" strokeWidth={1.5} />
+                        Edit
+                      </button>
+                      <button
+                        onClick={handleDelete}
+                        disabled={deleting}
+                        className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-destructive hover:bg-muted transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" strokeWidth={1.5} />
+                        {deleting ? "Deleting..." : "Delete"}
+                      </button>
+                    </>
+                  )}
+                  <button
+                    onClick={() => { handleShare(); setShowMenu(false); }}
+                    className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
+                  >
+                    <Send className="w-4 h-4 -rotate-[20deg]" strokeWidth={1.5} />
+                    Share
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
 
-        {/* Media — full width, supports image + video */}
+        {/* Media */}
         {hasMedia && (
-          <div
-            className="w-full aspect-square bg-muted relative select-none"
-            onDoubleClick={handleDoubleTap}
-          >
+          <div className="w-full aspect-square bg-muted relative select-none" onDoubleClick={handleDoubleTap}>
             {isVideo ? (
               <>
-                <video
-                  ref={videoRef}
-                  src={mediaUrl}
-                  className="w-full h-full object-cover"
-                  autoPlay
-                  loop
-                  muted={muted}
-                  playsInline
-                />
-                {/* Mute/Unmute button */}
-                <button
-                  onClick={toggleMute}
-                  className="absolute bottom-3 right-3 w-7 h-7 rounded-full bg-black/60 flex items-center justify-center"
-                >
-                  {muted ? (
-                    <VolumeX className="w-3.5 h-3.5 text-white" strokeWidth={2} />
-                  ) : (
-                    <Volume2 className="w-3.5 h-3.5 text-white" strokeWidth={2} />
-                  )}
+                <video ref={videoRef} src={mediaUrl} className="w-full h-full object-cover" autoPlay loop muted={muted} playsInline />
+                <button onClick={toggleMute} className="absolute bottom-3 right-3 w-7 h-7 rounded-full bg-black/60 flex items-center justify-center">
+                  {muted ? <VolumeX className="w-3.5 h-3.5 text-white" strokeWidth={2} /> : <Volume2 className="w-3.5 h-3.5 text-white" strokeWidth={2} />}
                 </button>
               </>
             ) : (
-              <img
-                src={mediaUrl}
-                alt=""
-                className="w-full h-full object-cover"
-                draggable={false}
-              />
+              <img src={mediaUrl} alt="" className="w-full h-full object-cover" draggable={false} />
             )}
-            {/* Double-tap heart animation */}
             {showHeart && (
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <Heart className="w-20 h-20 text-white fill-white animate-scale-in drop-shadow-lg" />
@@ -176,10 +216,7 @@ export function PostCard({ post, index, onRefresh }: PostCardProps) {
         <div className="flex items-center justify-between px-3 py-2">
           <div className="flex items-center gap-4">
             <button onClick={toggleLike} className="active:scale-110 transition-transform">
-              <Heart
-                className={`w-6 h-6 transition-colors ${liked ? "fill-red-500 text-red-500" : "text-foreground"}`}
-                strokeWidth={1.5}
-              />
+              <Heart className={`w-6 h-6 transition-colors ${liked ? "fill-red-500 text-red-500" : "text-foreground"}`} strokeWidth={1.5} />
             </button>
             <button onClick={() => setShowComments(true)}>
               <MessageCircle className="w-6 h-6 text-foreground" strokeWidth={1.5} />
@@ -189,10 +226,7 @@ export function PostCard({ post, index, onRefresh }: PostCardProps) {
             </button>
           </div>
           <button onClick={toggleSave} className="active:scale-110 transition-transform">
-            <Bookmark
-              className={`w-6 h-6 transition-colors ${saved ? "fill-foreground text-foreground" : "text-foreground"}`}
-              strokeWidth={1.5}
-            />
+            <Bookmark className={`w-6 h-6 transition-colors ${saved ? "fill-foreground text-foreground" : "text-foreground"}`} strokeWidth={1.5} />
           </button>
         </div>
 
@@ -203,16 +237,40 @@ export function PostCard({ post, index, onRefresh }: PostCardProps) {
           </p>
         )}
 
-        {/* Caption */}
+        {/* Caption / Edit mode */}
         <div className="px-3 mt-0.5">
-          <p className="text-[13px] leading-snug text-foreground">
-            <span className="font-semibold mr-1.5">{username}</span>
-            <span>{post.content}</span>
-            {post.book && (
-              <span className="text-muted-foreground"> #{post.book.title.replace(/\s+/g, '')}</span>
-            )}
-          </p>
+          {editing ? (
+            <div className="space-y-2 py-1">
+              <textarea
+                value={editContent}
+                onChange={(e) => setEditContent(e.target.value)}
+                rows={3}
+                className="w-full bg-muted rounded-xl px-3 py-2 text-sm outline-none resize-none text-foreground border border-border focus:border-foreground transition-colors"
+              />
+              <div className="flex gap-2">
+                <button onClick={() => setEditing(false)} className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-muted text-foreground text-xs font-medium">
+                  <X className="w-3 h-3" /> Cancel
+                </button>
+                <button onClick={handleEdit} disabled={!editContent.trim()} className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-foreground text-background text-xs font-medium disabled:opacity-40">
+                  <Check className="w-3 h-3" /> Save
+                </button>
+              </div>
+            </div>
+          ) : (
+            <p className="text-[13px] leading-snug text-foreground">
+              <span className="font-semibold mr-1.5">{username}</span>
+              <span>{post.content}</span>
+              {post.book && (
+                <span className="text-muted-foreground"> #{post.book.title.replace(/\s+/g, '')}</span>
+              )}
+            </p>
+          )}
         </div>
+
+        {/* Edited indicator */}
+        {wasEdited && !editing && (
+          <p className="px-3 mt-0.5 text-[10px] text-muted-foreground italic">Edited</p>
+        )}
 
         {/* View comments */}
         {(post.comments_count || 0) > 0 && (
