@@ -10,7 +10,10 @@ import ReadingNowScreen from "@/pages/ReadingNowScreen";
 import ReaderView from "@/pages/ReaderView";
 import ProfilePage from "@/pages/ProfilePage";
 import SearchScreen from "@/pages/SearchScreen";
+import ReelsScreen from "@/pages/ReelsScreen";
 import AuthPage from "@/pages/AuthPage";
+import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
+import ResetPasswordPage from "@/pages/ResetPasswordPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -51,7 +54,10 @@ const App = () => (
           <div className="max-w-lg mx-auto bg-background min-h-screen relative">
             <Routes>
               <Route path="/auth" element={<AuthRoute><AuthPage /></AuthRoute>} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
               <Route path="/" element={<ProtectedRoute><HomeScreen /></ProtectedRoute>} />
+              <Route path="/reels" element={<ProtectedRoute><ReelsScreen /></ProtectedRoute>} />
               <Route path="/reading" element={<ProtectedRoute><ReadingNowScreen /></ProtectedRoute>} />
               <Route path="/read/:id" element={<ProtectedRoute><ReaderView /></ProtectedRoute>} />
               <Route path="/search" element={<ProtectedRoute><SearchScreen /></ProtectedRoute>} />

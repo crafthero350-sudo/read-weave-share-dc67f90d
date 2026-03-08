@@ -5,8 +5,10 @@ import { motion } from "framer-motion";
 import { Mail, Lock, User, ArrowRight } from "lucide-react";
 import bookappLogo from "@/assets/bookapp-logo.png";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 export default function AuthPage() {
+  const navigate = useNavigate();
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -67,14 +69,12 @@ export default function AuthPage() {
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-sm space-y-8"
       >
-        {/* Logo */}
         <div className="text-center space-y-2">
           <img src={bookappLogo} alt="BookApp" className="w-12 h-12 mx-auto" />
           <h1 className="bookapp-title text-4xl">BookApp</h1>
           <p className="text-sm text-muted-foreground">Your reading community</p>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleEmailAuth} className="space-y-4">
           {isSignUp && (
             <div className="flex items-center gap-3 bg-muted rounded-xl px-4 py-3">
@@ -112,6 +112,16 @@ export default function AuthPage() {
             />
           </div>
 
+          {!isSignUp && (
+            <button
+              type="button"
+              onClick={() => navigate("/forgot-password")}
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Forgot password?
+            </button>
+          )}
+
           <button
             type="submit"
             disabled={loading}
@@ -122,14 +132,12 @@ export default function AuthPage() {
           </button>
         </form>
 
-        {/* Divider */}
         <div className="flex items-center gap-4">
           <div className="flex-1 h-px bg-border" />
           <span className="text-xs text-muted-foreground">or</span>
           <div className="flex-1 h-px bg-border" />
         </div>
 
-        {/* Google */}
         <button
           onClick={handleGoogleSignIn}
           disabled={loading}
@@ -144,7 +152,6 @@ export default function AuthPage() {
           Continue with Google
         </button>
 
-        {/* Toggle */}
         <p className="text-center text-sm text-muted-foreground">
           {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
           <button onClick={() => setIsSignUp(!isSignUp)} className="text-foreground font-medium">
