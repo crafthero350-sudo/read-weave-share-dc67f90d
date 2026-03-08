@@ -94,7 +94,7 @@ export default function HomeScreen() {
             </button>
           </div>
           <div className="hidden md:flex items-center gap-1">
-            <button className="p-2">
+            <button className="p-2" onClick={() => navigate("/messages")}>
               <Send className="w-6 h-6 text-foreground -rotate-[20deg]" strokeWidth={1.5} />
             </button>
           </div>

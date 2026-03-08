@@ -1,4 +1,4 @@
-import { Home, Search, BookOpen, Film, Heart, PlusSquare, User, Menu } from "lucide-react";
+import { Home, Search, BookOpen, Film, Heart, PlusSquare, User, Menu, Send } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState } from "react";
