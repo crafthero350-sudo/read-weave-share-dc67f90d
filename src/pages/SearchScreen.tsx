@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Search as SearchIcon, Plus, Check, BookOpen, ArrowLeft, ChevronRight } from "lucide-react";
+import { Search as SearchIcon, Plus, Check, ArrowLeft, Filter } from "lucide-react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -24,16 +24,27 @@ interface UserBook {
   book: { id: string; title: string; author: string; cover_url: string | null };
 }
 
-const categories = ["All", "Fiction", "Non-Fiction", "Philosophy", "Self-Help", "Science", "History"];
+interface PostResult {
+  id: string;
+  content: string;
+  type: string;
+  image_url: string | null;
+  created_at: string;
+  user_id: string;
+  profile?: { display_name: string | null; username: string | null; avatar_url: string | null };
+}
+
+type SearchFilter = "all" | "books" | "posts" | "reels";
 
 export default function SearchScreen() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
-  const [activeCategory, setActiveCategory] = useState("All");
+  const [activeFilter, setActiveFilter] = useState<SearchFilter>("all");
   const [books, setBooks] = useState<BookData[]>([]);
   const [userBookIds, setUserBookIds] = useState<Set<string>>(new Set());
   const [userBooks, setUserBooks] = useState<UserBook[]>([]);
+  const [postResults, setPostResults] = useState<PostResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedBook, setSelectedBook] = useState<BookData | null>(null);
 
@@ -55,7 +66,33 @@ export default function SearchScreen() {
     }
   }, [user]);
 
+  const searchPosts = useCallback(async (q: string) => {
+    if (!q.trim()) { setPostResults([]); return; }
+    const { data: postsData } = await supabase
+      .from("posts")
+      .select("id, content, type, image_url, created_at, user_id")
+      .ilike("content", `%${q}%`)
+      .order("created_at", { ascending: false })
+      .limit(20);
+
+    if (!postsData?.length) { setPostResults([]); return; }
+
+    const userIds = [...new Set(postsData.map((p) => p.user_id))];
+    const { data: profiles } = await supabase.from("profiles").select("user_id, display_name, username, avatar_url").in("user_id", userIds);
+    const profileMap = new Map(profiles?.map((p) => [p.user_id, p]) || []);
+
+    setPostResults(postsData.map((p) => ({ ...p, profile: profileMap.get(p.user_id) })));
+  }, []);
+
   useEffect(() => { fetchBooks(); fetchUserBooks(); }, [fetchBooks, fetchUserBooks]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (query.trim()) searchPosts(query);
+      else setPostResults([]);
+    }, 300);
+    return () => clearTimeout(timeout);
+  }, [query, searchPosts]);
 
   const addToLibrary = async (bookId: string) => {
     if (!user) return;
@@ -89,13 +126,12 @@ export default function SearchScreen() {
     fetchUserBooks();
   };
 
-  const filtered = query
+  const filteredBooks = query
     ? books.filter((b) => b.title.toLowerCase().includes(query.toLowerCase()) || b.author.toLowerCase().includes(query.toLowerCase()))
     : books;
 
-  const currentlyReading = userBooks.filter((ub) => ub.status === "reading");
-  const wantToRead = userBooks.filter((ub) => ub.status === "want_to_read");
-  const finished = userBooks.filter((ub) => ub.status === "finished");
+  const showBooks = activeFilter === "all" || activeFilter === "books";
+  const showPosts = (activeFilter === "all" || activeFilter === "posts" || activeFilter === "reels") && query.trim();
 
   // Book detail view
   if (selectedBook) {
@@ -180,16 +216,23 @@ export default function SearchScreen() {
     );
   }
 
+  const filters: { value: SearchFilter; label: string }[] = [
+    { value: "all", label: "All" },
+    { value: "books", label: "Books" },
+    { value: "posts", label: "Posts" },
+    { value: "reels", label: "Reels" },
+  ];
+
   return (
     <div className="min-h-screen bg-background pb-20">
       <header className="sticky top-0 z-30 bg-background/90 backdrop-blur-lg border-b border-border">
         <div className="px-4 py-3">
-          <h1 className="font-display text-2xl font-bold mb-3">Search & Library</h1>
+          <h1 className="font-display text-2xl font-bold mb-3">Search</h1>
           <div className="flex items-center gap-2 bg-card border border-border rounded-2xl px-3 py-2.5">
             <SearchIcon className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
             <input
               type="text"
-              placeholder="Search books, authors..."
+              placeholder="Search books, posts, reels..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
@@ -197,138 +240,110 @@ export default function SearchScreen() {
           </div>
         </div>
         <div className="flex gap-2 px-4 pb-3 overflow-x-auto no-scrollbar">
-          {categories.map((cat) => (
+          {filters.map((f) => (
             <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
+              key={f.value}
+              onClick={() => setActiveFilter(f.value)}
               className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
-                activeCategory === cat ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+                activeFilter === f.value ? "bg-primary text-primary-foreground" : "text-muted-foreground"
               }`}
             >
-              {cat}
+              {f.label}
             </button>
           ))}
         </div>
       </header>
 
       <div className="px-4 pt-4 space-y-6">
-        {/* Currently Reading */}
-        {currentlyReading.length > 0 && (
+        {/* Post/Reel search results */}
+        {showPosts && postResults.length > 0 && (
           <section>
-            <h2 className="font-display text-lg font-bold mb-3">📖 Currently Reading</h2>
-            <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
-              {currentlyReading.map((ub, i) => (
-                <motion.button
-                  key={ub.id}
-                  initial={{ opacity: 0, x: 12 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                  onClick={() => {
-                    const book = books.find((b) => b.id === ub.book_id);
-                    if (book) setSelectedBook(book);
-                  }}
-                  className="flex-shrink-0 w-40 bg-card rounded-2xl border border-border overflow-hidden text-left"
-                >
-                  <div className="w-full h-48 bg-muted">
-                    {ub.book.cover_url ? (
-                      <img src={ub.book.cover_url} alt={ub.book.title} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground p-2 text-center">{ub.book.title}</div>
-                    )}
-                  </div>
-                  <div className="p-3">
-                    <p className="text-xs font-semibold truncate">{ub.book.title}</p>
-                    <p className="text-[10px] text-muted-foreground truncate mb-2">{ub.book.author}</p>
-                    <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-                      <div className="h-full rounded-full bg-accent transition-all" style={{ width: `${ub.progress}%` }} />
-                    </div>
-                    <p className="text-[10px] text-muted-foreground mt-1">{ub.progress}% • {100 - ub.progress}% left</p>
-                  </div>
-                </motion.button>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Finished */}
-        {finished.length > 0 && (
-          <section>
-            <h2 className="font-display text-lg font-bold mb-3">✓ Finished</h2>
-            <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
-              {finished.map((ub, i) => (
-                <motion.button
-                  key={ub.id}
-                  initial={{ opacity: 0, x: 12 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                  onClick={() => {
-                    const book = books.find((b) => b.id === ub.book_id);
-                    if (book) setSelectedBook(book);
-                  }}
-                  className="flex-shrink-0 w-28 text-left"
-                >
-                  <div className="w-28 h-40 rounded-2xl overflow-hidden bg-muted">
-                    {ub.book.cover_url ? (
-                      <img src={ub.book.cover_url} alt={ub.book.title} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground p-2 text-center">{ub.book.title}</div>
-                    )}
-                  </div>
-                  <p className="text-xs font-medium truncate mt-1">{ub.book.title}</p>
-                </motion.button>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* All Books / Search Results */}
-        <section>
-          <h2 className="font-display text-lg font-bold mb-3">
-            {query ? "Search Results" : "Explore Books"}
-          </h2>
-          {loading ? (
-            <div className="flex justify-center py-12">
-              <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-            </div>
-          ) : (
-            <div className="grid grid-cols-3 gap-3">
-              {filtered.map((book, i) => (
-                <motion.button
-                  key={book.id}
-                  initial={{ opacity: 0, y: 12 }}
+            <h2 className="font-display text-lg font-bold mb-3">📝 Posts & Reels</h2>
+            <div className="space-y-2">
+              {postResults.map((p) => (
+                <motion.div
+                  key={p.id}
+                  initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.03 }}
-                  onClick={() => setSelectedBook(book)}
-                  className="flex flex-col gap-1.5 text-left"
+                  className="flex items-start gap-3 p-3 bg-card rounded-xl border border-border"
                 >
-                  <div className="relative w-full aspect-[2/3] rounded-2xl overflow-hidden bg-muted">
-                    {book.cover_url ? (
-                      <img src={book.cover_url} alt={book.title} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground p-2 text-center font-display">{book.title}</div>
-                    )}
-                    {/* Library indicator */}
-                    {userBookIds.has(book.id) && (
-                      <div className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
-                        <Check className="w-3 h-3" strokeWidth={2.5} />
-                      </div>
-                    )}
+                  {p.profile?.avatar_url ? (
+                    <img src={p.profile.avatar_url} className="w-9 h-9 rounded-full object-cover flex-shrink-0" alt="" />
+                  ) : (
+                    <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center text-xs font-medium flex-shrink-0">
+                      {(p.profile?.display_name || "?")[0]}
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs font-semibold">{p.profile?.username || "user"}</span>
+                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground bg-muted px-1.5 py-0.5 rounded">{p.type}</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground line-clamp-2 mt-0.5">{p.content}</p>
                   </div>
-                  <div>
-                    <p className="text-xs font-semibold truncate">{book.title}</p>
-                    <p className="text-[10px] text-muted-foreground truncate">{book.author}</p>
-                    {book.price != null && book.price > 0 && (
-                      <p className="text-[11px] font-bold text-accent mt-0.5">${book.price.toFixed(2)}</p>
-                    )}
-                  </div>
-                </motion.button>
+                  {p.image_url && (
+                    <img src={p.image_url} className="w-12 h-12 rounded-lg object-cover flex-shrink-0" alt="" />
+                  )}
+                </motion.div>
               ))}
             </div>
-          )}
-          {!loading && filtered.length === 0 && (
-            <p className="text-center text-muted-foreground text-sm mt-12">No results found</p>
-          )}
-        </section>
+          </section>
+        )}
+
+        {/* Books section */}
+        {showBooks && (
+          <section>
+            <h2 className="font-display text-lg font-bold mb-3">
+              {query ? "Book Results" : "Explore Books"}
+            </h2>
+            {loading ? (
+              <div className="flex justify-center py-12">
+                <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 gap-3">
+                {filteredBooks.map((book, i) => (
+                  <motion.button
+                    key={book.id}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.03 }}
+                    onClick={() => setSelectedBook(book)}
+                    className="flex flex-col gap-1.5 text-left"
+                  >
+                    <div className="relative w-full aspect-[2/3] rounded-2xl overflow-hidden bg-muted">
+                      {book.cover_url ? (
+                        <img src={book.cover_url} alt={book.title} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground p-2 text-center font-display">{book.title}</div>
+                      )}
+                      {userBookIds.has(book.id) && (
+                        <div className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
+                          <Check className="w-3 h-3" strokeWidth={2.5} />
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold truncate">{book.title}</p>
+                      <p className="text-[10px] text-muted-foreground truncate">{book.author}</p>
+                      {book.price != null && book.price > 0 && (
+                        <p className="text-[11px] font-bold text-accent mt-0.5">${book.price.toFixed(2)}</p>
+                      )}
+                    </div>
+                  </motion.button>
+                ))}
+              </div>
+            )}
+            {!loading && filteredBooks.length === 0 && (
+              <p className="text-center text-muted-foreground text-sm mt-12">No books found</p>
+            )}
+          </section>
+        )}
+
+        {/* No results */}
+        {query && showPosts && postResults.length === 0 && showBooks && filteredBooks.length === 0 && (
+          <p className="text-center text-muted-foreground text-sm mt-12">No results found for "{query}"</p>
+        )}
       </div>
     </div>
   );

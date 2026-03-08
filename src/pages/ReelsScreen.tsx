@@ -207,9 +207,13 @@ function ReelCard({ reel, isActive, onComment, onRefresh }: { reel: ReelData; is
         <div className="relative">
           <button
             onClick={() => navigate(`/user/${reel.user_id}`)}
-            className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-[11px] font-semibold text-white border border-white/30"
+            className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-[11px] font-semibold text-white border border-white/30 overflow-hidden"
           >
-            {initials}
+            {reel.profile?.avatar_url ? (
+              <img src={reel.profile.avatar_url} alt="" className="w-full h-full object-cover" />
+            ) : (
+              initials
+            )}
           </button>
           {user && user.id !== reel.user_id && status !== "following" && (
             <button
