@@ -27,6 +27,7 @@ interface ReelData {
 
 export default function ReelsScreen() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [reels, setReels] = useState<ReelData[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
