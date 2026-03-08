@@ -88,7 +88,7 @@ export function AIChatBubble() {
                 <img src={aiCharacter} alt="Lisa" className="w-full h-full object-cover" />
               </div>
               <div className="flex-1">
-                <p className="text-sm font-semibold font-display">Lisa</p>
+                <p className="text-sm font-semibold italic" style={{ fontFamily: "'Merriweather', serif" }}>Lisa</p>
                 <p className="text-[11px] text-muted-foreground">Your AI Book Companion</p>
               </div>
               <button onClick={() => setOpen(false)} className="p-1 text-muted-foreground">
