@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { StoriesRow } from "@/components/StoriesRow";
 import { PostCard, type PostData } from "@/components/PostCard";
 import { CreatePostSheet } from "@/components/CreatePostSheet";
+import { StoryCreator } from "@/components/StoryCreator";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
@@ -14,6 +15,7 @@ export default function HomeScreen() {
   const [posts, setPosts] = useState<PostData[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
+  const [showStoryCreator, setShowStoryCreator] = useState(false);
   const unreadCount = useUnreadMessages();
 
   const fetchPosts = useCallback(async () => {
@@ -85,7 +87,7 @@ export default function HomeScreen() {
             BookApp
           </h1>
           <div className="flex items-center gap-1 md:hidden">
-            <button onClick={() => setShowCreate(true)} className="p-2">
+            <button onClick={() => setShowStoryCreator(true)} className="p-2">
               <PlusSquare className="w-6 h-6 text-foreground" strokeWidth={1.5} />
             </button>
             <button className="p-2" onClick={() => navigate("/notifications")}>
@@ -141,6 +143,7 @@ export default function HomeScreen() {
       </div>
 
       <CreatePostSheet open={showCreate} onClose={() => setShowCreate(false)} onCreated={fetchPosts} />
+      <StoryCreator open={showStoryCreator} onClose={() => setShowStoryCreator(false)} onCreated={fetchPosts} />
     </div>
   );
 }
