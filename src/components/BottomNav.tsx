@@ -17,7 +17,7 @@ export function BottomNav() {
   if (hiddenPaths.some((p) => location.pathname.startsWith(p)) || location.pathname === "/reels" || location.pathname.startsWith("/settings") || location.pathname.startsWith("/user/")) return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-background border-t border-border z-40">
+    <nav className="fixed bottom-0 left-0 right-0 bg-background border-t border-border z-40 md:hidden">
       <div className="flex items-center justify-around py-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))] max-w-lg mx-auto">
         {navItems.map((item) => {
           const active = location.pathname === item.path;
