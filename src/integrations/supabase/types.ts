@@ -330,8 +330,11 @@ export type Database = {
           bio: string | null
           created_at: string
           display_name: string | null
+          gender: string | null
           id: string
           is_private: boolean | null
+          links: string | null
+          pronouns: string | null
           reading_personality: string | null
           reading_streak: number | null
           updated_at: string
@@ -343,8 +346,11 @@ export type Database = {
           bio?: string | null
           created_at?: string
           display_name?: string | null
+          gender?: string | null
           id?: string
           is_private?: boolean | null
+          links?: string | null
+          pronouns?: string | null
           reading_personality?: string | null
           reading_streak?: number | null
           updated_at?: string
@@ -356,8 +362,11 @@ export type Database = {
           bio?: string | null
           created_at?: string
           display_name?: string | null
+          gender?: string | null
           id?: string
           is_private?: boolean | null
+          links?: string | null
+          pronouns?: string | null
           reading_personality?: string | null
           reading_streak?: number | null
           updated_at?: string
