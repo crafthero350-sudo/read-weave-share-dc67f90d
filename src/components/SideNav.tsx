@@ -3,7 +3,14 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState } from "react";
 import { CreatePostSheet } from "@/components/CreatePostSheet";
+import { StoryCreator } from "@/components/StoryCreator";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const navItems = [
   { path: "/", icon: Home, label: "Home" },
