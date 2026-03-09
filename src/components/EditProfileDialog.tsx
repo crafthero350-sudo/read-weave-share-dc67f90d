@@ -12,13 +12,13 @@ interface EditProfileDialogProps {
 
 export function EditProfileDialog({ open, onClose }: EditProfileDialogProps) {
   const { profile, user, refreshProfile } = useAuth();
-  const [displayName, setDisplayName] = useState(profile?.display_name || "");
-  const [username, setUsername] = useState(profile?.username || "");
-  const [bio, setBio] = useState(profile?.bio || "");
+  const [displayName, setDisplayName] = useState("");
+  const [username, setUsername] = useState("");
+  const [bio, setBio] = useState("");
   const [pronouns, setPronouns] = useState("");
   const [links, setLinks] = useState("");
   const [gender, setGender] = useState("");
-  const [avatarPreview, setAvatarPreview] = useState(profile?.avatar_url || "");
+  const [avatarPreview, setAvatarPreview] = useState("");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -30,8 +30,24 @@ export function EditProfileDialog({ open, onClose }: EditProfileDialogProps) {
       setBio(profile.bio || "");
       setAvatarPreview(profile.avatar_url || "");
       setAvatarFile(null);
+      // Load extra fields from DB
+      loadExtraFields();
     }
   }, [open, profile]);
+
+  const loadExtraFields = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from("profiles")
+      .select("pronouns, links, gender" as any)
+      .eq("user_id", user.id)
+      .single();
+    if (data) {
+      setPronouns((data as any).pronouns || "");
+      setLinks((data as any).links || "");
+      setGender((data as any).gender || "");
+    }
+  };
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -68,7 +84,10 @@ export function EditProfileDialog({ open, onClose }: EditProfileDialogProps) {
         username: username.trim() || null,
         bio: bio.trim() || null,
         avatar_url: avatarUrl || null,
-      })
+        pronouns: pronouns.trim() || null,
+        links: links.trim() || null,
+        gender: gender || null,
+      } as any)
       .eq("user_id", user.id);
 
     if (error) {
@@ -119,27 +138,25 @@ export function EditProfileDialog({ open, onClose }: EditProfileDialogProps) {
 
             {/* Avatar Section */}
             <div className="flex flex-col items-center py-5">
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={() => fileRef.current?.click()}
-                  className="relative group"
-                >
-                  {avatarPreview ? (
-                    <img
-                      src={avatarPreview}
-                      alt="Avatar"
-                      className="w-20 h-20 rounded-full object-cover border border-border"
-                    />
-                  ) : (
-                    <div className="w-20 h-20 rounded-full bg-secondary flex items-center justify-center text-lg font-semibold text-muted-foreground">
-                      {initials}
-                    </div>
-                  )}
-                  <div className="absolute inset-0 bg-black/30 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Camera className="w-5 h-5 text-white" />
+              <button
+                onClick={() => fileRef.current?.click()}
+                className="relative group"
+              >
+                {avatarPreview ? (
+                  <img
+                    src={avatarPreview}
+                    alt="Avatar"
+                    className="w-20 h-20 rounded-full object-cover border border-border"
+                  />
+                ) : (
+                  <div className="w-20 h-20 rounded-full bg-secondary flex items-center justify-center text-lg font-semibold text-muted-foreground">
+                    {initials}
                   </div>
-                </button>
-              </div>
+                )}
+                <div className="absolute inset-0 bg-black/30 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Camera className="w-5 h-5 text-white" />
+                </div>
+              </button>
               <button
                 onClick={() => fileRef.current?.click()}
                 className="text-xs font-semibold text-primary mt-2"
@@ -155,7 +172,7 @@ export function EditProfileDialog({ open, onClose }: EditProfileDialogProps) {
               />
             </div>
 
-            {/* Editable Fields */}
+            {/* Fields */}
             <div className="border-t border-border">
               {/* Name */}
               <div className="flex items-center px-4 py-3 border-b border-border">
@@ -224,7 +241,7 @@ export function EditProfileDialog({ open, onClose }: EditProfileDialogProps) {
                 />
               </div>
 
-              {/* Banners — static row with chevron */}
+              {/* Banners */}
               <div className="flex items-center px-4 py-3 border-b border-border">
                 <span className="w-24 text-sm font-medium text-foreground shrink-0">Banners</span>
                 <div className="flex-1 flex items-center justify-end">
@@ -267,7 +284,6 @@ export function EditProfileDialog({ open, onClose }: EditProfileDialogProps) {
               </button>
             </div>
 
-            {/* Bottom padding */}
             <div className="h-8" />
           </motion.div>
         </motion.div>
