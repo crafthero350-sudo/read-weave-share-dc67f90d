@@ -55,16 +55,42 @@ export function SideNav() {
             const active = item.path !== "create" && location.pathname === item.path;
             const isCreate = item.path === "create";
 
+            if (isCreate) {
+              return (
+                <DropdownMenu key={item.label}>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      className="flex items-center gap-4 px-3 py-3 rounded-lg transition-colors group hover:bg-accent w-full"
+                    >
+                      <div className="relative flex-shrink-0">
+                        <item.icon
+                          className="w-[26px] h-[26px] text-foreground/70 group-hover:text-foreground transition-colors"
+                          strokeWidth={1.5}
+                        />
+                      </div>
+                      <span className="hidden xl:block text-[15px] text-foreground/70 group-hover:text-foreground transition-colors">
+                        {item.label}
+                      </span>
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent side="right" align="start" className="w-48">
+                    <DropdownMenuItem onClick={() => setShowCreate(true)} className="cursor-pointer">
+                      <PlusSquare className="w-4 h-4 mr-2" />
+                      إنشاء بوست
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setShowStoryCreator(true)} className="cursor-pointer">
+                      <Film className="w-4 h-4 mr-2" />
+                      إنشاء ريلز
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              );
+            }
+
             return (
               <button
                 key={item.label}
-                onClick={() => {
-                  if (isCreate) {
-                    setShowCreate(true);
-                  } else {
-                    navigate(item.path);
-                  }
-                }}
+                onClick={() => navigate(item.path)}
                 className={`flex items-center gap-4 px-3 py-3 rounded-lg transition-colors group hover:bg-accent ${
                   active ? "font-semibold" : ""
                 }`}
