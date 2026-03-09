@@ -134,6 +134,7 @@ export function SideNav() {
       </nav>
 
       <CreatePostSheet open={showCreate} onClose={() => setShowCreate(false)} onCreated={() => setShowCreate(false)} />
+      <StoryCreator open={showStoryCreator} onClose={() => setShowStoryCreator(false)} onCreated={() => setShowStoryCreator(false)} />
     </>
   );
 }
