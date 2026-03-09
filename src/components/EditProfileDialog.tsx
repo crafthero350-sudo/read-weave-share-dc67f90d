@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { X, Camera } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,11 +13,22 @@ interface EditProfileDialogProps {
 export function EditProfileDialog({ open, onClose }: EditProfileDialogProps) {
   const { profile, user, refreshProfile } = useAuth();
   const [displayName, setDisplayName] = useState(profile?.display_name || "");
+  const [username, setUsername] = useState(profile?.username || "");
   const [bio, setBio] = useState(profile?.bio || "");
   const [avatarPreview, setAvatarPreview] = useState(profile?.avatar_url || "");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (open && profile) {
+      setDisplayName(profile.display_name || "");
+      setUsername(profile.username || "");
+      setBio(profile.bio || "");
+      setAvatarPreview(profile.avatar_url || "");
+      setAvatarFile(null);
+    }
+  }, [open, profile]);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -32,7 +43,6 @@ export function EditProfileDialog({ open, onClose }: EditProfileDialogProps) {
 
     let avatarUrl = profile?.avatar_url || "";
 
-    // Upload new avatar if changed
     if (avatarFile) {
       const ext = avatarFile.name.split(".").pop();
       const path = `${user.id}/avatar-${Date.now()}.${ext}`;
@@ -52,6 +62,7 @@ export function EditProfileDialog({ open, onClose }: EditProfileDialogProps) {
       .from("profiles")
       .update({
         display_name: displayName.trim() || null,
+        username: username.trim() || null,
         bio: bio.trim() || null,
         avatar_url: avatarUrl || null,
       })
@@ -67,6 +78,9 @@ export function EditProfileDialog({ open, onClose }: EditProfileDialogProps) {
     setSaving(false);
   };
 
+  const initials = (displayName || username || "?")
+    .split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
+
   return (
     <AnimatePresence>
       {open && (
@@ -74,34 +88,34 @@ export function EditProfileDialog({ open, onClose }: EditProfileDialogProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[60] bg-black/50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-[60] bg-black/50 flex items-end sm:items-center justify-center"
           onClick={onClose}
         >
           <motion.div
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.95, opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            initial={{ y: "100%", opacity: 0.8 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: "100%", opacity: 0 }}
+            transition={{ type: "spring", damping: 28, stiffness: 300 }}
             onClick={(e) => e.stopPropagation()}
-            className="bg-background rounded-2xl w-full max-w-sm overflow-hidden"
+            className="bg-background rounded-t-2xl sm:rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-border sticky top-0 bg-background z-10">
               <button onClick={onClose} className="p-1">
                 <X className="w-5 h-5 text-foreground" />
               </button>
-              <h2 className="text-sm font-semibold text-foreground">Edit Profile</h2>
+              <h2 className="text-sm font-semibold text-foreground">Edit profile</h2>
               <button
                 onClick={handleSave}
                 disabled={saving}
                 className="text-sm font-semibold text-primary disabled:opacity-50"
               >
-                {saving ? "Saving..." : "Done"}
+                {saving ? "..." : "Done"}
               </button>
             </div>
 
-            {/* Avatar */}
-            <div className="flex flex-col items-center py-6">
+            {/* Avatar Section */}
+            <div className="flex flex-col items-center py-5">
               <button
                 onClick={() => fileRef.current?.click()}
                 className="relative group"
@@ -110,22 +124,22 @@ export function EditProfileDialog({ open, onClose }: EditProfileDialogProps) {
                   <img
                     src={avatarPreview}
                     alt="Avatar"
-                    className="w-24 h-24 rounded-full object-cover"
+                    className="w-20 h-20 rounded-full object-cover border border-border"
                   />
                 ) : (
-                  <div className="w-24 h-24 rounded-full bg-secondary flex items-center justify-center">
-                    <Camera className="w-8 h-8 text-muted-foreground" />
+                  <div className="w-20 h-20 rounded-full bg-secondary flex items-center justify-center text-lg font-semibold text-muted-foreground">
+                    {initials}
                   </div>
                 )}
                 <div className="absolute inset-0 bg-black/30 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Camera className="w-6 h-6 text-white" />
+                  <Camera className="w-5 h-5 text-white" />
                 </div>
               </button>
               <button
                 onClick={() => fileRef.current?.click()}
                 className="text-xs font-semibold text-primary mt-2"
               >
-                Change Photo
+                Edit picture or avatar
               </button>
               <input
                 ref={fileRef}
@@ -136,33 +150,59 @@ export function EditProfileDialog({ open, onClose }: EditProfileDialogProps) {
               />
             </div>
 
-            {/* Fields */}
-            <div className="px-4 pb-6 space-y-4">
-              <div>
-                <label className="text-xs text-muted-foreground font-medium">Name</label>
+            {/* Fields — Instagram style rows */}
+            <div className="border-t border-border">
+              {/* Name */}
+              <div className="flex items-center px-4 py-3 border-b border-border">
+                <span className="w-24 text-sm font-medium text-foreground shrink-0">Name</span>
                 <input
                   type="text"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder="Your name"
-                  className="w-full mt-1 px-3 py-2.5 rounded-lg bg-secondary text-sm text-foreground placeholder:text-muted-foreground outline-none border border-border focus:border-foreground/30 transition-colors"
+                  placeholder="Name"
+                  maxLength={50}
+                  className="flex-1 text-sm text-foreground placeholder:text-muted-foreground bg-transparent outline-none"
                 />
               </div>
-              <div>
-                <label className="text-xs text-muted-foreground font-medium">Bio</label>
-                <textarea
-                  value={bio}
-                  onChange={(e) => setBio(e.target.value)}
-                  placeholder="Write something about yourself..."
-                  rows={3}
-                  maxLength={150}
-                  className="w-full mt-1 px-3 py-2.5 rounded-lg bg-secondary text-sm text-foreground placeholder:text-muted-foreground outline-none border border-border focus:border-foreground/30 transition-colors resize-none"
+
+              {/* Username */}
+              <div className="flex items-center px-4 py-3 border-b border-border">
+                <span className="w-24 text-sm font-medium text-foreground shrink-0">Username</span>
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9._]/g, ""))}
+                  placeholder="Username"
+                  maxLength={30}
+                  className="flex-1 text-sm text-foreground placeholder:text-muted-foreground bg-transparent outline-none"
                 />
-                <p className="text-[10px] text-muted-foreground text-right mt-0.5">
-                  {bio.length}/150
-                </p>
+              </div>
+
+              {/* Bio */}
+              <div className="flex items-start px-4 py-3 border-b border-border">
+                <span className="w-24 text-sm font-medium text-foreground shrink-0 pt-0.5">Bio</span>
+                <div className="flex-1">
+                  <textarea
+                    value={bio}
+                    onChange={(e) => setBio(e.target.value)}
+                    placeholder="Bio"
+                    rows={2}
+                    maxLength={150}
+                    className="w-full text-sm text-foreground placeholder:text-muted-foreground bg-transparent outline-none resize-none"
+                  />
+                  <p className="text-[10px] text-muted-foreground text-right">{bio.length}/150</p>
+                </div>
+              </div>
+
+              {/* Gender — static display */}
+              <div className="flex items-center px-4 py-3 border-b border-border">
+                <span className="w-24 text-sm font-medium text-foreground shrink-0">Gender</span>
+                <span className="flex-1 text-sm text-muted-foreground">Gender</span>
               </div>
             </div>
+
+            {/* Bottom padding for mobile */}
+            <div className="h-6" />
           </motion.div>
         </motion.div>
       )}
