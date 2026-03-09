@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { X, Camera } from "lucide-react";
+import { X, Camera, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -15,6 +15,9 @@ export function EditProfileDialog({ open, onClose }: EditProfileDialogProps) {
   const [displayName, setDisplayName] = useState(profile?.display_name || "");
   const [username, setUsername] = useState(profile?.username || "");
   const [bio, setBio] = useState(profile?.bio || "");
+  const [pronouns, setPronouns] = useState("");
+  const [links, setLinks] = useState("");
+  const [gender, setGender] = useState("");
   const [avatarPreview, setAvatarPreview] = useState(profile?.avatar_url || "");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
@@ -116,25 +119,27 @@ export function EditProfileDialog({ open, onClose }: EditProfileDialogProps) {
 
             {/* Avatar Section */}
             <div className="flex flex-col items-center py-5">
-              <button
-                onClick={() => fileRef.current?.click()}
-                className="relative group"
-              >
-                {avatarPreview ? (
-                  <img
-                    src={avatarPreview}
-                    alt="Avatar"
-                    className="w-20 h-20 rounded-full object-cover border border-border"
-                  />
-                ) : (
-                  <div className="w-20 h-20 rounded-full bg-secondary flex items-center justify-center text-lg font-semibold text-muted-foreground">
-                    {initials}
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => fileRef.current?.click()}
+                  className="relative group"
+                >
+                  {avatarPreview ? (
+                    <img
+                      src={avatarPreview}
+                      alt="Avatar"
+                      className="w-20 h-20 rounded-full object-cover border border-border"
+                    />
+                  ) : (
+                    <div className="w-20 h-20 rounded-full bg-secondary flex items-center justify-center text-lg font-semibold text-muted-foreground">
+                      {initials}
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-black/30 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Camera className="w-5 h-5 text-white" />
                   </div>
-                )}
-                <div className="absolute inset-0 bg-black/30 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Camera className="w-5 h-5 text-white" />
-                </div>
-              </button>
+                </button>
+              </div>
               <button
                 onClick={() => fileRef.current?.click()}
                 className="text-xs font-semibold text-primary mt-2"
@@ -150,7 +155,7 @@ export function EditProfileDialog({ open, onClose }: EditProfileDialogProps) {
               />
             </div>
 
-            {/* Fields — Instagram style rows */}
+            {/* Editable Fields */}
             <div className="border-t border-border">
               {/* Name */}
               <div className="flex items-center px-4 py-3 border-b border-border">
@@ -178,6 +183,19 @@ export function EditProfileDialog({ open, onClose }: EditProfileDialogProps) {
                 />
               </div>
 
+              {/* Pronouns */}
+              <div className="flex items-center px-4 py-3 border-b border-border">
+                <span className="w-24 text-sm font-medium text-foreground shrink-0">Pronouns</span>
+                <input
+                  type="text"
+                  value={pronouns}
+                  onChange={(e) => setPronouns(e.target.value)}
+                  placeholder="Pronouns"
+                  maxLength={30}
+                  className="flex-1 text-sm text-foreground placeholder:text-muted-foreground bg-transparent outline-none"
+                />
+              </div>
+
               {/* Bio */}
               <div className="flex items-start px-4 py-3 border-b border-border">
                 <span className="w-24 text-sm font-medium text-foreground shrink-0 pt-0.5">Bio</span>
@@ -194,15 +212,63 @@ export function EditProfileDialog({ open, onClose }: EditProfileDialogProps) {
                 </div>
               </div>
 
-              {/* Gender — static display */}
+              {/* Links */}
+              <div className="flex items-center px-4 py-3 border-b border-border">
+                <span className="w-24 text-sm font-medium text-foreground shrink-0">Links</span>
+                <input
+                  type="text"
+                  value={links}
+                  onChange={(e) => setLinks(e.target.value)}
+                  placeholder="Add links"
+                  className="flex-1 text-sm text-foreground placeholder:text-muted-foreground bg-transparent outline-none"
+                />
+              </div>
+
+              {/* Banners — static row with chevron */}
+              <div className="flex items-center px-4 py-3 border-b border-border">
+                <span className="w-24 text-sm font-medium text-foreground shrink-0">Banners</span>
+                <div className="flex-1 flex items-center justify-end">
+                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                </div>
+              </div>
+
+              {/* Music */}
+              <div className="flex items-center px-4 py-3 border-b border-border">
+                <span className="w-24 text-sm font-medium text-foreground shrink-0">Music</span>
+                <span className="flex-1 text-sm text-muted-foreground">Add music to your profile</span>
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+              </div>
+
+              {/* Gender */}
               <div className="flex items-center px-4 py-3 border-b border-border">
                 <span className="w-24 text-sm font-medium text-foreground shrink-0">Gender</span>
-                <span className="flex-1 text-sm text-muted-foreground">Gender</span>
+                <select
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value)}
+                  className="flex-1 text-sm text-foreground bg-transparent outline-none appearance-none cursor-pointer"
+                >
+                  <option value="" className="bg-background">Gender</option>
+                  <option value="male" className="bg-background">Male</option>
+                  <option value="female" className="bg-background">Female</option>
+                  <option value="other" className="bg-background">Other</option>
+                  <option value="prefer_not" className="bg-background">Prefer not to say</option>
+                </select>
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
               </div>
             </div>
 
-            {/* Bottom padding for mobile */}
-            <div className="h-6" />
+            {/* Action Links */}
+            <div className="border-t border-border mt-2">
+              <button className="w-full text-left px-4 py-3 border-b border-border">
+                <span className="text-sm font-medium text-primary">Switch to professional account</span>
+              </button>
+              <button className="w-full text-left px-4 py-3 border-b border-border">
+                <span className="text-sm font-medium text-primary">Personal information settings</span>
+              </button>
+            </div>
+
+            {/* Bottom padding */}
+            <div className="h-8" />
           </motion.div>
         </motion.div>
       )}
