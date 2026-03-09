@@ -132,7 +132,7 @@ export default function HomeScreen() {
               onClick={() => setShowStoryCreator(true)}
               className="mt-4 px-6 py-2 bg-foreground text-background rounded-lg text-sm font-medium"
             >
-              Create Post
+              Create
             </button>
           </div>
         ) : (
