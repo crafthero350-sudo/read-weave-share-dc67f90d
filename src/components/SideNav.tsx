@@ -28,6 +28,7 @@ export function SideNav() {
   const navigate = useNavigate();
   const { profile } = useAuth();
   const [showCreate, setShowCreate] = useState(false);
+  const [showStoryCreator, setShowStoryCreator] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const unreadCount = useUnreadMessages();
 
