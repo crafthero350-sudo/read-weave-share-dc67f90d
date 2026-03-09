@@ -119,7 +119,7 @@ export default function ReelsScreen() {
             <div className="text-center">
               <p className="text-white/50 text-sm mb-3">No reels yet</p>
               <button onClick={() => setShowStory(true)} className="px-5 py-2.5 bg-white text-black rounded-lg text-sm font-medium">
-                Create First Reel
+                Create
               </button>
             </div>
           </div>
