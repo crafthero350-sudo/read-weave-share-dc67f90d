@@ -205,3 +205,65 @@ function ReadingCard({
     </motion.div>
   );
 }
+
+function ReadingGoalsCard({ currentBook, onNavigate }: { currentBook?: UserBook; onNavigate: (path: string) => void }) {
+  // Mock reading time — in production this would come from reading_sessions
+  const readMinutes = 4;
+  const readSeconds = 24;
+  const goalMinutes = 15;
+  const progress = Math.min(((readMinutes + readSeconds / 60) / goalMinutes) * 100, 100);
+  const circumference = 2 * Math.PI * 54;
+  const strokeDashoffset = circumference - (progress / 100) * circumference;
+
+  return (
+    <div className="rounded-2xl bg-card border border-border shadow-sm p-6 text-center space-y-4">
+      <div>
+        <h2 className="text-lg font-semibold tracking-tight">Reading Goals</h2>
+        <p className="text-xs text-muted-foreground mt-0.5">
+          Read every day, see your stats soar, and finish more books.
+        </p>
+      </div>
+
+      {/* Circular Progress */}
+      <div className="flex justify-center">
+        <div className="relative w-36 h-36">
+          <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="54" fill="none" stroke="hsl(var(--muted))" strokeWidth="6" />
+            <circle
+              cx="60" cy="60" r="54" fill="none"
+              stroke="hsl(var(--primary))"
+              strokeWidth="6"
+              strokeLinecap="round"
+              strokeDasharray={circumference}
+              strokeDashoffset={strokeDashoffset}
+              className="transition-all duration-700"
+            />
+          </svg>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <span className="text-[10px] text-muted-foreground font-medium">Today's Reading</span>
+            <span className="text-3xl font-bold tracking-tight leading-none mt-1">
+              {readMinutes}:{readSeconds.toString().padStart(2, "0")}
+            </span>
+            <span className="text-[10px] text-muted-foreground mt-1">
+              of your {goalMinutes}-minute goal &rsaquo;
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Keep Reading Button */}
+      <button
+        onClick={() => {
+          if (currentBook) onNavigate(`/read/${currentBook.book_id}`);
+          else onNavigate("/search");
+        }}
+        className="w-full max-w-[240px] mx-auto flex flex-col items-center py-3 px-6 rounded-xl bg-foreground text-background"
+      >
+        <span className="text-sm font-semibold">Keep Reading</span>
+        {currentBook && (
+          <span className="text-[11px] opacity-70 mt-0.5">{currentBook.book.title}</span>
+        )}
+      </button>
+    </div>
+  );
+}
