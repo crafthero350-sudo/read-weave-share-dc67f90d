@@ -270,7 +270,8 @@ export default function SearchScreen() {
           content: epubData?.text_content || null,
           description: ("subjects" in book ? book.subjects : epubData?.subjects || []).join(", ") || null,
           price: 0,
-        }).select("id").single();
+          created_by: user.id,
+        } as any).select("id").single();
         if (error) throw error;
         bookId = newBook.id;
       }
