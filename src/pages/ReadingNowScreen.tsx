@@ -95,6 +95,8 @@ export default function ReadingNowScreen() {
       </header>
 
       <div className="px-4 pt-6 space-y-8">
+        {/* Reading Goals Card */}
+        <ReadingGoalsCard currentBook={current[0]} onNavigate={navigate} />
         {userBooks.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-muted-foreground text-sm mb-3">Your library is empty</p>
