@@ -375,6 +375,120 @@ export type Database = {
         }
         Relationships: []
       }
+      reader_bookmarks: {
+        Row: {
+          book_id: string
+          chapter_title: string | null
+          created_at: string | null
+          id: string
+          page_number: number
+          user_id: string
+        }
+        Insert: {
+          book_id: string
+          chapter_title?: string | null
+          created_at?: string | null
+          id?: string
+          page_number: number
+          user_id: string
+        }
+        Update: {
+          book_id?: string
+          chapter_title?: string | null
+          created_at?: string | null
+          id?: string
+          page_number?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reader_bookmarks_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reader_highlights: {
+        Row: {
+          book_id: string
+          color: string | null
+          created_at: string | null
+          highlighted_text: string
+          id: string
+          note: string | null
+          page_number: number
+          user_id: string
+        }
+        Insert: {
+          book_id: string
+          color?: string | null
+          created_at?: string | null
+          highlighted_text: string
+          id?: string
+          note?: string | null
+          page_number: number
+          user_id: string
+        }
+        Update: {
+          book_id?: string
+          color?: string | null
+          created_at?: string | null
+          highlighted_text?: string
+          id?: string
+          note?: string | null
+          page_number?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reader_highlights_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reading_sessions: {
+        Row: {
+          book_id: string
+          duration_seconds: number | null
+          ended_at: string | null
+          id: string
+          pages_read: number | null
+          started_at: string | null
+          user_id: string
+        }
+        Insert: {
+          book_id: string
+          duration_seconds?: number | null
+          ended_at?: string | null
+          id?: string
+          pages_read?: number | null
+          started_at?: string | null
+          user_id: string
+        }
+        Update: {
+          book_id?: string
+          duration_seconds?: number | null
+          ended_at?: string | null
+          id?: string
+          pages_read?: number | null
+          started_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reading_sessions_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       saved_characters: {
         Row: {
           book_author: string
