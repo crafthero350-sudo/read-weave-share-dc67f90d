@@ -163,9 +163,40 @@ export default function SearchScreen() {
     setAiLoading(true);
     setAiResults("");
     try {
-      const resp = await supabase.functions.invoke("ai-recommend", { body: { query: q, type: "search" } });
+      const resp = await supabase.functions.invoke("ai-recommend", { body: { mood: q } });
       if (resp.error) throw resp.error;
-      setAiResults(resp.data?.recommendation || resp.data?.text || "No recommendations found.");
+
+      // The ai-recommend function streams SSE — read & parse the stream
+      if (resp.data instanceof ReadableStream) {
+        const reader = resp.data.getReader();
+        const decoder = new TextDecoder();
+        let fullText = "";
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const chunk = decoder.decode(value, { stream: true });
+          const lines = chunk.split("\n");
+          for (const line of lines) {
+            if (line.startsWith("data: ")) {
+              const jsonStr = line.slice(6).trim();
+              if (jsonStr === "[DONE]") continue;
+              try {
+                const parsed = JSON.parse(jsonStr);
+                const content = parsed.choices?.[0]?.delta?.content || "";
+                fullText += content;
+                setAiResults(fullText);
+              } catch { /* skip non-json lines */ }
+            }
+          }
+        }
+        if (!fullText) setAiResults("No recommendations found.");
+      } else if (typeof resp.data === "string") {
+        setAiResults(resp.data || "No recommendations found.");
+      } else if (resp.data && typeof resp.data === "object") {
+        setAiResults(resp.data.recommendation || resp.data.text || JSON.stringify(resp.data));
+      } else {
+        setAiResults("No recommendations found.");
+      }
     } catch { setAiResults("Failed to get AI recommendations."); }
     setAiLoading(false);
   }, []);
