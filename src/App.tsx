@@ -35,6 +35,8 @@ function AuthenticatedAIChatBubble() {
   return <AIChatBubble />;
 }
 
+const queryClient = new QueryClient();
+
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, profile, loading } = useAuth();
