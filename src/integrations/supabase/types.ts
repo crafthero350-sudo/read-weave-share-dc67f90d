@@ -73,6 +73,7 @@ export type Database = {
           content: string[] | null
           cover_url: string | null
           created_at: string
+          created_by: string | null
           description: string | null
           id: string
           price: number | null
@@ -83,6 +84,7 @@ export type Database = {
           content?: string[] | null
           cover_url?: string | null
           created_at?: string
+          created_by?: string | null
           description?: string | null
           id?: string
           price?: number | null
@@ -93,6 +95,7 @@ export type Database = {
           content?: string[] | null
           cover_url?: string | null
           created_at?: string
+          created_by?: string | null
           description?: string | null
           id?: string
           price?: number | null
