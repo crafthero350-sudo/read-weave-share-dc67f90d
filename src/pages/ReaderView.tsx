@@ -49,6 +49,7 @@ export default function ReaderView() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [bookmarksOpen, setBookmarksOpen] = useState(false);
   const [tocOpen, setTocOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [bmTab, setBmTab] = useState<"bookmarks" | "highlights">("bookmarks");
 
   // Data
