@@ -103,7 +103,7 @@ export function StoriesRow() {
           content: s.content || "",
           imageUrl: s.image_url,
           backgroundColor: s.background_color || "#1a1a2e",
-          stickers: Array.isArray(s.sticker_data) ? s.sticker_data : [],
+          stickers: Array.isArray(s.sticker_data) ? (s.sticker_data as any[]).map(String) : [],
           createdAt: s.created_at || new Date().toISOString(),
         })),
       });
