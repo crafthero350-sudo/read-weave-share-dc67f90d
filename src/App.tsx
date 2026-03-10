@@ -26,6 +26,7 @@ import SetupProfilePage from "@/pages/SetupProfilePage";
 import NotificationsPage from "@/pages/NotificationsPage";
 import MessagesPage from "@/pages/MessagesPage";
 import ChatPage from "@/pages/ChatPage";
+import FollowListPage from "@/pages/FollowListPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
