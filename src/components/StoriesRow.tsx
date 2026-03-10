@@ -10,26 +10,20 @@ interface StoryGroup {
   username: string;
   displayName: string;
   avatarUrl: string | null;
-  stories: DBStory[];
-}
-
-interface DBStory {
-  id: string;
-  user_id: string;
-  content: string | null;
-  image_url: string | null;
-  background_color: string;
-  text_style: string;
-  sticker_data: any;
-  privacy: string;
-  created_at: string;
-  expires_at: string;
+  stories: {
+    id: string;
+    content: string;
+    imageUrl: string | null;
+    backgroundColor: string;
+    stickers: string[];
+    createdAt: string;
+  }[];
 }
 
 export function StoriesRow() {
   const { user } = useAuth();
   const [groups, setGroups] = useState<StoryGroup[]>([]);
-  const [activeGroup, setActiveGroup] = useState<number | null>(null);
+  const [activeGroupIndex, setActiveGroupIndex] = useState<number | null>(null);
   const [showCreator, setShowCreator] = useState(false);
 
   const fetchStories = useCallback(async () => {
@@ -68,23 +62,31 @@ export function StoriesRow() {
       return false;
     });
 
-    const groupMap = new Map<string, DBStory[]>();
+    const groupMap = new Map<string, typeof filtered>();
     filtered.forEach((s) => {
       const existing = groupMap.get(s.user_id) || [];
-      existing.push(s as DBStory);
+      existing.push(s);
       groupMap.set(s.user_id, existing);
     });
 
     const storyGroups: StoryGroup[] = [];
 
+    // Own stories first
     if (user && groupMap.has(user.id)) {
       const p = profileMap.get(user.id);
       storyGroups.push({
         userId: user.id,
         username: p?.username || "you",
         displayName: p?.display_name || "Your Story",
-        avatarUrl: p?.avatar_url,
-        stories: groupMap.get(user.id)!,
+        avatarUrl: p?.avatar_url || null,
+        stories: groupMap.get(user.id)!.map(s => ({
+          id: s.id,
+          content: s.content || "",
+          imageUrl: s.image_url,
+          backgroundColor: s.background_color || "#1a1a2e",
+          stickers: Array.isArray(s.sticker_data) ? s.sticker_data : [],
+          createdAt: s.created_at || new Date().toISOString(),
+        })),
       });
     }
 
@@ -95,8 +97,15 @@ export function StoriesRow() {
         userId: uid,
         username: p?.username || "user",
         displayName: p?.display_name || "User",
-        avatarUrl: p?.avatar_url,
-        stories,
+        avatarUrl: p?.avatar_url || null,
+        stories: stories.map(s => ({
+          id: s.id,
+          content: s.content || "",
+          imageUrl: s.image_url,
+          backgroundColor: s.background_color || "#1a1a2e",
+          stickers: Array.isArray(s.sticker_data) ? s.sticker_data : [],
+          createdAt: s.created_at || new Date().toISOString(),
+        })),
       });
     });
 
@@ -105,30 +114,9 @@ export function StoriesRow() {
 
   useEffect(() => { fetchStories(); }, [fetchStories]);
 
-  const allStories = groups.flatMap((g) =>
-    g.stories.map((s) => ({
-      id: s.id,
-      userId: g.userId,
-      username: g.username,
-      avatar: (g.displayName || g.username).split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2),
-      content: s.content || "",
-      type: "quote" as const,
-      bookTitle: undefined,
-      imageUrl: s.image_url,
-      backgroundColor: s.background_color,
-      stickers: s.sticker_data,
-    }))
-  );
-
-  const renderAvatar = (avatarUrl: string | null, initials: string, size: number = 64) => {
+  const renderAvatar = (avatarUrl: string | null, initials: string) => {
     if (avatarUrl) {
-      return (
-        <img
-          src={avatarUrl}
-          alt=""
-          className="w-full h-full rounded-full object-cover"
-        />
-      );
+      return <img src={avatarUrl} alt="" className="w-full h-full rounded-full object-cover" />;
     }
     return (
       <div className="w-full h-full rounded-full bg-muted flex items-center justify-center text-sm font-semibold text-foreground">
@@ -140,7 +128,7 @@ export function StoriesRow() {
   return (
     <>
       <div className="flex gap-3 overflow-x-auto px-4 py-3 no-scrollbar">
-        {/* Your Story */}
+        {/* Your Story button */}
         {user && (
           <button
             onClick={() => setShowCreator(true)}
@@ -160,13 +148,10 @@ export function StoriesRow() {
 
         {groups.map((group, gi) => {
           const ini = (group.displayName || group.username).split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
-          let storyOffset = 0;
-          for (let i = 0; i < gi; i++) storyOffset += groups[i].stories.length;
-
           return (
             <button
               key={group.userId}
-              onClick={() => setActiveGroup(storyOffset)}
+              onClick={() => setActiveGroupIndex(gi)}
               className="flex flex-col items-center gap-1 flex-shrink-0"
             >
               <div className="story-ring-active">
@@ -184,11 +169,11 @@ export function StoriesRow() {
         })}
       </div>
 
-      {activeGroup !== null && allStories.length > 0 && (
+      {activeGroupIndex !== null && groups.length > 0 && (
         <StoryViewer
-          stories={allStories as any}
-          initialIndex={activeGroup}
-          onClose={() => setActiveGroup(null)}
+          groups={groups}
+          initialGroupIndex={activeGroupIndex}
+          onClose={() => setActiveGroupIndex(null)}
           onDeleted={fetchStories}
         />
       )}
