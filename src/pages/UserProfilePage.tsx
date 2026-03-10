@@ -141,7 +141,10 @@ export default function UserProfilePage() {
             >
               {followButtonLabel}
             </button>
-            <button className="flex-1 py-1.5 rounded-lg bg-secondary text-foreground text-[13px] font-semibold text-center">
+            <button
+              onClick={() => navigate(`/chat/${userId}`)}
+              className="flex-1 py-1.5 rounded-lg bg-secondary text-foreground text-[13px] font-semibold text-center"
+            >
               Message
             </button>
           </div>

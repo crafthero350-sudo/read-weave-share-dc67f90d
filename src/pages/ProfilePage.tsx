@@ -100,14 +100,14 @@ export default function ProfilePage() {
               <p className="text-lg font-bold leading-tight">{stats.posts}</p>
               <p className="text-[11px] text-muted-foreground">posts</p>
             </div>
-            <div className="text-center">
+            <button onClick={() => navigate(`/followers/${user?.id}?tab=followers`)} className="text-center">
               <p className="text-lg font-bold leading-tight">{followersCount}</p>
               <p className="text-[11px] text-muted-foreground">followers</p>
-            </div>
-            <div className="text-center">
+            </button>
+            <button onClick={() => navigate(`/followers/${user?.id}?tab=following`)} className="text-center">
               <p className="text-lg font-bold leading-tight">{followingCount}</p>
               <p className="text-[11px] text-muted-foreground">following</p>
-            </div>
+            </button>
           </div>
         </div>
 
