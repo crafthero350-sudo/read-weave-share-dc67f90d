@@ -29,7 +29,14 @@ import ChatPage from "@/pages/ChatPage";
 import FollowListPage from "@/pages/FollowListPage";
 import NotFound from "./pages/NotFound";
 
+function AuthenticatedAIChatBubble() {
+  const { user } = useAuth();
+  if (!user) return null;
+  return <AIChatBubble />;
+}
+
 const queryClient = new QueryClient();
+
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, profile, loading } = useAuth();
@@ -109,7 +116,7 @@ const App = () => (
                   </Routes>
                 </AnimatePresence>
                 <BottomNav />
-                <AIChatBubble />
+                <AuthenticatedAIChatBubble />
               </div>
             </div>
           </AuthProvider>
