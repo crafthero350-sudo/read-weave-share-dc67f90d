@@ -107,14 +107,14 @@ export default function UserProfilePage() {
               <p className="text-lg font-bold leading-tight">{stats.posts}</p>
               <p className="text-[11px] text-muted-foreground">posts</p>
             </div>
-            <div className="text-center">
+            <button onClick={() => navigate(`/followers/${userId}?tab=followers`)} className="text-center">
               <p className="text-lg font-bold leading-tight">{followersCount}</p>
               <p className="text-[11px] text-muted-foreground">followers</p>
-            </div>
-            <div className="text-center">
+            </button>
+            <button onClick={() => navigate(`/followers/${userId}?tab=following`)} className="text-center">
               <p className="text-lg font-bold leading-tight">{followingCount}</p>
               <p className="text-[11px] text-muted-foreground">following</p>
-            </div>
+            </button>
           </div>
         </div>
 
@@ -141,7 +141,10 @@ export default function UserProfilePage() {
             >
               {followButtonLabel}
             </button>
-            <button className="flex-1 py-1.5 rounded-lg bg-secondary text-foreground text-[13px] font-semibold text-center">
+            <button
+              onClick={() => navigate(`/chat/${userId}`)}
+              className="flex-1 py-1.5 rounded-lg bg-secondary text-foreground text-[13px] font-semibold text-center"
+            >
               Message
             </button>
           </div>

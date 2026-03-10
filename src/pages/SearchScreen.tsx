@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { Search as SearchIcon, Plus, Check, ArrowLeft, Filter } from "lucide-react";
-import { motion } from "framer-motion";
+import { Search as SearchIcon, Plus, Check, ArrowLeft, Filter, Globe, Sparkles, User } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -35,7 +35,24 @@ interface PostResult {
   profile?: { display_name: string | null; username: string | null; avatar_url: string | null };
 }
 
-type SearchFilter = "all" | "books" | "posts" | "reels";
+interface OpenLibraryBook {
+  key: string;
+  title: string;
+  author_name?: string[];
+  cover_i?: number;
+  first_publish_year?: number;
+  subject?: string[];
+}
+
+interface UserResult {
+  user_id: string;
+  display_name: string | null;
+  username: string | null;
+  avatar_url: string | null;
+  bio: string | null;
+}
+
+type SearchFilter = "all" | "books" | "posts" | "reels" | "online" | "ai" | "users";
 
 export default function SearchScreen() {
   const { user } = useAuth();
@@ -46,7 +63,13 @@ export default function SearchScreen() {
   const [userBookIds, setUserBookIds] = useState<Set<string>>(new Set());
   const [userBooks, setUserBooks] = useState<UserBook[]>([]);
   const [postResults, setPostResults] = useState<PostResult[]>([]);
+  const [userResults, setUserResults] = useState<UserResult[]>([]);
+  const [onlineBooks, setOnlineBooks] = useState<OpenLibraryBook[]>([]);
+  const [aiResults, setAiResults] = useState<string>("");
   const [loading, setLoading] = useState(true);
+  const [onlineLoading, setOnlineLoading] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [addingBook, setAddingBook] = useState<string | null>(null);
   const [selectedBook, setSelectedBook] = useState<BookData | null>(null);
 
   const fetchBooks = useCallback(async () => {
@@ -85,15 +108,63 @@ export default function SearchScreen() {
     setPostResults(postsData.map((p) => ({ ...p, profile: profileMap.get(p.user_id) })));
   }, []);
 
+  const searchUsers = useCallback(async (q: string) => {
+    if (!q.trim()) { setUserResults([]); return; }
+    const { data } = await supabase
+      .from("profiles")
+      .select("user_id, display_name, username, avatar_url, bio")
+      .or(`username.ilike.%${q}%,display_name.ilike.%${q}%`)
+      .limit(20);
+    setUserResults((data || []) as UserResult[]);
+  }, []);
+
+  const searchOpenLibrary = useCallback(async (q: string) => {
+    if (!q.trim()) { setOnlineBooks([]); return; }
+    setOnlineLoading(true);
+    try {
+      const res = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(q)}&limit=20&fields=key,title,author_name,cover_i,first_publish_year,subject`);
+      const data = await res.json();
+      setOnlineBooks(data.docs || []);
+    } catch {
+      toast.error("Failed to search online books");
+    }
+    setOnlineLoading(false);
+  }, []);
+
+  const searchAI = useCallback(async (q: string) => {
+    if (!q.trim()) { setAiResults(""); return; }
+    setAiLoading(true);
+    setAiResults("");
+    try {
+      const resp = await supabase.functions.invoke("ai-recommend", {
+        body: { query: q, type: "search" },
+      });
+      if (resp.error) throw resp.error;
+      setAiResults(resp.data?.recommendation || resp.data?.text || "No recommendations found.");
+    } catch {
+      setAiResults("Failed to get AI recommendations. Try again later.");
+    }
+    setAiLoading(false);
+  }, []);
+
   useEffect(() => { fetchBooks(); fetchUserBooks(); }, [fetchBooks, fetchUserBooks]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      if (query.trim()) searchPosts(query);
-      else setPostResults([]);
-    }, 300);
+      if (query.trim()) {
+        searchPosts(query);
+        searchUsers(query);
+        if (activeFilter === "online" || activeFilter === "all") searchOpenLibrary(query);
+        if (activeFilter === "ai") searchAI(query);
+      } else {
+        setPostResults([]);
+        setUserResults([]);
+        setOnlineBooks([]);
+        setAiResults("");
+      }
+    }, 400);
     return () => clearTimeout(timeout);
-  }, [query, searchPosts]);
+  }, [query, activeFilter, searchPosts, searchUsers, searchOpenLibrary, searchAI]);
 
   const addToLibrary = async (bookId: string) => {
     if (!user) return;
@@ -104,6 +175,50 @@ export default function SearchScreen() {
       toast.success("Added to library!");
       fetchUserBooks();
     } catch (err: any) { toast.error(err.message || "Failed to add book"); }
+  };
+
+  const addOnlineBookToLibrary = async (olBook: OpenLibraryBook) => {
+    if (!user) return;
+    const bookKey = olBook.key;
+    setAddingBook(bookKey);
+    try {
+      // Check if book already exists
+      const title = olBook.title;
+      const author = olBook.author_name?.[0] || "Unknown";
+      const coverUrl = olBook.cover_i ? `https://covers.openlibrary.org/b/id/${olBook.cover_i}-L.jpg` : null;
+
+      const { data: existing } = await supabase
+        .from("books")
+        .select("id")
+        .eq("title", title)
+        .eq("author", author)
+        .maybeSingle();
+
+      let bookId: string;
+      if (existing) {
+        bookId = existing.id;
+      } else {
+        const { data: newBook, error } = await supabase
+          .from("books")
+          .insert({ title, author, cover_url: coverUrl, description: olBook.subject?.slice(0, 3).join(", ") || null })
+          .select("id")
+          .single();
+        if (error) throw error;
+        bookId = newBook.id;
+      }
+
+      // Add to user's library
+      const { error: ubError } = await supabase.from("user_books").insert({ user_id: user.id, book_id: bookId, status: "want_to_read" });
+      if (ubError && !ubError.message.includes("duplicate")) throw ubError;
+
+      setUserBookIds((prev) => new Set([...prev, bookId]));
+      toast.success(`"${title}" added to library!`);
+      fetchBooks();
+      fetchUserBooks();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to add book");
+    }
+    setAddingBook(null);
   };
 
   const removeFromLibrary = async (bookId: string) => {
@@ -133,6 +248,9 @@ export default function SearchScreen() {
 
   const showBooks = activeFilter === "all" || activeFilter === "books";
   const showPosts = (activeFilter === "all" || activeFilter === "posts" || activeFilter === "reels") && query.trim();
+  const showUsers = (activeFilter === "all" || activeFilter === "users") && query.trim();
+  const showOnline = (activeFilter === "online") && query.trim();
+  const showAI = (activeFilter === "ai") && query.trim();
 
   // Book detail view
   if (selectedBook) {
@@ -217,11 +335,14 @@ export default function SearchScreen() {
     );
   }
 
-  const filters: { value: SearchFilter; label: string }[] = [
+  const filters: { value: SearchFilter; label: string; icon?: React.ReactNode }[] = [
     { value: "all", label: "All" },
     { value: "books", label: "Books" },
+    { value: "users", label: "Users", icon: <User className="w-3 h-3" /> },
     { value: "posts", label: "Posts" },
     { value: "reels", label: "Reels" },
+    { value: "online", label: "Online", icon: <Globe className="w-3 h-3" /> },
+    { value: "ai", label: "AI", icon: <Sparkles className="w-3 h-3" /> },
   ];
 
   return (
@@ -233,9 +354,12 @@ export default function SearchScreen() {
             <SearchIcon className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
             <input
               type="text"
-              placeholder="Search books, posts, reels..."
+              placeholder={activeFilter === "ai" ? "Ask AI for book recommendations..." : activeFilter === "online" ? "Search Open Library..." : "Search books, users, posts..."}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && activeFilter === "ai") searchAI(query);
+              }}
               className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
             />
           </div>
@@ -245,10 +369,11 @@ export default function SearchScreen() {
             <button
               key={f.value}
               onClick={() => setActiveFilter(f.value)}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
+              className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors flex items-center gap-1 ${
                 activeFilter === f.value ? "bg-primary text-primary-foreground" : "text-muted-foreground"
               }`}
             >
+              {f.icon}
               {f.label}
             </button>
           ))}
@@ -256,6 +381,112 @@ export default function SearchScreen() {
       </header>
 
       <div className="px-4 pt-4 space-y-6">
+        {/* AI Results */}
+        {showAI && (
+          <section>
+            <h2 className="font-display text-lg font-bold mb-3 flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-primary" /> AI Recommendations
+            </h2>
+            {aiLoading ? (
+              <div className="flex items-center gap-3 py-8 justify-center">
+                <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                <span className="text-sm text-muted-foreground">AI is thinking...</span>
+              </div>
+            ) : aiResults ? (
+              <div className="bg-card border border-border rounded-2xl p-4">
+                <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{aiResults}</p>
+              </div>
+            ) : query.trim() ? (
+              <p className="text-center text-muted-foreground text-sm py-4">Press Enter or wait to get AI recommendations</p>
+            ) : null}
+          </section>
+        )}
+
+        {/* User search results */}
+        {showUsers && userResults.length > 0 && (
+          <section>
+            <h2 className="font-display text-lg font-bold mb-3 flex items-center gap-2">
+              <User className="w-5 h-5" /> People
+            </h2>
+            <div className="space-y-1">
+              {userResults.filter(u => u.user_id !== user?.id).map((u, i) => (
+                <motion.button
+                  key={u.user_id}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.03 }}
+                  onClick={() => navigate(`/user/${u.user_id}`)}
+                  className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-accent transition-colors"
+                >
+                  {u.avatar_url ? (
+                    <img src={u.avatar_url} alt="" className="w-11 h-11 rounded-full object-cover flex-shrink-0" />
+                  ) : (
+                    <div className="w-11 h-11 rounded-full bg-secondary flex items-center justify-center text-sm font-semibold flex-shrink-0">
+                      {(u.display_name || u.username || "?")[0]?.toUpperCase()}
+                    </div>
+                  )}
+                  <div className="text-left min-w-0">
+                    <p className="text-sm font-semibold truncate">{u.username || "user"}</p>
+                    <p className="text-xs text-muted-foreground truncate">{u.display_name}</p>
+                  </div>
+                </motion.button>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Online Book Results (Open Library) */}
+        {showOnline && (
+          <section>
+            <h2 className="font-display text-lg font-bold mb-3 flex items-center gap-2">
+              <Globe className="w-5 h-5 text-primary" /> Open Library Results
+            </h2>
+            {onlineLoading ? (
+              <div className="flex justify-center py-12">
+                <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : onlineBooks.length > 0 ? (
+              <div className="space-y-2">
+                {onlineBooks.map((ob, i) => (
+                  <motion.div
+                    key={ob.key}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.03 }}
+                    className="flex items-center gap-3 p-3 bg-card rounded-xl border border-border"
+                  >
+                    <div className="w-12 h-16 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+                      {ob.cover_i ? (
+                        <img src={`https://covers.openlibrary.org/b/id/${ob.cover_i}-M.jpg`} alt={ob.title} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-[8px] text-muted-foreground p-1 text-center">{ob.title}</div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold truncate">{ob.title}</p>
+                      <p className="text-xs text-muted-foreground truncate">{ob.author_name?.[0] || "Unknown"}</p>
+                      {ob.first_publish_year && <p className="text-[10px] text-muted-foreground">{ob.first_publish_year}</p>}
+                    </div>
+                    <button
+                      onClick={() => addOnlineBookToLibrary(ob)}
+                      disabled={addingBook === ob.key}
+                      className="p-2 rounded-full bg-primary text-primary-foreground flex-shrink-0 disabled:opacity-50"
+                    >
+                      {addingBook === ob.key ? (
+                        <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+                      ) : (
+                        <Plus className="w-4 h-4" />
+                      )}
+                    </button>
+                  </motion.div>
+                ))}
+              </div>
+            ) : query.trim() ? (
+              <p className="text-center text-muted-foreground text-sm py-4">No online results found</p>
+            ) : null}
+          </section>
+        )}
+
         {/* Post/Reel search results */}
         {showPosts && postResults.length > 0 && (
           <section>
@@ -342,7 +573,7 @@ export default function SearchScreen() {
         )}
 
         {/* No results */}
-        {query && showPosts && postResults.length === 0 && showBooks && filteredBooks.length === 0 && (
+        {query && !showOnline && !showAI && showPosts && postResults.length === 0 && showBooks && filteredBooks.length === 0 && userResults.length === 0 && (
           <p className="text-center text-muted-foreground text-sm mt-12">No results found for "{query}"</p>
         )}
       </div>

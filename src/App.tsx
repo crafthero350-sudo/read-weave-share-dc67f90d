@@ -26,6 +26,7 @@ import SetupProfilePage from "@/pages/SetupProfilePage";
 import NotificationsPage from "@/pages/NotificationsPage";
 import MessagesPage from "@/pages/MessagesPage";
 import ChatPage from "@/pages/ChatPage";
+import FollowListPage from "@/pages/FollowListPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -103,6 +104,7 @@ const App = () => (
                     <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
                     <Route path="/messages" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} />
                     <Route path="/chat/:userId" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
+                    <Route path="/followers/:userId" element={<ProtectedRoute><FollowListPage /></ProtectedRoute>} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </AnimatePresence>
