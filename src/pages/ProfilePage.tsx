@@ -76,7 +76,9 @@ export default function ProfilePage() {
       <header className="sticky top-0 z-30 bg-background border-b border-border">
         <div className="flex items-center justify-between px-4 h-11">
           <h1 className="text-[15px] font-bold">{profile?.username || "Profile"}</h1>
-          <div />
+          <button onClick={() => navigate("/settings")} className="p-1.5 rounded-full hover:bg-accent transition-colors">
+            <Settings className="w-5 h-5 text-foreground" strokeWidth={1.5} />
+          </button>
         </div>
       </header>
 
