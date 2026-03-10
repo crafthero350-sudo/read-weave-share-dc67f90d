@@ -29,7 +29,12 @@ import ChatPage from "@/pages/ChatPage";
 import FollowListPage from "@/pages/FollowListPage";
 import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
+function AuthenticatedAIChatBubble() {
+  const { user } = useAuth();
+  if (!user) return null;
+  return <AIChatBubble />;
+}
+
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, profile, loading } = useAuth();
