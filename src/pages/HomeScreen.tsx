@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Heart, Send, PlusSquare } from "lucide-react";
+import { Send, Bell, PlusCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { StoriesRow } from "@/components/StoriesRow";
 import { PostCard, type PostData } from "@/components/PostCard";
@@ -87,12 +87,6 @@ export default function HomeScreen() {
             BookApp
           </h1>
           <div className="flex items-center gap-1 md:hidden">
-            <button onClick={() => setShowStoryCreator(true)} className="p-2">
-              <PlusSquare className="w-6 h-6 text-foreground" strokeWidth={1.5} />
-            </button>
-            <button className="p-2" onClick={() => navigate("/notifications")}>
-              <Heart className="w-6 h-6 text-foreground" strokeWidth={1.5} />
-            </button>
             <button className="p-2 relative" onClick={() => navigate("/messages")}>
               <Send className="w-6 h-6 text-foreground -rotate-[20deg]" strokeWidth={1.5} />
               {unreadCount > 0 && (
@@ -100,6 +94,12 @@ export default function HomeScreen() {
                   {unreadCount > 9 ? "9+" : unreadCount}
                 </span>
               )}
+            </button>
+            <button className="p-2" onClick={() => navigate("/notifications")}>
+              <Bell className="w-6 h-6 text-foreground" strokeWidth={1.5} />
+            </button>
+            <button onClick={() => setShowStoryCreator(true)} className="p-2">
+              <PlusCircle className="w-6 h-6 text-foreground" strokeWidth={1.5} />
             </button>
           </div>
           <div className="hidden md:flex items-center gap-1">
