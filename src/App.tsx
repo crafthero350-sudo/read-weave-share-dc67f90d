@@ -109,7 +109,7 @@ const App = () => (
                   </Routes>
                 </AnimatePresence>
                 <BottomNav />
-                <AIChatBubble />
+                <AuthenticatedAIChatBubble />
               </div>
             </div>
           </AuthProvider>
