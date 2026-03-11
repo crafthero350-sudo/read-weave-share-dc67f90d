@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, Search, Send } from "lucide-react";
+import { Search, Send, SquarePen, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,7 +19,7 @@ interface Conversation {
 
 export default function MessagesPage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -28,7 +28,6 @@ export default function MessagesPage() {
     async function loadConversations() {
       if (!user) return;
 
-      // Get all messages involving this user
       const { data: msgs } = await supabase
         .from("direct_messages")
         .select("*")
@@ -37,7 +36,6 @@ export default function MessagesPage() {
         .limit(500);
 
       if (!msgs || msgs.length === 0) {
-        // Fall back to showing followed users
         const { data: follows } = await supabase
           .from("follows")
           .select("following_id")
@@ -67,7 +65,6 @@ export default function MessagesPage() {
         return;
       }
 
-      // Group by conversation partner
       const convoMap = new Map<
         string,
         { lastMsg: typeof msgs[0]; unread: number }
@@ -97,15 +94,15 @@ export default function MessagesPage() {
 
       const convos: Conversation[] = partnerIds.map((pid) => {
         const entry = convoMap.get(pid)!;
-        const profile = profileMap.get(pid);
+        const pf = profileMap.get(pid);
         return {
           userId: pid,
-          displayName: profile?.display_name || profile?.username || "User",
-          username: profile?.username || "",
-          avatarUrl: profile?.avatar_url || null,
+          displayName: pf?.display_name || pf?.username || "User",
+          username: pf?.username || "",
+          avatarUrl: pf?.avatar_url || null,
           lastMessage: entry.lastMsg.content,
           time: formatDistanceToNow(new Date(entry.lastMsg.created_at), {
-            addSuffix: true,
+            addSuffix: false,
           }),
           unreadCount: entry.unread,
         };
@@ -126,25 +123,31 @@ export default function MessagesPage() {
   return (
     <PageTransition>
       <div className="min-h-screen bg-background pb-14">
-        {/* Header */}
+        {/* Instagram-style header */}
         <header className="sticky top-0 z-30 bg-background border-b border-border">
           <div className="flex items-center justify-between px-4 h-11">
-            <div className="flex items-center gap-3">
-              <button onClick={() => navigate(-1)} className="p-1">
-                <ArrowLeft className="w-6 h-6 text-foreground" />
-              </button>
-              <h1 className="text-lg font-bold text-foreground">Messages</h1>
-            </div>
+            <button
+              onClick={() => navigate(-1)}
+              className="flex items-center gap-1"
+            >
+              <span className="text-lg font-bold text-foreground">
+                {profile?.username || "Messages"}
+              </span>
+              <ChevronDown className="w-4 h-4 text-foreground" strokeWidth={2} />
+            </button>
+            <button className="p-1">
+              <SquarePen className="w-6 h-6 text-foreground" strokeWidth={1.5} />
+            </button>
           </div>
         </header>
 
         {/* Search */}
-        <div className="px-4 py-3">
+        <div className="px-4 py-2">
           <div className="flex items-center gap-2 bg-secondary rounded-lg px-3 py-2">
             <Search className="w-4 h-4 text-muted-foreground flex-shrink-0" />
             <input
               type="text"
-              placeholder="Search messages..."
+              placeholder="Search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none w-full"
@@ -152,8 +155,16 @@ export default function MessagesPage() {
           </div>
         </div>
 
+        {/* Messages / Requests header */}
+        <div className="flex items-center justify-between px-4 py-2">
+          <p className="text-base font-bold text-foreground">Messages</p>
+          <button className="text-sm font-semibold text-[#0095f6]">
+            Requests
+          </button>
+        </div>
+
         {/* Conversations */}
-        <div className="px-2">
+        <div className="px-0">
           {loading ? (
             <div className="flex justify-center py-12">
               <div className="w-6 h-6 border-2 border-foreground/30 border-t-foreground rounded-full animate-spin" />
@@ -171,51 +182,44 @@ export default function MessagesPage() {
                 key={convo.userId}
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.04 }}
+                transition={{ delay: i * 0.03 }}
                 onClick={() => navigate(`/chat/${convo.userId}`)}
-                className="flex items-center gap-3 w-full px-3 py-3 rounded-xl hover:bg-accent transition-colors"
+                className="flex items-center gap-3 w-full px-4 py-2.5 hover:bg-accent/50 transition-colors"
               >
-                {convo.avatarUrl ? (
-                  <img
-                    src={convo.avatarUrl}
-                    alt={convo.displayName}
-                    className="w-14 h-14 rounded-full object-cover flex-shrink-0"
-                  />
-                ) : (
-                  <div className="w-14 h-14 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
-                    <span className="text-lg font-semibold text-foreground">
-                      {convo.displayName[0]?.toUpperCase()}
-                    </span>
-                  </div>
-                )}
-                <div className="flex-1 text-left min-w-0">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-semibold text-foreground truncate">
-                      {convo.displayName}
-                    </p>
-                    {convo.time && (
-                      <span className="text-[11px] text-muted-foreground flex-shrink-0 ml-2">
-                        {convo.time}
+                {/* Avatar with active indicator */}
+                <div className="relative flex-shrink-0">
+                  {convo.avatarUrl ? (
+                    <img
+                      src={convo.avatarUrl}
+                      alt={convo.displayName}
+                      className="w-14 h-14 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-14 h-14 rounded-full bg-secondary flex items-center justify-center">
+                      <span className="text-lg font-semibold text-foreground">
+                        {convo.displayName[0]?.toUpperCase()}
                       </span>
-                    )}
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <p
-                      className={`text-xs truncate ${
-                        convo.unreadCount > 0
-                          ? "text-foreground font-medium"
-                          : "text-muted-foreground"
-                      }`}
-                    >
-                      {convo.lastMessage}
-                    </p>
-                    {convo.unreadCount > 0 && (
-                      <span className="ml-2 flex-shrink-0 w-5 h-5 rounded-full bg-foreground text-background text-[10px] font-bold flex items-center justify-center">
-                        {convo.unreadCount}
-                      </span>
-                    )}
-                  </div>
+                    </div>
+                  )}
+                  {/* Green active dot */}
+                  <span className="absolute bottom-0 right-0 w-4 h-4 rounded-full bg-green-500 border-[2.5px] border-background" />
                 </div>
+
+                {/* Text content */}
+                <div className="flex-1 text-left min-w-0">
+                  <p className={`text-sm truncate ${convo.unreadCount > 0 ? "font-bold text-foreground" : "font-normal text-foreground"}`}>
+                    {convo.username || convo.displayName}
+                  </p>
+                  <p className={`text-xs truncate ${convo.unreadCount > 0 ? "text-foreground font-medium" : "text-muted-foreground"}`}>
+                    {convo.lastMessage}
+                    {convo.time && <span> · {convo.time}</span>}
+                  </p>
+                </div>
+
+                {/* Unread indicator (blue dot) */}
+                {convo.unreadCount > 0 && (
+                  <span className="w-2 h-2 rounded-full bg-[#0095f6] flex-shrink-0" />
+                )}
               </motion.button>
             ))
           )}
