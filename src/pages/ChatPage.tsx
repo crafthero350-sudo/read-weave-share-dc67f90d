@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { ArrowLeft, Send, Image } from "lucide-react";
+import { ArrowLeft, Send, Camera, Mic, Image, Smile, Phone, Video } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
@@ -34,7 +34,6 @@ export default function ChatPage() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Load other user's profile
   useEffect(() => {
     if (!userId) return;
     supabase
@@ -47,7 +46,6 @@ export default function ChatPage() {
       });
   }, [userId]);
 
-  // Load messages
   const loadMessages = useCallback(async () => {
     if (!user || !userId) return;
     const { data } = await supabase
@@ -61,7 +59,6 @@ export default function ChatPage() {
 
     if (data) setMessages(data);
 
-    // Mark unread as read
     await supabase
       .from("direct_messages")
       .update({ read: true })
@@ -74,12 +71,10 @@ export default function ChatPage() {
     loadMessages();
   }, [loadMessages]);
 
-  // Scroll to bottom on new messages
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Realtime subscription
   useEffect(() => {
     if (!user || !userId) return;
 
@@ -94,7 +89,6 @@ export default function ChatPage() {
         },
         (payload) => {
           const msg = payload.new as Message;
-          // Only add if it belongs to this conversation
           if (
             (msg.sender_id === user.id && msg.receiver_id === userId) ||
             (msg.sender_id === userId && msg.receiver_id === user.id)
@@ -104,7 +98,6 @@ export default function ChatPage() {
               return [...prev, msg];
             });
 
-            // Mark as read if we're the receiver
             if (msg.receiver_id === user.id) {
               supabase
                 .from("direct_messages")
@@ -145,36 +138,44 @@ export default function ChatPage() {
   return (
     <PageTransition>
       <div className="min-h-screen bg-background flex flex-col">
-        {/* Header */}
+        {/* Instagram-style header */}
         <header className="sticky top-0 z-30 bg-background border-b border-border">
-          <div className="flex items-center gap-3 px-3 h-14">
-            <button onClick={() => navigate("/messages")} className="p-1">
-              <ArrowLeft className="w-6 h-6 text-foreground" />
-            </button>
-            <button
-              onClick={() => navigate(`/user/${userId}`)}
-              className="flex items-center gap-3 flex-1 min-w-0"
-            >
-              {otherUser?.avatar_url ? (
-                <img
-                  src={otherUser.avatar_url}
-                  alt={displayName}
-                  className="w-9 h-9 rounded-full object-cover"
-                />
-              ) : (
-                <div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center">
-                  <span className="text-sm font-semibold text-foreground">
-                    {displayName[0]?.toUpperCase()}
-                  </span>
+          <div className="flex items-center justify-between px-3 h-14">
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+              <button onClick={() => navigate("/messages")} className="p-1">
+                <ArrowLeft className="w-6 h-6 text-foreground" />
+              </button>
+              <button
+                onClick={() => navigate(`/user/${userId}`)}
+                className="flex items-center gap-3 min-w-0"
+              >
+                {otherUser?.avatar_url ? (
+                  <img
+                    src={otherUser.avatar_url}
+                    alt={displayName}
+                    className="w-9 h-9 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center">
+                    <span className="text-sm font-semibold text-foreground">
+                      {displayName[0]?.toUpperCase()}
+                    </span>
+                  </div>
+                )}
+                <div className="text-left min-w-0">
+                  <p className="text-sm font-semibold text-foreground truncate">{displayName}</p>
+                  <p className="text-[11px] text-green-500 font-medium">Active now</p>
                 </div>
-              )}
-              <div className="text-left min-w-0">
-                <p className="text-sm font-semibold text-foreground truncate">{displayName}</p>
-                <p className="text-[11px] text-muted-foreground">
-                  {otherUser?.username ? `@${otherUser.username}` : ""}
-                </p>
-              </div>
-            </button>
+              </button>
+            </div>
+            <div className="flex items-center gap-4">
+              <button className="p-1">
+                <Phone className="w-5 h-5 text-foreground" strokeWidth={1.5} />
+              </button>
+              <button className="p-1">
+                <Video className="w-5 h-5 text-foreground" strokeWidth={1.5} />
+              </button>
+            </div>
           </div>
         </header>
 
@@ -209,12 +210,29 @@ export default function ChatPage() {
                     transition={{ duration: 0.15 }}
                     className={`flex ${isMe ? "justify-end" : "justify-start"} mb-0.5`}
                   >
+                    {/* Other user avatar on left */}
+                    {!isMe && (
+                      <div className="flex-shrink-0 mr-2 self-end">
+                        {otherUser?.avatar_url ? (
+                          <img src={otherUser.avatar_url} alt="" className="w-6 h-6 rounded-full object-cover" />
+                        ) : (
+                          <div className="w-6 h-6 rounded-full bg-secondary flex items-center justify-center">
+                            <span className="text-[10px] font-semibold text-foreground">{displayName[0]?.toUpperCase()}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
                     <div
                       className={`max-w-[75%] px-3.5 py-2 text-sm leading-relaxed ${
                         isMe
-                          ? "bg-foreground text-background rounded-2xl rounded-br-md"
+                          ? "text-white rounded-2xl rounded-br-md"
                           : "bg-secondary text-foreground rounded-2xl rounded-bl-md"
                       }`}
+                      style={
+                        isMe
+                          ? { background: "linear-gradient(135deg, #6366f1, #8b5cf6, #a855f7)" }
+                          : undefined
+                      }
                     >
                       {msg.content}
                     </div>
@@ -226,10 +244,13 @@ export default function ChatPage() {
           <div ref={bottomRef} />
         </div>
 
-        {/* Input */}
+        {/* Instagram-style input bar */}
         <div className="sticky bottom-0 bg-background border-t border-border px-3 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
           <div className="flex items-center gap-2">
-            <div className="flex-1 flex items-center bg-secondary rounded-full px-4 py-2.5">
+            <button className="p-1.5 flex-shrink-0">
+              <Camera className="w-6 h-6 text-foreground" strokeWidth={1.5} />
+            </button>
+            <div className="flex-1 flex items-center bg-secondary rounded-full px-4 py-2.5 gap-2">
               <input
                 ref={inputRef}
                 type="text"
@@ -239,18 +260,29 @@ export default function ChatPage() {
                 onKeyDown={(e) => e.key === "Enter" && handleSend()}
                 className="bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none w-full"
               />
+              {!newMsg.trim() && (
+                <>
+                  <button className="p-0.5 flex-shrink-0">
+                    <Mic className="w-5 h-5 text-foreground" strokeWidth={1.5} />
+                  </button>
+                  <button className="p-0.5 flex-shrink-0">
+                    <Image className="w-5 h-5 text-foreground" strokeWidth={1.5} />
+                  </button>
+                  <button className="p-0.5 flex-shrink-0">
+                    <Smile className="w-5 h-5 text-foreground" strokeWidth={1.5} />
+                  </button>
+                </>
+              )}
             </div>
-            <button
-              onClick={handleSend}
-              disabled={!newMsg.trim() || sending}
-              className={`p-2.5 rounded-full transition-colors ${
-                newMsg.trim()
-                  ? "bg-foreground text-background"
-                  : "bg-secondary text-muted-foreground"
-              }`}
-            >
-              <Send className="w-5 h-5" strokeWidth={1.5} />
-            </button>
+            {newMsg.trim() && (
+              <button
+                onClick={handleSend}
+                disabled={sending}
+                className="p-2 flex-shrink-0"
+              >
+                <Send className="w-6 h-6 text-[#0095f6]" strokeWidth={1.5} />
+              </button>
+            )}
           </div>
         </div>
       </div>

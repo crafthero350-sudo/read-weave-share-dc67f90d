@@ -94,7 +94,7 @@ const App = () => (
               <div className="max-w-lg mx-auto">
                 <AnimatePresence mode="wait">
                   <Routes>
-                    <Route path="/welcome" element={<OnboardingScreen />} />
+                    <Route path="/welcome" element={<Navigate to="/auth" replace />} />
                     <Route path="/auth" element={<AuthRoute><AuthPage /></AuthRoute>} />
                     <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                     <Route path="/reset-password" element={<ResetPasswordPage />} />
