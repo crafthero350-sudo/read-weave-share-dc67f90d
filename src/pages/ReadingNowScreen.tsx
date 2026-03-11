@@ -245,7 +245,7 @@ function ReadingGoalsCard({ currentBook, onNavigate }: { currentBook?: UserBook;
               {readMinutes}:{readSeconds.toString().padStart(2, "0")}
             </span>
             <span className="text-[10px] text-muted-foreground mt-1">
-              of your {goalMinutes}-minute goal &rsaquo;
+              goal &rsaquo;
             </span>
           </div>
         </div>
