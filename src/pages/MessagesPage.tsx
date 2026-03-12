@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { PageTransition } from "@/components/PageTransition";
 import { formatDistanceToNow } from "date-fns";
+import { isUserOnline } from "@/hooks/usePresence";
 
 interface Conversation {
   userId: string;
@@ -15,6 +16,8 @@ interface Conversation {
   lastMessage: string;
   time: string;
   unreadCount: number;
+  isOnline: boolean;
+  lastSeenAt: string | null;
 }
 
 export default function MessagesPage() {
@@ -49,16 +52,31 @@ export default function MessagesPage() {
             .select("user_id, display_name, username, avatar_url")
             .in("user_id", ids);
 
+          // Fetch presence for these users
+          const { data: presenceData } = await supabase
+            .from("user_presence")
+            .select("user_id, is_online, last_seen_at")
+            .in("user_id", ids);
+
+          const presenceMap = new Map(
+            (presenceData || []).map((p: any) => [p.user_id, p])
+          );
+
           setConversations(
-            (profiles || []).map((p) => ({
-              userId: p.user_id,
-              displayName: p.display_name || p.username || "User",
-              username: p.username || "",
-              avatarUrl: p.avatar_url,
-              lastMessage: "Tap to start chatting 📚",
-              time: "",
-              unreadCount: 0,
-            }))
+            (profiles || []).map((p) => {
+              const presence = presenceMap.get(p.user_id);
+              return {
+                userId: p.user_id,
+                displayName: p.display_name || p.username || "User",
+                username: p.username || "",
+                avatarUrl: p.avatar_url,
+                lastMessage: "Tap to start chatting 📚",
+                time: "",
+                unreadCount: 0,
+                isOnline: presence ? isUserOnline(presence.last_seen_at, presence.is_online) : false,
+                lastSeenAt: presence?.last_seen_at || null,
+              };
+            })
           );
         }
         setLoading(false);
@@ -88,13 +106,23 @@ export default function MessagesPage() {
         .select("user_id, display_name, username, avatar_url")
         .in("user_id", partnerIds);
 
+      // Fetch presence
+      const { data: presenceData } = await supabase
+        .from("user_presence")
+        .select("user_id, is_online, last_seen_at")
+        .in("user_id", partnerIds);
+
       const profileMap = new Map(
         (profiles || []).map((p) => [p.user_id, p])
+      );
+      const presenceMap = new Map(
+        (presenceData || []).map((p: any) => [p.user_id, p])
       );
 
       const convos: Conversation[] = partnerIds.map((pid) => {
         const entry = convoMap.get(pid)!;
         const pf = profileMap.get(pid);
+        const presence = presenceMap.get(pid);
         return {
           userId: pid,
           displayName: pf?.display_name || pf?.username || "User",
@@ -105,6 +133,8 @@ export default function MessagesPage() {
             addSuffix: false,
           }),
           unreadCount: entry.unread,
+          isOnline: presence ? isUserOnline(presence.last_seen_at, presence.is_online) : false,
+          lastSeenAt: presence?.last_seen_at || null,
         };
       });
 
@@ -114,22 +144,52 @@ export default function MessagesPage() {
     loadConversations();
   }, [user]);
 
+  // Subscribe to presence changes
+  useEffect(() => {
+    const channel = supabase
+      .channel("presence-updates")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "user_presence" },
+        (payload) => {
+          const updated = payload.new as any;
+          if (!updated?.user_id) return;
+          setConversations((prev) =>
+            prev.map((c) =>
+              c.userId === updated.user_id
+                ? {
+                    ...c,
+                    isOnline: isUserOnline(updated.last_seen_at, updated.is_online),
+                    lastSeenAt: updated.last_seen_at,
+                  }
+                : c
+            )
+          );
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, []);
+
   const filtered = conversations.filter(
     (c) =>
       c.displayName.toLowerCase().includes(search.toLowerCase()) ||
       c.username.toLowerCase().includes(search.toLowerCase())
   );
 
+  const formatLastSeen = (lastSeenAt: string | null, online: boolean) => {
+    if (online) return "Active now";
+    if (!lastSeenAt) return "";
+    return `Active ${formatDistanceToNow(new Date(lastSeenAt), { addSuffix: true })}`;
+  };
+
   return (
     <PageTransition>
       <div className="min-h-screen bg-background pb-14">
-        {/* Instagram-style header */}
         <header className="sticky top-0 z-30 bg-background border-b border-border">
           <div className="flex items-center justify-between px-4 h-11">
-            <button
-              onClick={() => navigate(-1)}
-              className="flex items-center gap-1"
-            >
+            <button onClick={() => navigate(-1)} className="flex items-center gap-1">
               <span className="text-lg font-bold text-foreground">
                 {profile?.username || "Messages"}
               </span>
@@ -141,7 +201,6 @@ export default function MessagesPage() {
           </div>
         </header>
 
-        {/* Search */}
         <div className="px-4 py-2">
           <div className="flex items-center gap-2 bg-secondary rounded-lg px-3 py-2">
             <Search className="w-4 h-4 text-muted-foreground flex-shrink-0" />
@@ -155,15 +214,11 @@ export default function MessagesPage() {
           </div>
         </div>
 
-        {/* Messages / Requests header */}
         <div className="flex items-center justify-between px-4 py-2">
           <p className="text-base font-bold text-foreground">Messages</p>
-          <button className="text-sm font-semibold text-[#0095f6]">
-            Requests
-          </button>
+          <button className="text-sm font-semibold text-[#0095f6]">Requests</button>
         </div>
 
-        {/* Conversations */}
         <div className="px-0">
           {loading ? (
             <div className="flex justify-center py-12">
@@ -186,7 +241,6 @@ export default function MessagesPage() {
                 onClick={() => navigate(`/chat/${convo.userId}`)}
                 className="flex items-center gap-3 w-full px-4 py-2.5 hover:bg-accent/50 transition-colors"
               >
-                {/* Avatar with active indicator */}
                 <div className="relative flex-shrink-0">
                   {convo.avatarUrl ? (
                     <img
@@ -201,11 +255,11 @@ export default function MessagesPage() {
                       </span>
                     </div>
                   )}
-                  {/* Green active dot */}
-                  <span className="absolute bottom-0 right-0 w-4 h-4 rounded-full bg-green-500 border-[2.5px] border-background" />
+                  {convo.isOnline && (
+                    <span className="absolute bottom-0 right-0 w-4 h-4 rounded-full bg-green-500 border-[2.5px] border-background" />
+                  )}
                 </div>
 
-                {/* Text content */}
                 <div className="flex-1 text-left min-w-0">
                   <p className={`text-sm truncate ${convo.unreadCount > 0 ? "font-bold text-foreground" : "font-normal text-foreground"}`}>
                     {convo.username || convo.displayName}
@@ -216,7 +270,6 @@ export default function MessagesPage() {
                   </p>
                 </div>
 
-                {/* Unread indicator (blue dot) */}
                 {convo.unreadCount > 0 && (
                   <span className="w-2 h-2 rounded-full bg-[#0095f6] flex-shrink-0" />
                 )}

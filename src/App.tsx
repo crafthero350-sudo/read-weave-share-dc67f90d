@@ -9,6 +9,7 @@ import { SideNav } from "@/components/SideNav";
 import { AIChatBubble } from "@/components/AIChatBubble";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { usePresence } from "@/hooks/usePresence";
 import OnboardingScreen from "@/pages/OnboardingScreen";
 import HomeScreen from "@/pages/HomeScreen";
 import ReadingNowScreen from "@/pages/ReadingNowScreen";
@@ -27,12 +28,18 @@ import NotificationsPage from "@/pages/NotificationsPage";
 import MessagesPage from "@/pages/MessagesPage";
 import ChatPage from "@/pages/ChatPage";
 import FollowListPage from "@/pages/FollowListPage";
+import LibraryPage from "@/pages/LibraryPage";
 import NotFound from "./pages/NotFound";
 
 function AuthenticatedAIChatBubble() {
   const { user } = useAuth();
   if (!user) return null;
   return <AIChatBubble />;
+}
+
+function PresenceTracker() {
+  usePresence();
+  return null;
 }
 
 const queryClient = new QueryClient();
@@ -89,6 +96,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <AuthProvider>
+            <PresenceTracker />
             <SideNav />
             <div className="md:ml-[72px] xl:ml-[220px] bg-background min-h-screen relative">
               <div className="max-w-lg mx-auto">
@@ -102,6 +110,7 @@ const App = () => (
                     <Route path="/" element={<ProtectedRoute><HomeScreen /></ProtectedRoute>} />
                     <Route path="/reels" element={<ProtectedRoute><ReelsScreen /></ProtectedRoute>} />
                     <Route path="/reading" element={<ProtectedRoute><ReadingNowScreen /></ProtectedRoute>} />
+                    <Route path="/library" element={<ProtectedRoute><LibraryPage /></ProtectedRoute>} />
                     <Route path="/read/:id" element={<ProtectedRoute><ReaderView /></ProtectedRoute>} />
                     <Route path="/search" element={<ProtectedRoute><SearchScreen /></ProtectedRoute>} />
                     <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
