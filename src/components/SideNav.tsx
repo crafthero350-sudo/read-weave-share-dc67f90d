@@ -76,11 +76,11 @@ export function SideNav() {
                   <DropdownMenuContent side="right" align="start" className="w-48">
                     <DropdownMenuItem onClick={() => setShowCreate(true)} className="cursor-pointer">
                       <PlusSquare className="w-4 h-4 mr-2" />
-                      إنشاء بوست
+                      Create Past
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => setShowStoryCreator(true)} className="cursor-pointer">
                       <Film className="w-4 h-4 mr-2" />
-                      إنشاء ريلز
+                      Create Reels
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>);
