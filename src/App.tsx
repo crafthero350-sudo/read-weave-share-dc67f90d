@@ -95,6 +95,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <AuthProvider>
+            <PresenceTracker />
             <SideNav />
             <div className="md:ml-[72px] xl:ml-[220px] bg-background min-h-screen relative">
               <div className="max-w-lg mx-auto">
