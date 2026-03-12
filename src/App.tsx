@@ -9,6 +9,7 @@ import { SideNav } from "@/components/SideNav";
 import { AIChatBubble } from "@/components/AIChatBubble";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { usePresence } from "@/hooks/usePresence";
 import OnboardingScreen from "@/pages/OnboardingScreen";
 import HomeScreen from "@/pages/HomeScreen";
 import ReadingNowScreen from "@/pages/ReadingNowScreen";
