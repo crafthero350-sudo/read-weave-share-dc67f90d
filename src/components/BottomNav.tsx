@@ -1,4 +1,4 @@
-import { Home, Search, BookOpen, Film, Bell, User, Library } from "lucide-react";
+import { Home, Search, BookOpen, Film, Bell, User } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const navItems = [
