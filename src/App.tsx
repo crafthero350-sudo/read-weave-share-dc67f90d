@@ -37,8 +37,7 @@ function AuthenticatedAIChatBubble() {
 }
 
 function PresenceTracker() {
-  const { usePresence: usePresenceHook } = require("@/hooks/usePresence");
-  usePresenceHook();
+  usePresence();
   return null;
 }
 
