@@ -1,9 +1,9 @@
-import { Home, Search, BookOpen, Film, Bell, User } from "lucide-react";
+import { Home, Search, BookOpen, Film, Bell, User, Library } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const navItems = [
   { path: "/", icon: Home, label: "Home" },
-  { path: "/reading", icon: BookOpen, label: "Reading" },
+  { path: "/library", icon: BookOpen, label: "Library" },
   { path: "/reels", icon: Film, label: "Reels" },
   { path: "/search", icon: Search, label: "Search" },
   { path: "/notifications", icon: Bell, label: "Alerts" },
