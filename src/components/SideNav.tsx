@@ -121,23 +121,15 @@ export function SideNav() {
           })}
         </div>
 
-        {/* Profile */}
+        {/* More */}
         <div className="px-2 xl:px-3 pb-6">
-          <button
-            onClick={() => navigate("/profile")}
-            className={`flex items-center gap-4 px-3 py-3 rounded-lg transition-colors group hover:bg-accent w-full ${location.pathname === "/profile" ? "font-semibold" : ""}`}>
-            
-            {profile?.avatar_url ? (
-              <img
-                src={profile.avatar_url}
-                alt="Profile"
-                className={`w-[26px] h-[26px] rounded-full object-cover border-2 ${location.pathname === "/profile" ? "border-foreground" : "border-transparent"}`}
-              />
-            ) : (
-              <User className={`w-[26px] h-[26px] ${location.pathname === "/profile" ? "text-foreground" : "text-foreground/70"} group-hover:text-foreground`} strokeWidth={location.pathname === "/profile" ? 2.2 : 1.5} />
-            )}
-            <span className={`hidden xl:block text-[15px] ${location.pathname === "/profile" ? "text-foreground font-semibold" : "text-foreground/70"} group-hover:text-foreground`}>Profile</span>
-          </button>
+          
+
+
+
+
+
+          
         </div>
       </nav>
 
