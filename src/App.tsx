@@ -29,6 +29,10 @@ import MessagesPage from "@/pages/MessagesPage";
 import ChatPage from "@/pages/ChatPage";
 import FollowListPage from "@/pages/FollowListPage";
 import LibraryPage from "@/pages/LibraryPage";
+import SnapCameraPage from "@/pages/SnapCameraPage";
+import SnapStoriesPage from "@/pages/SnapStoriesPage";
+import SnapChatListPage from "@/pages/SnapChatListPage";
+import LensesPage from "@/pages/LensesPage";
 import NotFound from "./pages/NotFound";
 
 function AuthenticatedAIChatBubble() {
