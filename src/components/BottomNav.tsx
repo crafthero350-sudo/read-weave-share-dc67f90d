@@ -14,7 +14,7 @@ export function BottomNav() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const hiddenPaths = ["/read/", "/auth", "/forgot-password", "/reset-password", "/welcome", "/setup"];
+  const hiddenPaths = ["/read/", "/auth", "/forgot-password", "/reset-password", "/welcome", "/setup", "/snap", "/lenses"];
   if (hiddenPaths.some((p) => location.pathname.startsWith(p)) || location.pathname === "/reels" || location.pathname.startsWith("/settings") || location.pathname.startsWith("/user/") || location.pathname.startsWith("/chat/") || location.pathname === "/messages") return null;
 
   return (
