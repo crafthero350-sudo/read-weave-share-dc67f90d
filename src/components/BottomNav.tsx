@@ -1,12 +1,12 @@
-import { Home, Search, BookOpen, Film, Bell, User } from "lucide-react";
+import { Home, Search, BookOpen, Film, Bell, User, Camera, MessageCircle, Compass, Ghost } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const navItems = [
   { path: "/", icon: Home, label: "Home" },
-  { path: "/library", icon: BookOpen, label: "Library" },
-  { path: "/reels", icon: Film, label: "Reels" },
-  { path: "/search", icon: Search, label: "Search" },
-  { path: "/notifications", icon: Bell, label: "Alerts" },
+  { path: "/snap", icon: Camera, label: "Snap" },
+  { path: "/snap-chat", icon: MessageCircle, label: "Chat" },
+  { path: "/lenses", icon: Compass, label: "Lenses" },
+  { path: "/snap-stories", icon: Ghost, label: "Stories" },
   { path: "/profile", icon: User, label: "Profile" },
 ];
 

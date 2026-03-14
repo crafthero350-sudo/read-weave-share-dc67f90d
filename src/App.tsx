@@ -125,6 +125,10 @@ const App = () => (
                     <Route path="/messages" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} />
                     <Route path="/chat/:userId" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
                     <Route path="/followers/:userId" element={<ProtectedRoute><FollowListPage /></ProtectedRoute>} />
+                    <Route path="/snap" element={<ProtectedRoute><SnapCameraPage /></ProtectedRoute>} />
+                    <Route path="/snap-stories" element={<ProtectedRoute><SnapStoriesPage /></ProtectedRoute>} />
+                    <Route path="/snap-chat" element={<ProtectedRoute><SnapChatListPage /></ProtectedRoute>} />
+                    <Route path="/lenses" element={<ProtectedRoute><LensesPage /></ProtectedRoute>} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </AnimatePresence>
