@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 const navItems = [
   { path: "/", icon: Home, label: "Home" },
+  { path: "/snap", icon: Camera, label: "Snap" },
   { path: "/snap-chat", icon: MessageCircle, label: "Chat" },
   { path: "/lenses", icon: Compass, label: "Lenses" },
   { path: "/snap-stories", icon: Ghost, label: "Stories" },
