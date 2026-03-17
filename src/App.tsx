@@ -29,10 +29,6 @@ import MessagesPage from "@/pages/MessagesPage";
 import ChatPage from "@/pages/ChatPage";
 import FollowListPage from "@/pages/FollowListPage";
 import LibraryPage from "@/pages/LibraryPage";
-import SnapCameraPage from "@/pages/SnapCameraPage";
-import SnapStoriesPage from "@/pages/SnapStoriesPage";
-import SnapChatListPage from "@/pages/SnapChatListPage";
-import LensesPage from "@/pages/LensesPage";
 import NotFound from "./pages/NotFound";
 
 function AuthenticatedAIChatBubble() {
@@ -125,10 +121,6 @@ const App = () => (
                     <Route path="/messages" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} />
                     <Route path="/chat/:userId" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
                     <Route path="/followers/:userId" element={<ProtectedRoute><FollowListPage /></ProtectedRoute>} />
-                    <Route path="/snap" element={<ProtectedRoute><SnapCameraPage /></ProtectedRoute>} />
-                    <Route path="/snap-stories" element={<ProtectedRoute><SnapStoriesPage /></ProtectedRoute>} />
-                    <Route path="/snap-chat" element={<ProtectedRoute><SnapChatListPage /></ProtectedRoute>} />
-                    <Route path="/lenses" element={<ProtectedRoute><LensesPage /></ProtectedRoute>} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </AnimatePresence>

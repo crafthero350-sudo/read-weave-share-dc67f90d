@@ -1,12 +1,12 @@
-import { Home, Search, BookOpen, Film, Bell, User, Camera, MessageCircle, Compass, Ghost } from "lucide-react";
+import { Home, Search, BookOpen, Film, Bell, User } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const navItems = [
   { path: "/", icon: Home, label: "Home" },
-  { path: "/snap", icon: Camera, label: "Snap" },
-  { path: "/snap-chat", icon: MessageCircle, label: "Chat" },
-  { path: "/lenses", icon: Compass, label: "Lenses" },
-  { path: "/snap-stories", icon: Ghost, label: "Stories" },
+  { path: "/library", icon: BookOpen, label: "Library" },
+  { path: "/reels", icon: Film, label: "Reels" },
+  { path: "/search", icon: Search, label: "Search" },
+  { path: "/notifications", icon: Bell, label: "Alerts" },
   { path: "/profile", icon: User, label: "Profile" },
 ];
 
@@ -14,7 +14,7 @@ export function BottomNav() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const hiddenPaths = ["/read/", "/auth", "/forgot-password", "/reset-password", "/welcome", "/setup", "/snap", "/lenses"];
+  const hiddenPaths = ["/read/", "/auth", "/forgot-password", "/reset-password", "/welcome", "/setup"];
   if (hiddenPaths.some((p) => location.pathname.startsWith(p)) || location.pathname === "/reels" || location.pathname.startsWith("/settings") || location.pathname.startsWith("/user/") || location.pathname.startsWith("/chat/") || location.pathname === "/messages") return null;
 
   return (
