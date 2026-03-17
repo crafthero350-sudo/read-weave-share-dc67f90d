@@ -22,11 +22,11 @@ interface Conversation {
 
 // Snapchat-style status colors
 const STATUS_COLORS: Record<string, string> = {
-  sent_snap: "#FF3B30",       // Red square = sent snap
-  received_snap: "#FF3B30",   // Red = snap
-  sent_chat: "#007AFF",       // Blue = chat
+  sent_snap: "#FF3B30", // Red square = sent snap
+  received_snap: "#FF3B30", // Red = snap
+  sent_chat: "#007AFF", // Blue = chat
   received_chat: "#007AFF",
-  default: "#6E6E73",
+  default: "#6E6E73"
 };
 
 export default function SnapChatListPage() {
@@ -40,26 +40,26 @@ export default function SnapChatListPage() {
     async function loadConversations() {
       if (!user) return;
 
-      const { data: msgs } = await supabase
-        .from("direct_messages")
-        .select("*")
-        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-        .order("created_at", { ascending: false })
-        .limit(500);
+      const { data: msgs } = await supabase.
+      from("direct_messages").
+      select("*").
+      or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`).
+      order("created_at", { ascending: false }).
+      limit(500);
 
       if (!msgs || msgs.length === 0) {
-        const { data: follows } = await supabase
-          .from("follows")
-          .select("following_id")
-          .eq("follower_id", user.id)
-          .limit(30);
+        const { data: follows } = await supabase.
+        from("follows").
+        select("following_id").
+        eq("follower_id", user.id).
+        limit(30);
 
         if (follows?.length) {
           const ids = follows.map((f) => f.following_id);
-          const { data: profiles } = await supabase
-            .from("profiles")
-            .select("user_id, display_name, username, avatar_url")
-            .in("user_id", ids);
+          const { data: profiles } = await supabase.
+          from("profiles").
+          select("user_id, display_name, username, avatar_url").
+          in("user_id", ids);
 
           setConversations(
             (profiles || []).map((p) => ({
@@ -71,7 +71,7 @@ export default function SnapChatListPage() {
               time: "",
               unreadCount: 0,
               isOnline: false,
-              messageType: "default",
+              messageType: "default"
             }))
           );
         }
@@ -79,7 +79,7 @@ export default function SnapChatListPage() {
         return;
       }
 
-      const convoMap = new Map<string, { lastMsg: typeof msgs[0]; unread: number }>();
+      const convoMap = new Map<string, {lastMsg: typeof msgs[0];unread: number;}>();
       for (const msg of msgs) {
         const partnerId = msg.sender_id === user.id ? msg.receiver_id : msg.sender_id;
         if (!convoMap.has(partnerId)) {
@@ -92,9 +92,9 @@ export default function SnapChatListPage() {
 
       const partnerIds = [...convoMap.keys()];
       const [profilesRes, presenceRes] = await Promise.all([
-        supabase.from("profiles").select("user_id, display_name, username, avatar_url").in("user_id", partnerIds),
-        supabase.from("user_presence").select("user_id, is_online, last_seen_at").in("user_id", partnerIds),
-      ]);
+      supabase.from("profiles").select("user_id, display_name, username, avatar_url").in("user_id", partnerIds),
+      supabase.from("user_presence").select("user_id, is_online, last_seen_at").in("user_id", partnerIds)]
+      );
 
       const profileMap = new Map((profilesRes.data || []).map((p) => [p.user_id, p]));
       const presenceMap = new Map((presenceRes.data || []).map((p: any) => [p.user_id, p]));
@@ -107,8 +107,8 @@ export default function SnapChatListPage() {
         const msgType = entry.lastMsg.message_type;
 
         let statusKey = "default";
-        if (msgType === "image") statusKey = isSent ? "sent_snap" : "received_snap";
-        else statusKey = isSent ? "sent_chat" : "received_chat";
+        if (msgType === "image") statusKey = isSent ? "sent_snap" : "received_snap";else
+        statusKey = isSent ? "sent_chat" : "received_chat";
 
         return {
           userId: pid,
@@ -119,7 +119,7 @@ export default function SnapChatListPage() {
           time: formatDistanceToNow(new Date(entry.lastMsg.created_at), { addSuffix: false }),
           unreadCount: entry.unread,
           isOnline: pr ? isUserOnline(pr.last_seen_at, pr.is_online) : false,
-          messageType: statusKey,
+          messageType: statusKey
         };
       });
 
@@ -131,8 +131,8 @@ export default function SnapChatListPage() {
 
   const filtered = conversations.filter(
     (c) =>
-      c.displayName.toLowerCase().includes(search.toLowerCase()) ||
-      c.username.toLowerCase().includes(search.toLowerCase())
+    c.displayName.toLowerCase().includes(search.toLowerCase()) ||
+    c.username.toLowerCase().includes(search.toLowerCase())
   );
 
   const renderAvatar = (url: string | null, name: string) => {
@@ -143,8 +143,8 @@ export default function SnapChatListPage() {
     return (
       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
         <span className="text-white font-bold text-sm">{initials}</span>
-      </div>
-    );
+      </div>);
+
   };
 
   const getStatusIcon = (type: string) => {
@@ -201,55 +201,55 @@ export default function SnapChatListPage() {
               placeholder="Search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none w-full"
-            />
+              className="bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none w-full" />
+            
           </div>
         </div>
 
         {/* Quick actions */}
         <div className="flex items-center gap-3 px-4 pb-3">
           {[
-            { icon: Camera, label: "Camera", color: "#FFFC00", bg: "#FFFC00", textColor: "#000" },
-            { icon: MessageCircle, label: "Chat", color: "#007AFF", bg: "#007AFF", textColor: "#fff" },
-          ].map(({ icon: Icon, label, bg, textColor }) => (
-            <button
-              key={label}
-              onClick={() => label === "Camera" ? navigate("/snap") : null}
-              className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium"
-              style={{ backgroundColor: bg, color: textColor }}
-            >
-              <Icon className="w-4 h-4" />
-              {label}
-            </button>
-          ))}
+          { icon: Camera, label: "Camera", color: "#FFFC00", bg: "#FFFC00", textColor: "#000" },
+          { icon: MessageCircle, label: "Chat", color: "#007AFF", bg: "#007AFF", textColor: "#fff" }].
+          map(({ icon: Icon, label, bg, textColor }) => {}
+
+
+
+
+
+
+
+
+
+          )}
         </div>
 
         {/* Chat list */}
         <div>
-          {loading ? (
-            <div className="flex justify-center py-12">
+          {loading ?
+          <div className="flex justify-center py-12">
               <div className="w-6 h-6 border-2 border-foreground/30 border-t-foreground rounded-full animate-spin" />
-            </div>
-          ) : filtered.length === 0 ? (
-            <div className="text-center py-16 px-4">
+            </div> :
+          filtered.length === 0 ?
+          <div className="text-center py-16 px-4">
               <MessageCircle className="w-12 h-12 text-muted-foreground/40 mx-auto mb-4" />
               <p className="text-muted-foreground text-sm">No conversations yet</p>
-            </div>
-          ) : (
-            filtered.map((convo, i) => (
-              <motion.button
-                key={convo.userId}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.02 }}
-                onClick={() => navigate(`/chat/${convo.userId}`)}
-                className="flex items-center gap-3 w-full px-4 py-3 hover:bg-secondary/50 transition-colors active:bg-secondary/80"
-              >
+            </div> :
+
+          filtered.map((convo, i) =>
+          <motion.button
+            key={convo.userId}
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: i * 0.02 }}
+            onClick={() => navigate(`/chat/${convo.userId}`)}
+            className="flex items-center gap-3 w-full px-4 py-3 hover:bg-secondary/50 transition-colors active:bg-secondary/80">
+            
                 <div className="relative flex-shrink-0">
                   {renderAvatar(convo.avatarUrl, convo.displayName)}
-                  {convo.isOnline && (
-                    <span className="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-[#34C759] border-2 border-background" />
-                  )}
+                  {convo.isOnline &&
+              <span className="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-[#34C759] border-2 border-background" />
+              }
                 </div>
 
                 <div className="flex-1 text-left min-w-0">
@@ -259,7 +259,7 @@ export default function SnapChatListPage() {
                   <div className="flex items-center gap-1.5">
                     {getStatusIcon(convo.messageType)}
                     <p className={`text-xs truncate ${convo.unreadCount > 0 ? "font-semibold" : ""}`}
-                      style={{ color: STATUS_COLORS[convo.messageType] || STATUS_COLORS.default }}>
+                style={{ color: STATUS_COLORS[convo.messageType] || STATUS_COLORS.default }}>
                       {getStatusLabel(convo)}
                       {convo.time && <span className="text-muted-foreground font-normal"> · {convo.time}</span>}
                     </p>
@@ -267,16 +267,16 @@ export default function SnapChatListPage() {
                 </div>
 
                 <button
-                  onClick={(e) => { e.stopPropagation(); navigate("/snap"); }}
-                  className="w-9 h-9 flex items-center justify-center flex-shrink-0"
-                >
+              onClick={(e) => {e.stopPropagation();navigate("/snap");}}
+              className="w-9 h-9 flex items-center justify-center flex-shrink-0">
+              
                   <Camera className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
                 </button>
               </motion.button>
-            ))
-          )}
+          )
+          }
         </div>
       </div>
-    </PageTransition>
-  );
+    </PageTransition>);
+
 }
