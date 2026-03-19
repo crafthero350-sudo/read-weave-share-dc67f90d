@@ -76,22 +76,10 @@ export function PostCard({ post, index, onRefresh }: PostCardProps) {
     const shareUrl = `${window.location.origin}/?post=${post.id}`;
     const shareText = post.content.slice(0, 200);
     const shareTitle = `Post by ${post.profile?.display_name || "User"}`;
-
     if (navigator.share) {
-      try {
-        await navigator.share({ title: shareTitle, text: shareText, url: shareUrl });
-        return;
-      } catch (e: any) {
-        if (e?.name === "AbortError") return;
-      }
+      try { await navigator.share({ title: shareTitle, text: shareText, url: shareUrl }); return; } catch (e: any) { if (e?.name === "AbortError") return; }
     }
-    // Fallback: copy link
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      toast.success("Link copied to clipboard!");
-    } catch {
-      toast.error("Could not share");
-    }
+    try { await navigator.clipboard.writeText(shareUrl); toast.success("Link copied!"); } catch { toast.error("Could not share"); }
   };
 
   const handleDoubleTap = () => {
@@ -112,10 +100,7 @@ export function PostCard({ post, index, onRefresh }: PostCardProps) {
       onRefresh?.();
     } catch (err: any) {
       toast.error(err.message || "Failed to delete");
-    } finally {
-      setDeleting(false);
-      setShowMenu(false);
-    }
+    } finally { setDeleting(false); setShowMenu(false); }
   };
 
   const handleEdit = async () => {
@@ -126,9 +111,7 @@ export function PostCard({ post, index, onRefresh }: PostCardProps) {
       toast.success("Post updated");
       setEditing(false);
       onRefresh?.();
-    } catch (err: any) {
-      toast.error(err.message || "Failed to update");
-    }
+    } catch (err: any) { toast.error(err.message || "Failed to update"); }
   };
 
   const timeAgo = formatDistanceToNow(new Date(post.created_at), { addSuffix: false });
@@ -136,7 +119,6 @@ export function PostCard({ post, index, onRefresh }: PostCardProps) {
   const username = post.profile?.username || displayName;
   const initials = displayName.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
   const avatarUrl = post.profile?.avatar_url;
-
   const mediaUrl = post.image_url || post.book?.cover_url || "";
   const hasMedia = !!mediaUrl;
   const isVideo = mediaUrl.match(/\.(mp4|mov|webm|avi|mkv)(\?|$)/i);
@@ -148,55 +130,48 @@ export function PostCard({ post, index, onRefresh }: PostCardProps) {
 
   return (
     <>
-      <article className="border-b border-border">
+      <article className="feed-card mb-3">
         {/* Header */}
-        <div className="flex items-center gap-2.5 px-3 py-2">
+        <div className="flex items-center gap-2.5 px-3.5 py-3">
           <button onClick={() => navigate(`/user/${post.user_id}`)} className="flex-shrink-0">
             {avatarUrl ? (
-              <img src={avatarUrl} alt={username} className="w-8 h-8 rounded-full object-cover ring-1 ring-border" />
+              <img src={avatarUrl} alt={username} className="w-9 h-9 rounded-full object-cover ring-2 ring-border" />
             ) : (
-              <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-[11px] font-semibold text-foreground ring-1 ring-border">
+              <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center text-[11px] font-semibold text-muted-foreground ring-2 ring-border">
                 {initials}
               </div>
             )}
           </button>
-          <button onClick={() => navigate(`/user/${post.user_id}`)} className="flex items-center gap-1.5 flex-1 text-left">
-            <span className="text-[13px] font-semibold text-foreground">{username}</span>
-            <span className="text-[12px] text-muted-foreground">• {timeAgo}</span>
+          <button onClick={() => navigate(`/user/${post.user_id}`)} className="flex-1 text-left">
+            <div className="flex items-center gap-1.5">
+              <span className="text-[13px] font-bold text-foreground">{username}</span>
+              {post.book && (
+                <span className="text-[11px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded-md">
+                  📖 {post.book.title}
+                </span>
+              )}
+            </div>
           </button>
           <div className="relative">
-            <button onClick={() => setShowMenu(!showMenu)} className="p-1">
-              <MoreHorizontal className="w-5 h-5 text-foreground" strokeWidth={1.5} />
+            <button onClick={() => setShowMenu(!showMenu)} className="p-1.5 min-w-[44px] min-h-[44px] flex items-center justify-center">
+              <MoreHorizontal className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
             </button>
             {showMenu && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />
-                <div className="absolute right-0 top-8 z-50 bg-card border border-border rounded-xl shadow-lg min-w-[160px] py-1 overflow-hidden">
+                <div className="absolute right-0 top-8 z-50 bg-card border border-border rounded-2xl shadow-lg min-w-[160px] py-1 overflow-hidden">
                   {isOwner && (
                     <>
-                      <button
-                        onClick={() => { setEditing(true); setEditContent(post.content); setShowMenu(false); }}
-                        className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
-                      >
-                        <Pencil className="w-4 h-4" strokeWidth={1.5} />
-                        Edit
+                      <button onClick={() => { setEditing(true); setEditContent(post.content); setShowMenu(false); }} className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors">
+                        <Pencil className="w-4 h-4" strokeWidth={1.5} /> Edit
                       </button>
-                      <button
-                        onClick={handleDelete}
-                        disabled={deleting}
-                        className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-destructive hover:bg-muted transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" strokeWidth={1.5} />
-                        {deleting ? "Deleting..." : "Delete"}
+                      <button onClick={handleDelete} disabled={deleting} className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-destructive hover:bg-muted transition-colors">
+                        <Trash2 className="w-4 h-4" strokeWidth={1.5} /> {deleting ? "Deleting..." : "Delete"}
                       </button>
                     </>
                   )}
-                  <button
-                    onClick={() => { handleShare(); setShowMenu(false); }}
-                    className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
-                  >
-                    <Send className="w-4 h-4 -rotate-[20deg]" strokeWidth={1.5} />
-                    Share
+                  <button onClick={() => { handleShare(); setShowMenu(false); }} className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors">
+                    <Send className="w-4 h-4 -rotate-[20deg]" strokeWidth={1.5} /> Share
                   </button>
                 </div>
               </>
@@ -206,12 +181,12 @@ export function PostCard({ post, index, onRefresh }: PostCardProps) {
 
         {/* Media */}
         {hasMedia && (
-          <div className="w-full aspect-square bg-muted relative select-none" onDoubleClick={handleDoubleTap}>
+          <div className="w-full aspect-[4/5] bg-muted relative select-none" onDoubleClick={handleDoubleTap}>
             {isVideo ? (
               <>
                 <video ref={videoRef} src={mediaUrl} className="w-full h-full object-cover" autoPlay loop muted={muted} playsInline />
-                <button onClick={toggleMute} className="absolute bottom-3 right-3 w-7 h-7 rounded-full bg-black/60 flex items-center justify-center">
-                  {muted ? <VolumeX className="w-3.5 h-3.5 text-white" strokeWidth={2} /> : <Volume2 className="w-3.5 h-3.5 text-white" strokeWidth={2} />}
+                <button onClick={toggleMute} className="absolute bottom-3 right-3 w-8 h-8 rounded-full bg-card/80 backdrop-blur-sm flex items-center justify-center shadow-sm">
+                  {muted ? <VolumeX className="w-4 h-4 text-foreground" strokeWidth={2} /> : <Volume2 className="w-4 h-4 text-foreground" strokeWidth={2} />}
                 </button>
               </>
             ) : (
@@ -219,75 +194,69 @@ export function PostCard({ post, index, onRefresh }: PostCardProps) {
             )}
             {showHeart && (
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <Heart className="w-20 h-20 text-white fill-white animate-scale-in drop-shadow-lg" />
+                <Heart className="w-24 h-24 text-destructive fill-destructive animate-scale-in drop-shadow-lg" />
               </div>
             )}
           </div>
         )}
 
-        {/* Caption / Edit mode */}
-        <div className="px-3 mt-2">
+        {/* Actions */}
+        <div className="px-3.5 pt-3 pb-1">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <button onClick={toggleLike} className="active:scale-110 transition-transform min-w-[44px] min-h-[44px] flex items-center justify-center -ml-2">
+                <Heart className={`w-[26px] h-[26px] transition-colors ${liked ? "fill-destructive text-destructive" : "text-foreground"}`} strokeWidth={1.5} />
+              </button>
+              <button onClick={() => setShowComments(true)} className="min-w-[44px] min-h-[44px] flex items-center justify-center -ml-2">
+                <MessageCircle className="w-[26px] h-[26px] text-foreground" strokeWidth={1.5} />
+              </button>
+              <button onClick={handleShare} className="min-w-[44px] min-h-[44px] flex items-center justify-center -ml-2">
+                <Send className="w-[24px] h-[24px] text-foreground -rotate-[25deg]" strokeWidth={1.5} />
+              </button>
+            </div>
+            <button onClick={toggleSave} className="active:scale-110 transition-transform min-w-[44px] min-h-[44px] flex items-center justify-center">
+              <Bookmark className={`w-[26px] h-[26px] transition-colors ${saved ? "fill-foreground text-foreground" : "text-foreground"}`} strokeWidth={1.5} />
+            </button>
+          </div>
+        </div>
+
+        {/* Likes */}
+        {likeCount > 0 && (
+          <div className="px-3.5 flex items-center gap-1.5">
+            <div className="flex -space-x-1.5">
+              <div className="w-4 h-4 rounded-full bg-destructive border border-card" />
+            </div>
+            <p className="text-[13px] font-semibold text-foreground">
+              {likeCount.toLocaleString()} {likeCount === 1 ? "Like" : "Liked"}
+            </p>
+          </div>
+        )}
+
+        {/* Caption */}
+        <div className="px-3.5 mt-1.5">
           {editing ? (
             <div className="space-y-2 py-1">
-              <textarea
-                value={editContent}
-                onChange={(e) => setEditContent(e.target.value)}
-                rows={3}
-                className="w-full bg-muted rounded-xl px-3 py-2 text-sm outline-none resize-none text-foreground border border-border focus:border-foreground transition-colors"
-              />
+              <textarea value={editContent} onChange={(e) => setEditContent(e.target.value)} rows={3} className="w-full bg-muted rounded-xl px-3 py-2 text-sm outline-none resize-none text-foreground border border-border focus:border-primary transition-colors" />
               <div className="flex gap-2">
-                <button onClick={() => setEditing(false)} className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-muted text-foreground text-xs font-medium">
-                  <X className="w-3 h-3" /> Cancel
-                </button>
-                <button onClick={handleEdit} disabled={!editContent.trim()} className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-foreground text-background text-xs font-medium disabled:opacity-40">
-                  <Check className="w-3 h-3" /> Save
-                </button>
+                <button onClick={() => setEditing(false)} className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-muted text-foreground text-xs font-medium"><X className="w-3 h-3" /> Cancel</button>
+                <button onClick={handleEdit} disabled={!editContent.trim()} className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium disabled:opacity-40"><Check className="w-3 h-3" /> Save</button>
               </div>
             </div>
           ) : (
-            <p className="text-[13px] leading-snug text-foreground">
-              <span className="font-semibold mr-1.5">{username}</span>
-              <span>{post.content}</span>
-              {post.book && (
-                <span className="text-muted-foreground"> #{post.book.title.replace(/\s+/g, '')}</span>
-              )}
+            <p className="text-[13px] leading-[1.4] text-foreground">
+              <span className="font-bold mr-1.5">{username}</span>
+              <span className="text-foreground/90">{post.content}</span>
             </p>
           )}
         </div>
 
-        {/* Edited indicator */}
         {wasEdited && !editing && (
-          <p className="px-3 mt-0.5 text-[10px] text-muted-foreground italic">Edited</p>
+          <p className="px-3.5 mt-0.5 text-[10px] text-muted-foreground italic">Edited</p>
         )}
 
-        {/* Actions row — below content */}
-        <div className="flex items-center justify-between px-3 py-2">
-          <div className="flex items-center gap-4">
-            <button onClick={toggleLike} className="active:scale-110 transition-transform">
-              <Heart className={`w-6 h-6 transition-colors ${liked ? "fill-red-500 text-red-500" : "text-foreground"}`} strokeWidth={1.5} />
-            </button>
-            <button onClick={() => setShowComments(true)}>
-              <MessageCircle className="w-6 h-6 text-foreground" strokeWidth={1.5} />
-            </button>
-            <button onClick={handleShare}>
-              <Send className="w-6 h-6 text-foreground" strokeWidth={1.5} style={{ transform: "rotate(-25deg) translateY(-1px)" }} />
-            </button>
-          </div>
-          <button onClick={toggleSave} className="active:scale-110 transition-transform">
-            <Bookmark className={`w-6 h-6 transition-colors ${saved ? "fill-foreground text-foreground" : "text-foreground"}`} strokeWidth={1.5} />
-          </button>
-        </div>
-
-        {/* Likes count */}
-        {likeCount > 0 && (
-          <p className="px-3 text-[13px] font-semibold leading-tight text-foreground">
-            {likeCount.toLocaleString()} {likeCount === 1 ? "like" : "likes"}
-          </p>
-        )}
-
-        {/* View comments */}
+        {/* Comments link */}
         {(post.comments_count || 0) > 0 && (
-          <button onClick={() => setShowComments(true)} className="px-3 mt-1 block">
+          <button onClick={() => setShowComments(true)} className="px-3.5 mt-1 block">
             <span className="text-[13px] text-muted-foreground">
               View all {post.comments_count} comment{post.comments_count !== 1 ? "s" : ""}
             </span>
@@ -295,7 +264,7 @@ export function PostCard({ post, index, onRefresh }: PostCardProps) {
         )}
 
         {/* Time */}
-        <p className="px-3 pb-3 pt-1 text-[10px] text-muted-foreground uppercase">{timeAgo} ago</p>
+        <p className="px-3.5 pb-3.5 pt-1 text-[11px] text-muted-foreground">{timeAgo} ago</p>
       </article>
 
       <CommentPanel postId={post.id} open={showComments} onClose={() => { setShowComments(false); onRefresh?.(); }} />

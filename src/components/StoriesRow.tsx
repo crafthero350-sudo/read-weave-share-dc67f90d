@@ -71,7 +71,6 @@ export function StoriesRow() {
 
     const storyGroups: StoryGroup[] = [];
 
-    // Own stories first
     if (user && groupMap.has(user.id)) {
       const p = profileMap.get(user.id);
       storyGroups.push({
@@ -119,7 +118,7 @@ export function StoriesRow() {
       return <img src={avatarUrl} alt="" className="w-full h-full rounded-full object-cover" />;
     }
     return (
-      <div className="w-full h-full rounded-full bg-muted flex items-center justify-center text-sm font-semibold text-foreground">
+      <div className="w-full h-full rounded-full bg-muted flex items-center justify-center text-sm font-semibold text-muted-foreground">
         {initials}
       </div>
     );
@@ -127,22 +126,24 @@ export function StoriesRow() {
 
   return (
     <>
-      <div className="flex gap-3 overflow-x-auto px-4 py-3 no-scrollbar">
-        {/* Your Story button */}
+      <div className="flex gap-3.5 overflow-x-auto px-4 py-3 no-scrollbar">
+        {/* Your Story */}
         {user && (
           <button
             onClick={() => setShowCreator(true)}
-            className="flex flex-col items-center gap-1 flex-shrink-0"
+            className="flex flex-col items-center gap-1.5 flex-shrink-0"
           >
             <div className="relative">
-              <div className="w-[66px] h-[66px] rounded-full bg-muted flex items-center justify-center overflow-hidden">
+              <div className="w-[68px] h-[68px] rounded-full bg-muted/60 flex items-center justify-center overflow-hidden border-2 border-dashed border-border">
                 {renderAvatar(null, "You")}
               </div>
-              <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-foreground flex items-center justify-center border-2 border-background">
-                <Plus className="w-3 h-3 text-background" strokeWidth={3} />
+              <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-primary flex items-center justify-center border-[2.5px] border-background">
+                <Plus className="w-3 h-3 text-primary-foreground" strokeWidth={3} />
               </div>
             </div>
-            <span className="text-[11px] text-foreground w-[72px] truncate text-center">Your story</span>
+            <span className="text-[11px] text-muted-foreground w-[72px] truncate text-center font-medium">
+              Your Loop
+            </span>
           </button>
         )}
 
@@ -152,17 +153,17 @@ export function StoriesRow() {
             <button
               key={group.userId}
               onClick={() => setActiveGroupIndex(gi)}
-              className="flex flex-col items-center gap-1 flex-shrink-0"
+              className="flex flex-col items-center gap-1.5 flex-shrink-0"
             >
-              <div className="story-ring-active">
-                <div className="w-[62px] h-[62px] rounded-full bg-background p-[2px]">
+              <div className="story-ring-gradient">
+                <div className="w-[64px] h-[64px] rounded-full bg-background p-[2.5px]">
                   <div className="w-full h-full rounded-full overflow-hidden">
                     {renderAvatar(group.avatarUrl, ini)}
                   </div>
                 </div>
               </div>
-              <span className="text-[11px] text-foreground w-[72px] truncate text-center">
-                {user && group.userId === user.id ? "Your story" : group.username}
+              <span className="text-[11px] text-foreground w-[72px] truncate text-center font-medium">
+                {user && group.userId === user.id ? "Your Loop" : group.username}
               </span>
             </button>
           );
