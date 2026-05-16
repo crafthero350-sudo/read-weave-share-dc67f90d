@@ -205,9 +205,9 @@ export default function ProfilePage() {
       )}
 
       {activeTab === "characters" && (
-        <div className="grid grid-cols-3 gap-px">
+        <div className="grid grid-cols-3 gap-1.5 px-5 mt-4">
           {characters.map((char) => (
-            <div key={char.id} className="aspect-square bg-secondary relative group">
+            <div key={char.id} className="aspect-square bg-secondary relative group rounded-2xl overflow-hidden shadow-xs">
               <img src={char.image_url} alt={char.character_name} className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/40 transition-colors flex items-center justify-center">
                 <div className="opacity-0 group-hover:opacity-100 transition-opacity text-center text-background">
