@@ -89,16 +89,16 @@ export default function HomeScreen() {
             className="text-[26px] font-extrabold tracking-tight text-primary"
             style={{ fontFamily: "'Merriweather', serif" }}
           >
-            BookApp
+            BookApp<span className="sr-only"> — Social network for book lovers</span>
           </h1>
           <div className="flex items-center gap-0.5 md:hidden">
-            <button onClick={() => setShowStoryCreator(true)} className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center">
+            <button aria-label="Create story" onClick={() => setShowStoryCreator(true)} className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center">
               <PlusSquare className="w-6 h-6 text-foreground" strokeWidth={1.5} />
             </button>
-            <button className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center" onClick={() => navigate("/notifications")}>
+            <button aria-label="Notifications" className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center" onClick={() => navigate("/notifications")}>
               <Heart className="w-6 h-6 text-foreground" strokeWidth={1.5} />
             </button>
-            <button className="p-2 relative min-w-[44px] min-h-[44px] flex items-center justify-center" onClick={() => navigate("/messages")}>
+            <button aria-label="Messages" className="p-2 relative min-w-[44px] min-h-[44px] flex items-center justify-center" onClick={() => navigate("/messages")}>
               <Send className="w-6 h-6 text-foreground -rotate-[20deg]" strokeWidth={1.5} />
               {unreadCount > 0 && (
                 <span className="absolute top-1 right-1 w-[18px] h-[18px] rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center">

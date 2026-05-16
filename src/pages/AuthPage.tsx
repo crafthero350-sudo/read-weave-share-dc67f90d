@@ -71,13 +71,14 @@ export default function AuthPage() {
           className="text-4xl mb-8"
           style={{ fontFamily: "'Grand Hotel', cursive, serif" }}
         >
-          BookApp
+          BookApp<span className="sr-only"> — Log in or create an account</span>
         </h1>
 
         <form onSubmit={handleEmailAuth} className="w-full space-y-2">
           {isSignUp && (
             <input
               type="text"
+              aria-label="Full name"
               placeholder="Full name"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -86,6 +87,7 @@ export default function AuthPage() {
           )}
           <input
             type="text"
+            aria-label="Phone number, username or email"
             placeholder="Phone number, username or email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -94,6 +96,7 @@ export default function AuthPage() {
           />
           <input
             type="password"
+            aria-label="Password"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
