@@ -82,26 +82,23 @@ export default function HomeScreen() {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      {/* Header — Loop style */}
-      <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl">
-        <div className="flex items-center justify-between px-4 h-12">
-          <h1
-            className="text-[26px] font-extrabold tracking-tight text-primary"
-            style={{ fontFamily: "'Merriweather', serif" }}
-          >
-            BookApp<span className="sr-only"> — Social network for book lovers</span>
+      {/* Header — iOS Apple Books style */}
+      <header className="sticky top-0 z-30 ios-glass">
+        <div className="flex items-end justify-between px-5 pt-3 pb-2">
+          <h1 className="ios-large-title font-serif">
+            Read<span className="sr-only"> — Social network for book lovers</span>
           </h1>
-          <div className="flex items-center gap-0.5 md:hidden">
-            <button aria-label="Create story" onClick={() => setShowStoryCreator(true)} className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center">
-              <PlusSquare className="w-6 h-6 text-foreground" strokeWidth={1.5} />
+          <div className="flex items-center gap-1 md:hidden">
+            <button aria-label="Create story" onClick={() => setShowStoryCreator(true)} className="ios-press w-11 h-11 rounded-full bg-secondary/70 flex items-center justify-center">
+              <PlusSquare className="w-[20px] h-[20px] text-foreground" strokeWidth={1.7} />
             </button>
-            <button aria-label="Notifications" className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center" onClick={() => navigate("/notifications")}>
-              <Heart className="w-6 h-6 text-foreground" strokeWidth={1.5} />
+            <button aria-label="Notifications" onClick={() => navigate("/notifications")} className="ios-press w-11 h-11 rounded-full bg-secondary/70 flex items-center justify-center">
+              <Heart className="w-[20px] h-[20px] text-foreground" strokeWidth={1.7} />
             </button>
-            <button aria-label="Messages" className="p-2 relative min-w-[44px] min-h-[44px] flex items-center justify-center" onClick={() => navigate("/messages")}>
-              <Send className="w-6 h-6 text-foreground -rotate-[20deg]" strokeWidth={1.5} />
+            <button aria-label="Messages" onClick={() => navigate("/messages")} className="ios-press relative w-11 h-11 rounded-full bg-secondary/70 flex items-center justify-center">
+              <Send className="w-[20px] h-[20px] text-foreground -rotate-[20deg]" strokeWidth={1.7} />
               {unreadCount > 0 && (
-                <span className="absolute top-1 right-1 w-[18px] h-[18px] rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center">
+                <span className="absolute top-1 right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center">
                   {unreadCount > 9 ? "9+" : unreadCount}
                 </span>
               )}
@@ -114,19 +111,19 @@ export default function HomeScreen() {
       <StoriesRow />
 
       {/* Feed */}
-      <div className="px-3 pt-2 space-y-3">
+      <div className="px-4 pt-3 space-y-4">
         {loading ? (
           <div className="flex justify-center py-16">
             <div className="w-7 h-7 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
           </div>
         ) : posts.length === 0 ? (
-          <div className="text-center py-20 px-4">
-            <p className="text-muted-foreground text-sm">No posts yet. Share your first book thought!</p>
+          <div className="ios-card text-center py-16 px-6 animate-spring-in">
+            <p className="text-muted-foreground text-[15px]">No posts yet. Share your first book thought.</p>
             <button
               onClick={() => setShowStoryCreator(true)}
-              className="mt-4 px-6 py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-semibold"
+              className="ios-press mt-5 px-7 py-3 bg-primary text-primary-foreground rounded-full text-[15px] font-semibold"
             >
-              Create
+              Create your first post
             </button>
           </div>
         ) : (
