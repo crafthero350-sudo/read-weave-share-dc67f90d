@@ -185,10 +185,59 @@
 
 @layer components {
   .bookapp-title {
-    font-family: 'Merriweather', 'Georgia', serif;
+    font-family: 'New York', 'Iowan Old Style', 'Palatino', 'Merriweather', Georgia, serif;
     font-weight: 700;
     letter-spacing: -0.03em;
     color: hsl(var(--foreground));
+  }
+
+  /* iOS-style large display title (Apple Books / Health) */
+  .ios-large-title {
+    font-family: var(--font-sans);
+    font-weight: 800;
+    font-size: 34px;
+    line-height: 1.08;
+    letter-spacing: -0.022em;
+    color: hsl(var(--foreground));
+  }
+
+  .ios-section-title {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.018em;
+    color: hsl(var(--foreground));
+  }
+
+  .ios-serif-title {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: hsl(var(--foreground));
+  }
+
+  /* Frosted glass surface (nav bars / headers) */
+  .ios-glass {
+    background-color: hsl(var(--background) / 0.72);
+    backdrop-filter: saturate(180%) blur(24px);
+    -webkit-backdrop-filter: saturate(180%) blur(24px);
+  }
+
+  /* Soft elevated card — Apple Books vibe */
+  .ios-card {
+    @apply rounded-[28px] bg-card;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid hsl(var(--border) / 0.6);
+  }
+
+  .ios-tile {
+    @apply rounded-[24px] p-4;
+    box-shadow: var(--shadow-xs);
+  }
+
+  /* Spring tap micro-interaction */
+  .ios-press {
+    @apply transition-transform duration-150 ease-out active:scale-[0.96];
   }
 
   .page-flip {
@@ -226,21 +275,23 @@
   }
 
   .feed-card {
-    @apply rounded-2xl bg-card shadow-sm overflow-hidden;
+    @apply rounded-[28px] bg-card overflow-hidden;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid hsl(var(--border) / 0.5);
   }
 
   .section-title {
-    @apply text-base font-semibold tracking-tight;
-    font-family: 'Inter', sans-serif;
+    @apply text-[22px] font-bold tracking-tight;
+    letter-spacing: -0.018em;
   }
 
   .book-progress-bar {
-    @apply h-1 rounded-full bg-muted overflow-hidden;
+    @apply h-2 rounded-full bg-muted overflow-hidden;
   }
 
   .book-progress-fill {
     @apply h-full rounded-full transition-all duration-500;
-    background: hsl(var(--primary));
+    background: linear-gradient(90deg, hsl(var(--pastel-mint)), hsl(var(--pastel-lavender)));
   }
 
   .gold-gradient {
