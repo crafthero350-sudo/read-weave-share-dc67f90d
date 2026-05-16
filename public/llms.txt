@@ -1,0 +1,16 @@
+# BookApp
+
+> A minimal reading social platform where readers track their books, share highlights, and discuss what they're reading with a community.
+
+BookApp combines a personal reading library and EPUB reader with a social feed for posts, reels, stories, and direct messages between readers.
+
+## Pages
+
+- [Home](/): Social feed of posts and stories from readers you follow.
+- [Sign in](/auth): Log in or create a BookApp account.
+
+## Optional
+
+- [Reels](/reels): Short-form video feed from the reading community (requires sign in).
+- [Library](/library): Your personal book library and reading progress (requires sign in).
+- [Messages](/messages): Direct conversations with other readers (requires sign in).
