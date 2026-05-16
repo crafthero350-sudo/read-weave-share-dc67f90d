@@ -99,7 +99,7 @@ const App = () => (
             <PresenceTracker />
             <SideNav />
             <div className="md:ml-[72px] xl:ml-[220px] bg-background min-h-screen relative">
-              <div className="max-w-lg mx-auto">
+              <main className="max-w-lg mx-auto">
                 <AnimatePresence mode="wait">
                   <Routes>
                     <Route path="/welcome" element={<Navigate to="/auth" replace />} />
@@ -126,7 +126,7 @@ const App = () => (
                 </AnimatePresence>
                 <BottomNav />
                 <AuthenticatedAIChatBubble />
-              </div>
+              </main>
             </div>
           </AuthProvider>
         </BrowserRouter>
