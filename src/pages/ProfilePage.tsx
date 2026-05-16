@@ -71,106 +71,112 @@ export default function ProfilePage() {
     .split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
 
   return (
-    <div className="min-h-screen bg-background pb-14">
-      {/* Header */}
-      <header className="sticky top-0 z-30 bg-background border-b border-border">
-        <div className="flex items-center justify-between px-4 h-11">
-          <h1 className="text-[15px] font-bold">{profile?.username || "Profile"}</h1>
-          <button onClick={() => navigate("/settings")} className="p-1.5 rounded-full hover:bg-accent transition-colors">
-            <Settings className="w-5 h-5 text-foreground" strokeWidth={1.5} />
+    <div className="min-h-screen bg-background pb-20">
+      {/* Header — iOS large title style */}
+      <header className="sticky top-0 z-30 ios-glass">
+        <div className="flex items-center justify-between px-5 h-12">
+          <h1 className="text-[17px] font-semibold tracking-tight">{profile?.username || "Profile"}</h1>
+          <button
+            aria-label="Settings"
+            onClick={() => navigate("/settings")}
+            className="ios-press w-10 h-10 rounded-full bg-secondary/70 flex items-center justify-center"
+          >
+            <Settings className="w-[19px] h-[19px] text-foreground" strokeWidth={1.6} />
           </button>
         </div>
       </header>
 
-      <div className="px-4 pt-4">
-        {/* Profile Info — Instagram layout */}
-        <div className="flex items-center gap-6">
-          {/* Avatar */}
-          <div className="w-20 h-20 rounded-full bg-secondary flex items-center justify-center text-2xl font-bold text-foreground flex-shrink-0 overflow-hidden ring-2 ring-border">
+      <div className="px-5 pt-4">
+        {/* Hero: large avatar + display name */}
+        <div className="flex flex-col items-center text-center animate-spring-in">
+          <div className="w-24 h-24 rounded-full bg-secondary flex items-center justify-center text-3xl font-bold text-foreground overflow-hidden shadow-md ring-1 ring-border">
             {profile?.avatar_url ? (
               <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
             ) : (
               <span>{initials}</span>
             )}
           </div>
-
-          {/* Stats row */}
-          <div className="flex-1 flex justify-around">
-            <div className="text-center">
-              <p className="text-lg font-bold leading-tight">{stats.posts}</p>
-              <p className="text-[11px] text-muted-foreground">posts</p>
-            </div>
-            <button onClick={() => navigate(`/followers/${user?.id}?tab=followers`)} className="text-center">
-              <p className="text-lg font-bold leading-tight">{followersCount}</p>
-              <p className="text-[11px] text-muted-foreground">followers</p>
-            </button>
-            <button onClick={() => navigate(`/followers/${user?.id}?tab=following`)} className="text-center">
-              <p className="text-lg font-bold leading-tight">{followingCount}</p>
-              <p className="text-[11px] text-muted-foreground">following</p>
-            </button>
-          </div>
-        </div>
-
-        {/* Name & Bio */}
-        <div className="mt-3">
-          <p className="text-[13px] font-semibold">{profile?.display_name || "Reader"}</p>
-          {profile?.bio && <p className="text-[13px] text-muted-foreground mt-0.5">{profile.bio}</p>}
+          <h2 className="ios-serif-title text-[26px] mt-3">{profile?.display_name || "Reader"}</h2>
+          {profile?.bio && <p className="text-[14px] text-muted-foreground mt-1 max-w-xs">{profile.bio}</p>}
           {profile?.reading_personality && (
-            <p className="text-[13px] mt-0.5 flex items-center gap-1.5"><NotionEmoji emoji="📚" size={16} /> {profile.reading_personality}</p>
+            <p className="text-[13px] mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pastel-lavender text-foreground">
+              <NotionEmoji emoji="📚" size={14} /> {profile.reading_personality}
+            </p>
           )}
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex gap-1.5 mt-3">
+        {/* Statistics — soft pastel tiles */}
+        <div className="grid grid-cols-3 gap-2.5 mt-6">
+          <div className="ios-tile bg-pastel-mint text-center">
+            <p className="text-[24px] font-bold tracking-tight leading-none">{stats.booksRead}</p>
+            <p className="text-[11px] text-foreground/70 mt-1.5 uppercase tracking-wide font-medium">Books Read</p>
+          </div>
+          <div className="ios-tile bg-pastel-lavender text-center">
+            <p className="text-[24px] font-bold tracking-tight leading-none">{stats.posts}</p>
+            <p className="text-[11px] text-foreground/70 mt-1.5 uppercase tracking-wide font-medium">Posts</p>
+          </div>
+          <div className="ios-tile bg-pastel-peach text-center">
+            <p className="text-[24px] font-bold tracking-tight leading-none">{stats.discussions}</p>
+            <p className="text-[11px] text-foreground/70 mt-1.5 uppercase tracking-wide font-medium">Comments</p>
+          </div>
+        </div>
+
+        {/* Followers row */}
+        <div className="flex items-center justify-around mt-4 ios-card py-3">
+          <button onClick={() => navigate(`/followers/${user?.id}?tab=followers`)} className="text-center ios-press">
+            <p className="text-[17px] font-bold leading-tight">{followersCount}</p>
+            <p className="text-[12px] text-muted-foreground">Followers</p>
+          </button>
+          <div className="w-px h-8 bg-border" />
+          <button onClick={() => navigate(`/followers/${user?.id}?tab=following`)} className="text-center ios-press">
+            <p className="text-[17px] font-bold leading-tight">{followingCount}</p>
+            <p className="text-[12px] text-muted-foreground">Following</p>
+          </button>
+        </div>
+
+        {/* Action buttons — iOS pill style */}
+        <div className="flex gap-2.5 mt-4">
           <button
             onClick={() => setShowEditProfile(true)}
-            className="flex-1 py-1.5 rounded-lg bg-secondary text-foreground text-[13px] font-semibold text-center"
+            className="ios-press flex-1 py-3 rounded-full bg-secondary text-foreground text-[14px] font-semibold"
           >
             Edit Profile
           </button>
           <button
             onClick={() => navigate("/quiz")}
-            className="flex-1 py-1.5 rounded-lg bg-secondary text-foreground text-[13px] font-semibold text-center flex items-center justify-center gap-1"
+            className="ios-press flex-1 py-3 rounded-full bg-primary text-primary-foreground text-[14px] font-semibold flex items-center justify-center gap-1.5"
           >
-            <Sparkles className="w-3.5 h-3.5" />
+            <Sparkles className="w-4 h-4" />
             {profile?.reading_personality ? "Retake Quiz" : "Take Quiz"}
           </button>
         </div>
       </div>
 
-      {/* Tabs — Grid | Saved | Characters */}
-      <div className="flex border-b border-border mt-4">
-        <button
-          onClick={() => setActiveTab("posts")}
-          className={`flex-1 py-3 flex justify-center border-b-[1.5px] transition-colors ${
-            activeTab === "posts" ? "border-foreground text-foreground" : "border-transparent text-muted-foreground"
-          }`}
-        >
-          <Grid3X3 className="w-5 h-5" strokeWidth={1.5} />
-        </button>
-        <button
-          onClick={() => setActiveTab("saved")}
-          className={`flex-1 py-3 flex justify-center border-b-[1.5px] transition-colors ${
-            activeTab === "saved" ? "border-foreground text-foreground" : "border-transparent text-muted-foreground"
-          }`}
-        >
-          <Bookmark className="w-5 h-5" strokeWidth={1.5} />
-        </button>
-        <button
-          onClick={() => setActiveTab("characters")}
-          className={`flex-1 py-3 flex justify-center border-b-[1.5px] transition-colors ${
-            activeTab === "characters" ? "border-foreground text-foreground" : "border-transparent text-muted-foreground"
-          }`}
-        >
-          <Film className="w-5 h-5" strokeWidth={1.5} />
-        </button>
+      {/* Tabs */}
+      <div className="flex mt-6 mx-5 p-1 rounded-2xl bg-secondary/60">
+        {[
+          { key: "posts" as const, icon: Grid3X3, label: "Posts" },
+          { key: "saved" as const, icon: Bookmark, label: "Saved" },
+          { key: "characters" as const, icon: Film, label: "Characters" },
+        ].map(({ key, icon: Icon, label }) => (
+          <button
+            key={key}
+            onClick={() => setActiveTab(key)}
+            className={`flex-1 py-2.5 flex items-center justify-center gap-1.5 rounded-xl text-[12px] font-semibold transition-all ${
+              activeTab === key ? "bg-card text-foreground shadow-xs" : "text-muted-foreground"
+            }`}
+          >
+            <Icon className="w-4 h-4" strokeWidth={1.7} />
+            {label}
+          </button>
+        ))}
       </div>
 
       {/* Tab Content */}
       {activeTab === "posts" && (
-        <div className="grid grid-cols-3 gap-px">
+        <div className="grid grid-cols-3 gap-1.5 px-5 mt-4">
           {posts.map((p) => (
-            <button key={p.id} className="aspect-square bg-secondary" onClick={() => navigate(`/?post=${p.id}`)}>
+            <button key={p.id} className="ios-press aspect-square rounded-2xl bg-secondary overflow-hidden shadow-xs" onClick={() => navigate(`/?post=${p.id}`)}>
               {(p.image_url || p.book_cover) ? (
                 <img src={p.image_url || p.book_cover!} alt="" className="w-full h-full object-cover" />
               ) : (
@@ -190,8 +196,8 @@ export default function ProfilePage() {
       )}
 
       {activeTab === "saved" && (
-        <div className="grid grid-cols-3 gap-px">
-          <div className="col-span-3 py-16 text-center">
+        <div className="px-5 mt-4">
+          <div className="ios-card py-16 text-center">
             <Bookmark className="w-10 h-10 mx-auto text-muted-foreground mb-2" strokeWidth={1} />
             <p className="text-sm text-muted-foreground">Saved posts will appear here</p>
           </div>
@@ -199,9 +205,9 @@ export default function ProfilePage() {
       )}
 
       {activeTab === "characters" && (
-        <div className="grid grid-cols-3 gap-px">
+        <div className="grid grid-cols-3 gap-1.5 px-5 mt-4">
           {characters.map((char) => (
-            <div key={char.id} className="aspect-square bg-secondary relative group">
+            <div key={char.id} className="aspect-square bg-secondary relative group rounded-2xl overflow-hidden shadow-xs">
               <img src={char.image_url} alt={char.character_name} className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/40 transition-colors flex items-center justify-center">
                 <div className="opacity-0 group-hover:opacity-100 transition-opacity text-center text-background">

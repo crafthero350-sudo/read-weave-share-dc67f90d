@@ -1,7 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400&display=swap');
 @import url("https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=New+York:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -9,138 +10,166 @@
 
 @layer base {
   :root {
-    --background: 0 0% 98%;
-    --foreground: 0 0% 7%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 7%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 7%;
-    --primary: 211 100% 50%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 240 5% 96%;
-    --secondary-foreground: 0 0% 7%;
-    --muted: 240 5% 96%;
-    --muted-foreground: 240 4% 46%;
-    --accent: 211 100% 50%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 4 90% 58%;
+    /* Soft Pastels — Apple Books inspired */
+    --background: 42 39% 97%;          /* #FAF8F3 cream */
+    --foreground: 24 7% 21%;           /* #3A3633 soft charcoal */
+    --card: 40 38% 99%;                /* slightly lighter cream */
+    --card-foreground: 24 7% 21%;
+    --popover: 40 38% 99%;
+    --popover-foreground: 24 7% 21%;
+
+    /* Primary = soft charcoal for ink-on-paper feel */
+    --primary: 24 7% 21%;
+    --primary-foreground: 42 39% 97%;
+
+    /* Secondary = mint */
+    --secondary: 144 41% 90%;
+    --secondary-foreground: 24 7% 21%;
+
+    --muted: 40 25% 93%;
+    --muted-foreground: 30 8% 42%;
+
+    /* Accent = lavender */
+    --accent: 282 56% 89%;
+    --accent-foreground: 24 7% 21%;
+
+    --destructive: 4 70% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 240 6% 90%;
-    --input: 240 6% 90%;
-    --ring: 211 100% 50%;
-    --radius: 0.875rem;
 
-    --activity-none: 40 5% 93%;
-    --activity-low: 48 60% 85%;
-    --activity-medium: 48 70% 72%;
-    --activity-high: 48 80% 60%;
-    --activity-max: 48 90% 50%;
+    --border: 35 18% 88%;
+    --input: 35 18% 88%;
+    --ring: 144 35% 60%;
+    --radius: 1.75rem;                 /* 28px — large iOS radius */
 
-    --story-ring-start: 280 80% 60%;
-    --story-ring-mid: 330 90% 55%;
-    --story-ring-end: 25 95% 55%;
-    --story-ring: 280 80% 60%;
-    --surface-elevated: 0 0% 100%;
-    --gold-glow: 48 80% 60%;
+    --activity-none: 40 25% 93%;
+    --activity-low: 144 35% 88%;
+    --activity-medium: 144 40% 75%;
+    --activity-high: 144 45% 60%;
+    --activity-max: 144 50% 45%;
 
-    --chart-1: 211 100% 50%;
-    --chart-2: 162 63% 41%;
-    --chart-3: 25 95% 53%;
-    --chart-4: 280 80% 60%;
-    --chart-5: 330 90% 55%;
+    --story-ring-start: 282 56% 75%;
+    --story-ring-mid: 19 75% 78%;
+    --story-ring-end: 144 41% 72%;
+    --story-ring: 282 56% 75%;
+    --surface-elevated: 40 38% 99%;
+    --gold-glow: 30 70% 78%;
 
-    --sidebar: 0 0% 100%;
-    --sidebar-foreground: 0 0% 7%;
-    --sidebar-primary: 211 100% 50%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 5% 96%;
-    --sidebar-accent-foreground: 0 0% 7%;
-    --sidebar-border: 240 6% 90%;
-    --sidebar-ring: 211 100% 50%;
+    --chart-1: 144 41% 65%;
+    --chart-2: 282 50% 75%;
+    --chart-3: 19 75% 75%;
+    --chart-4: 210 50% 75%;
+    --chart-5: 48 65% 75%;
 
-    --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-    --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+    --sidebar: 42 39% 97%;
+    --sidebar-foreground: 24 7% 21%;
+    --sidebar-primary: 24 7% 21%;
+    --sidebar-primary-foreground: 42 39% 97%;
+    --sidebar-accent: 40 25% 93%;
+    --sidebar-accent-foreground: 24 7% 21%;
+    --sidebar-border: 35 18% 88%;
+    --sidebar-ring: 144 35% 60%;
+
+    /* iOS-native SF Pro stack */
+    --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Inter', system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+    --font-serif: 'New York', 'Iowan Old Style', 'Palatino', ui-serif, Georgia, Cambria, serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
-    --pastel-yellow: 48 100% 93%;
-    --pastel-red: 0 100% 95%;
-    --pastel-blue: 210 100% 95%;
-    --pastel-green: 140 60% 93%;
-    --pastel-purple: 270 80% 95%;
-    --shadow-2xs: 0 1px 2px 0px hsl(0 0% 0% / 0.03);
-    --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.04);
-    --shadow-sm: 0 2px 8px -2px hsl(0 0% 0% / 0.08);
-    --shadow: 0 2px 8px -2px hsl(0 0% 0% / 0.08);
-    --shadow-md: 0 4px 16px -4px hsl(0 0% 0% / 0.1);
-    --shadow-lg: 0 8px 24px -6px hsl(0 0% 0% / 0.12);
-    --shadow-xl: 0 12px 32px -8px hsl(0 0% 0% / 0.15);
-    --shadow-2xl: 0 20px 40px -10px hsl(0 0% 0% / 0.2);
-    --tracking-normal: 0em;
+    /* Pastel accent tokens */
+    --pastel-mint: 144 41% 84%;
+    --pastel-lavender: 282 56% 89%;
+    --pastel-peach: 19 88% 89%;
+    --pastel-butter: 48 88% 90%;
+    --pastel-sky: 210 70% 90%;
+
+    /* Legacy aliases (kept for components still using them) */
+    --pastel-yellow: 48 88% 90%;
+    --pastel-red: 19 88% 89%;
+    --pastel-blue: 210 70% 90%;
+    --pastel-green: 144 41% 84%;
+    --pastel-purple: 282 56% 89%;
+
+    /* Soft, diffused iOS shadows (warm, not pure black) */
+    --shadow-2xs: 0 1px 2px 0px hsl(30 20% 30% / 0.04);
+    --shadow-xs:  0 2px 6px -1px hsl(30 20% 30% / 0.05);
+    --shadow-sm:  0 4px 12px -2px hsl(30 20% 30% / 0.06);
+    --shadow:     0 6px 18px -4px hsl(30 20% 30% / 0.07);
+    --shadow-md:  0 10px 28px -8px hsl(30 20% 30% / 0.10);
+    --shadow-lg:  0 18px 40px -12px hsl(30 20% 30% / 0.12);
+    --shadow-xl:  0 24px 56px -16px hsl(30 20% 30% / 0.16);
+    --shadow-2xl: 0 32px 72px -20px hsl(30 20% 30% / 0.22);
+    --tracking-normal: -0.011em;       /* iOS letter-spacing */
     --spacing: 0.25rem;
   }
 
   .dark {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 7%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 7%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 211 100% 50%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 64%;
-    --accent: 211 100% 50%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 4 90% 58%;
+    --background: 24 9% 9%;
+    --foreground: 40 25% 94%;
+    --card: 24 9% 12%;
+    --card-foreground: 40 25% 94%;
+    --popover: 24 9% 12%;
+    --popover-foreground: 40 25% 94%;
+    --primary: 40 25% 94%;
+    --primary-foreground: 24 9% 9%;
+    --secondary: 24 8% 18%;
+    --secondary-foreground: 40 25% 94%;
+    --muted: 24 8% 18%;
+    --muted-foreground: 30 10% 65%;
+    --accent: 282 35% 35%;
+    --accent-foreground: 40 25% 94%;
+    --destructive: 4 70% 55%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 18%;
-    --input: 0 0% 18%;
-    --ring: 211 100% 50%;
+    --border: 24 8% 20%;
+    --input: 24 8% 20%;
+    --ring: 144 35% 55%;
 
-    --activity-none: 0 0% 14%;
-    --activity-low: 48 40% 25%;
-    --activity-medium: 48 50% 35%;
-    --activity-high: 48 60% 45%;
-    --activity-max: 48 70% 55%;
+    --activity-none: 24 8% 16%;
+    --activity-low: 144 30% 25%;
+    --activity-medium: 144 35% 35%;
+    --activity-high: 144 40% 45%;
+    --activity-max: 144 45% 55%;
 
-    --story-ring-start: 280 80% 60%;
-    --story-ring-mid: 330 90% 55%;
-    --story-ring-end: 25 95% 55%;
-    --story-ring: 280 80% 60%;
-    --surface-elevated: 0 0% 10%;
-    --gold-glow: 48 60% 50%;
+    --story-ring-start: 282 50% 60%;
+    --story-ring-mid: 19 65% 65%;
+    --story-ring-end: 144 40% 55%;
+    --story-ring: 282 50% 60%;
+    --surface-elevated: 24 9% 14%;
+    --gold-glow: 30 50% 55%;
 
-    --chart-1: 211 100% 50%;
-    --chart-2: 162 50% 55%;
-    --chart-3: 25 80% 55%;
-    --chart-4: 280 60% 60%;
-    --chart-5: 330 70% 55%;
+    --chart-1: 144 41% 55%;
+    --chart-2: 282 40% 65%;
+    --chart-3: 19 65% 65%;
+    --chart-4: 210 50% 65%;
+    --chart-5: 48 55% 65%;
 
-    --sidebar: 0 0% 7%;
-    --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 211 100% 50%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 0% 15%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 0 0% 18%;
-    --sidebar-ring: 211 100% 50%;
+    --sidebar: 24 9% 9%;
+    --sidebar-foreground: 40 25% 94%;
+    --sidebar-primary: 40 25% 94%;
+    --sidebar-primary-foreground: 24 9% 9%;
+    --sidebar-accent: 24 8% 18%;
+    --sidebar-accent-foreground: 40 25% 94%;
+    --sidebar-border: 24 8% 20%;
+    --sidebar-ring: 144 35% 55%;
 
-    --pastel-yellow: 48 60% 15%;
-    --pastel-red: 0 50% 15%;
-    --pastel-blue: 210 50% 15%;
-    --pastel-green: 140 40% 15%;
-    --pastel-purple: 270 40% 15%;
-    --shadow-2xs: 0 1px 2px 0px hsl(0 0% 0% / 0.1);
-    --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.15);
-    --shadow-sm: 0 2px 8px -2px hsl(0 0% 0% / 0.2);
-    --shadow: 0 2px 8px -2px hsl(0 0% 0% / 0.2);
-    --shadow-md: 0 4px 16px -4px hsl(0 0% 0% / 0.25);
-    --shadow-lg: 0 8px 24px -6px hsl(0 0% 0% / 0.3);
-    --shadow-xl: 0 12px 32px -8px hsl(0 0% 0% / 0.35);
-    --shadow-2xl: 0 20px 40px -10px hsl(0 0% 0% / 0.4);
+    --pastel-mint: 144 30% 25%;
+    --pastel-lavender: 282 30% 28%;
+    --pastel-peach: 19 35% 25%;
+    --pastel-butter: 48 35% 25%;
+    --pastel-sky: 210 30% 25%;
+
+    --pastel-yellow: 48 35% 25%;
+    --pastel-red: 19 35% 25%;
+    --pastel-blue: 210 30% 25%;
+    --pastel-green: 144 30% 25%;
+    --pastel-purple: 282 30% 28%;
+
+    --shadow-2xs: 0 1px 2px 0px hsl(0 0% 0% / 0.25);
+    --shadow-xs:  0 2px 6px -1px hsl(0 0% 0% / 0.3);
+    --shadow-sm:  0 4px 12px -2px hsl(0 0% 0% / 0.35);
+    --shadow:     0 6px 18px -4px hsl(0 0% 0% / 0.4);
+    --shadow-md:  0 10px 28px -8px hsl(0 0% 0% / 0.45);
+    --shadow-lg:  0 18px 40px -12px hsl(0 0% 0% / 0.5);
+    --shadow-xl:  0 24px 56px -16px hsl(0 0% 0% / 0.55);
+    --shadow-2xl: 0 32px 72px -20px hsl(0 0% 0% / 0.6);
   }
 
   * {
@@ -156,10 +185,59 @@
 
 @layer components {
   .bookapp-title {
-    font-family: 'Merriweather', 'Georgia', serif;
+    font-family: 'New York', 'Iowan Old Style', 'Palatino', 'Merriweather', Georgia, serif;
     font-weight: 700;
     letter-spacing: -0.03em;
     color: hsl(var(--foreground));
+  }
+
+  /* iOS-style large display title (Apple Books / Health) */
+  .ios-large-title {
+    font-family: var(--font-sans);
+    font-weight: 800;
+    font-size: 34px;
+    line-height: 1.08;
+    letter-spacing: -0.022em;
+    color: hsl(var(--foreground));
+  }
+
+  .ios-section-title {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.018em;
+    color: hsl(var(--foreground));
+  }
+
+  .ios-serif-title {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: hsl(var(--foreground));
+  }
+
+  /* Frosted glass surface (nav bars / headers) */
+  .ios-glass {
+    background-color: hsl(var(--background) / 0.72);
+    backdrop-filter: saturate(180%) blur(24px);
+    -webkit-backdrop-filter: saturate(180%) blur(24px);
+  }
+
+  /* Soft elevated card — Apple Books vibe */
+  .ios-card {
+    @apply rounded-[28px] bg-card;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid hsl(var(--border) / 0.6);
+  }
+
+  .ios-tile {
+    @apply rounded-[24px] p-4;
+    box-shadow: var(--shadow-xs);
+  }
+
+  /* Spring tap micro-interaction */
+  .ios-press {
+    @apply transition-transform duration-150 ease-out active:scale-[0.96];
   }
 
   .page-flip {
@@ -197,21 +275,23 @@
   }
 
   .feed-card {
-    @apply rounded-2xl bg-card shadow-sm overflow-hidden;
+    @apply rounded-[28px] bg-card overflow-hidden;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid hsl(var(--border) / 0.5);
   }
 
   .section-title {
-    @apply text-base font-semibold tracking-tight;
-    font-family: 'Inter', sans-serif;
+    @apply text-[22px] font-bold tracking-tight;
+    letter-spacing: -0.018em;
   }
 
   .book-progress-bar {
-    @apply h-1 rounded-full bg-muted overflow-hidden;
+    @apply h-2 rounded-full bg-muted overflow-hidden;
   }
 
   .book-progress-fill {
     @apply h-full rounded-full transition-all duration-500;
-    background: hsl(var(--primary));
+    background: linear-gradient(90deg, hsl(var(--pastel-mint)), hsl(var(--pastel-lavender)));
   }
 
   .gold-gradient {
