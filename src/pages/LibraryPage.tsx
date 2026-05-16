@@ -80,25 +80,25 @@ export default function LibraryPage() {
     <PageTransition>
       <div className="min-h-screen bg-background pb-20">
         {/* Apple Books style header */}
-        <header className="sticky top-0 z-30 bg-background/95 backdrop-blur-lg">
+        <header className="sticky top-0 z-30 ios-glass">
           <div className="flex items-center justify-between px-5 pt-14 pb-2">
-            <h1 className="text-[34px] font-bold tracking-tight text-foreground">Library</h1>
+            <h1 className="ios-serif-title text-[34px]">Library</h1>
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
                 className="p-2 rounded-full hover:bg-secondary transition-colors"
               >
                 {viewMode === "grid" ? (
-                  <List className="w-5 h-5 text-[#0A84FF]" strokeWidth={1.5} />
+                  <List className="w-5 h-5 text-foreground" strokeWidth={1.5} />
                 ) : (
-                  <Grid3X3 className="w-5 h-5 text-[#0A84FF]" strokeWidth={1.5} />
+                  <Grid3X3 className="w-5 h-5 text-foreground" strokeWidth={1.5} />
                 )}
               </button>
               <button
                 onClick={() => navigate("/search")}
                 className="p-2 rounded-full hover:bg-secondary transition-colors"
               >
-                <Plus className="w-5 h-5 text-[#0A84FF]" strokeWidth={2} />
+                <Plus className="w-5 h-5 text-foreground" strokeWidth={2} />
               </button>
             </div>
           </div>
@@ -154,7 +154,7 @@ export default function LibraryPage() {
             </p>
             <button
               onClick={() => navigate("/search")}
-              className="px-5 py-2.5 bg-[#0A84FF] text-white rounded-full text-sm font-semibold"
+              className="px-5 py-2.5 bg-primary text-primary-foreground rounded-full text-sm font-semibold"
             >
               Browse Books
             </button>
@@ -170,7 +170,7 @@ export default function LibraryPage() {
                 onClick={() => navigate(`/read/${ub.book_id}`)}
                 className="text-left"
               >
-                <div className="relative aspect-[2/3] rounded-lg overflow-hidden shadow-md bg-muted">
+                <div className="relative aspect-[2/3] rounded-2xl overflow-hidden shadow-md bg-muted">
                   {ub.book.cover_url ? (
                     <img src={ub.book.cover_url} alt={ub.book.title} className="w-full h-full object-cover" />
                   ) : (
@@ -182,7 +182,7 @@ export default function LibraryPage() {
                   {ub.status === "reading" && ub.progress > 0 && (
                     <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/20">
                       <div
-                        className="h-full bg-[#0A84FF] transition-all"
+                        className="h-full bg-primary transition-all"
                         style={{ width: `${ub.progress}%` }}
                       />
                     </div>
@@ -196,7 +196,7 @@ export default function LibraryPage() {
                 <p className="text-xs font-medium mt-1.5 truncate text-foreground">{ub.book.title}</p>
                 <p className="text-[11px] text-muted-foreground truncate">{ub.book.author}</p>
                 {ub.status === "reading" && (
-                  <p className="text-[10px] text-[#0A84FF] font-medium mt-0.5">{ub.progress}% complete</p>
+                  <p className="text-[10px] text-foreground font-medium mt-0.5">{ub.progress}% complete</p>
                 )}
               </motion.button>
             ))}
@@ -227,9 +227,9 @@ export default function LibraryPage() {
                   {ub.status === "reading" && (
                     <div className="flex items-center gap-2 mt-1.5">
                       <div className="flex-1 h-1 rounded-full bg-secondary">
-                        <div className="h-full rounded-full bg-[#0A84FF] transition-all" style={{ width: `${ub.progress}%` }} />
+                        <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${ub.progress}%` }} />
                       </div>
-                      <span className="text-[10px] text-[#0A84FF] font-medium">{ub.progress}%</span>
+                      <span className="text-[10px] text-foreground font-medium">{ub.progress}%</span>
                     </div>
                   )}
                   {ub.status === "finished" && (
