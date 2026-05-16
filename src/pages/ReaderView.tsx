@@ -239,6 +239,7 @@ export default function ReaderView() {
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col" style={{ backgroundColor: palette.bg, color: palette.fg }}>
+      <h1 className="sr-only">{book?.title || "Reader"}</h1>
       {/* Top bar */}
       <AnimatePresence>
         {showControls && (
