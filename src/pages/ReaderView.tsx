@@ -372,6 +372,7 @@ export default function ReaderView() {
         theme={theme}
       >
         <div
+          ref={pageContentRef}
           className="h-full overflow-y-auto overscroll-none"
           style={{
             padding: "3rem 1.75rem 4rem",
@@ -379,9 +380,17 @@ export default function ReaderView() {
             fontSize: `${fontSize}px`,
             lineHeight: lineHeight,
             color: palette.fg,
+            WebkitUserSelect: "text",
+            userSelect: "text",
           }}
         >
-          <p className="whitespace-pre-line">{pages[currentPage]}</p>
+          <p className="whitespace-pre-line">
+            {renderHighlightedText(
+              pages[currentPage] || "",
+              highlights.filter((h) => h.page_number === currentPage),
+              onHighlightTap
+            )}
+          </p>
         </div>
       </PageFlip>
 
