@@ -504,13 +504,6 @@ export default function ReaderView() {
         pages={pages}
         onGoToPage={goToPage}
       />
-      <ReaderSearch
-        open={searchOpen}
-        onClose={() => setSearchOpen(false)}
-        theme={theme}
-        pages={pages}
-        onGoToPage={goToPage}
-      />
 
       <SelectionToolbar
         x={selection?.x ?? 0}
