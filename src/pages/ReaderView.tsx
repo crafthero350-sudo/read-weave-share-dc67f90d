@@ -333,14 +333,14 @@ export default function ReaderView() {
             }}
           >
             <div className="flex items-center justify-between px-4 py-3 max-w-lg mx-auto">
-              <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-sm" style={{ color: "#007AFF" }}>
+              <button aria-label="Back to library" onClick={() => navigate(-1)} className="flex items-center gap-1 text-sm" style={{ color: "#007AFF" }}>
                 <ChevronLeft className="w-5 h-5" strokeWidth={2} />
                 <span>Library</span>
               </button>
               <div className="text-center flex-1 mx-4">
                 <p className="text-xs font-medium truncate" style={{ color: palette.muted }}>{book.title}</p>
               </div>
-              <button onClick={toggleBookmark} className="p-1">
+              <button aria-label={isBookmarked ? "Remove bookmark" : "Add bookmark"} onClick={toggleBookmark} className="p-1">
                 {isBookmarked ? (
                   <BookmarkCheck className="w-5 h-5" style={{ color: "#007AFF" }} strokeWidth={2} />
                 ) : (
