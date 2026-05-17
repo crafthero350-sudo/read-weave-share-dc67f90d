@@ -436,19 +436,19 @@ export default function ReaderView() {
 
               {/* Action buttons - Apple Books style */}
               <div className="flex items-center justify-around py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-                <button onClick={() => setTocOpen(true)} className="flex flex-col items-center gap-0.5 p-2">
+                <button aria-label="Contents" onClick={() => setTocOpen(true)} className="flex flex-col items-center gap-0.5 p-2">
                   <List className="w-5 h-5" style={{ color: palette.muted }} strokeWidth={1.5} />
                   <span className="text-[10px]" style={{ color: palette.muted }}>Contents</span>
                 </button>
-                <button onClick={() => { setBmTab("bookmarks"); setBookmarksOpen(true); }} className="flex flex-col items-center gap-0.5 p-2">
+                <button aria-label="Bookmarks" onClick={() => { setBmTab("bookmarks"); setBookmarksOpen(true); }} className="flex flex-col items-center gap-0.5 p-2">
                   <Bookmark className="w-5 h-5" style={{ color: palette.muted }} strokeWidth={1.5} />
                   <span className="text-[10px]" style={{ color: palette.muted }}>Bookmarks</span>
                 </button>
-                <button onClick={() => setSettingsOpen(true)} className="flex flex-col items-center gap-0.5 p-2">
+                <button aria-label="Reader settings" onClick={() => setSettingsOpen(true)} className="flex flex-col items-center gap-0.5 p-2">
                   <Type className="w-5 h-5" style={{ color: palette.muted }} strokeWidth={1.5} />
                   <span className="text-[10px]" style={{ color: palette.muted }}>Settings</span>
                 </button>
-                <button onClick={() => setSearchOpen(true)} className="flex flex-col items-center gap-0.5 p-2">
+                <button aria-label="Search in book" onClick={() => setSearchOpen(true)} className="flex flex-col items-center gap-0.5 p-2">
                   <Search className="w-5 h-5" style={{ color: palette.muted }} strokeWidth={1.5} />
                   <span className="text-[10px]" style={{ color: palette.muted }}>Search</span>
                 </button>
