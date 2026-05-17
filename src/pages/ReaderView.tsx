@@ -219,6 +219,81 @@ export default function ReaderView() {
     setHighlights((prev) => prev.filter((h) => h.id !== hlId));
   };
 
+  // ===== Text selection → highlight + share =====
+  const pageContentRef = useRef<HTMLDivElement>(null);
+  const [selection, setSelection] = useState<{ text: string; x: number; y: number; existingId: string | null } | null>(null);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [shareQuote, setShareQuote] = useState("");
+
+  const handleSelectionChange = useCallback(() => {
+    const sel = window.getSelection();
+    if (!sel || sel.isCollapsed || !sel.rangeCount) {
+      setSelection(null);
+      return;
+    }
+    const range = sel.getRangeAt(0);
+    const text = sel.toString().trim();
+    if (!text || text.length < 2) { setSelection(null); return; }
+    if (!pageContentRef.current?.contains(range.commonAncestorContainer)) {
+      setSelection(null);
+      return;
+    }
+    const rect = range.getBoundingClientRect();
+    setSelection({
+      text,
+      x: rect.left + rect.width / 2,
+      y: Math.max(60, rect.top - 12),
+      existingId: null,
+    });
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("selectionchange", handleSelectionChange);
+    return () => document.removeEventListener("selectionchange", handleSelectionChange);
+  }, [handleSelectionChange]);
+
+  const addHighlight = async (color: string) => {
+    if (!user || !id || !selection) return;
+    const { data } = await supabase.from("reader_highlights").insert({
+      user_id: user.id,
+      book_id: id,
+      page_number: currentPage,
+      highlighted_text: selection.text,
+      color,
+    }).select().single();
+    if (data) setHighlights((prev) => [...prev, data]);
+    window.getSelection()?.removeAllRanges();
+    setSelection(null);
+  };
+
+  const removeSelectedHighlight = async () => {
+    if (!selection?.existingId) return;
+    await deleteHighlight(selection.existingId);
+    setSelection(null);
+  };
+
+  const shareSelection = () => {
+    if (!selection) return;
+    setShareQuote(selection.text);
+    setShareOpen(true);
+    window.getSelection()?.removeAllRanges();
+    setSelection(null);
+  };
+
+  const onHighlightTap = (hlId: string) => {
+    const hl = highlights.find((h) => h.id === hlId);
+    if (!hl) return;
+    // Use approximate viewport center for the toolbar when tapping an existing mark
+    const el = pageContentRef.current?.querySelector(`[data-highlight-id="${hlId}"]`) as HTMLElement | null;
+    const rect = el?.getBoundingClientRect();
+    setSelection({
+      text: hl.highlighted_text,
+      x: rect ? rect.left + rect.width / 2 : window.innerWidth / 2,
+      y: rect ? Math.max(60, rect.top - 12) : 120,
+      existingId: hlId,
+    });
+  };
+
   const palette = themePalettes[theme];
   const totalPages = pages.length;
   const progress = totalPages > 0 ? ((currentPage + 1) / totalPages) * 100 : 0;
