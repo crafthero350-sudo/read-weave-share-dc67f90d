@@ -8,6 +8,8 @@ import PageFlip from "@/components/reader/PageFlip";
 import ReaderSettingsSheet, { type ReaderTheme } from "@/components/reader/ReaderSettingsSheet";
 import ReaderBookmarksSheet from "@/components/reader/ReaderBookmarksSheet";
 import ReaderTOCSheet from "@/components/reader/ReaderTOCSheet";
+import SelectionToolbar, { renderHighlightedText } from "@/components/reader/SelectionToolbar";
+import ShareQuoteSheet from "@/components/reader/ShareQuoteSheet";
 
 // Theme palettes matching Apple Books
 const themePalettes: Record<ReaderTheme, { bg: string; fg: string; muted: string; border: string }> = {
@@ -217,6 +219,81 @@ export default function ReaderView() {
     setHighlights((prev) => prev.filter((h) => h.id !== hlId));
   };
 
+  // ===== Text selection → highlight + share =====
+  const pageContentRef = useRef<HTMLDivElement>(null);
+  const [selection, setSelection] = useState<{ text: string; x: number; y: number; existingId: string | null } | null>(null);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [shareQuote, setShareQuote] = useState("");
+
+  const handleSelectionChange = useCallback(() => {
+    const sel = window.getSelection();
+    if (!sel || sel.isCollapsed || !sel.rangeCount) {
+      setSelection(null);
+      return;
+    }
+    const range = sel.getRangeAt(0);
+    const text = sel.toString().trim();
+    if (!text || text.length < 2) { setSelection(null); return; }
+    if (!pageContentRef.current?.contains(range.commonAncestorContainer)) {
+      setSelection(null);
+      return;
+    }
+    const rect = range.getBoundingClientRect();
+    setSelection({
+      text,
+      x: rect.left + rect.width / 2,
+      y: Math.max(60, rect.top - 12),
+      existingId: null,
+    });
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("selectionchange", handleSelectionChange);
+    return () => document.removeEventListener("selectionchange", handleSelectionChange);
+  }, [handleSelectionChange]);
+
+  const addHighlight = async (color: string) => {
+    if (!user || !id || !selection) return;
+    const { data } = await supabase.from("reader_highlights").insert({
+      user_id: user.id,
+      book_id: id,
+      page_number: currentPage,
+      highlighted_text: selection.text,
+      color,
+    }).select().single();
+    if (data) setHighlights((prev) => [...prev, data]);
+    window.getSelection()?.removeAllRanges();
+    setSelection(null);
+  };
+
+  const removeSelectedHighlight = async () => {
+    if (!selection?.existingId) return;
+    await deleteHighlight(selection.existingId);
+    setSelection(null);
+  };
+
+  const shareSelection = () => {
+    if (!selection) return;
+    setShareQuote(selection.text);
+    setShareOpen(true);
+    window.getSelection()?.removeAllRanges();
+    setSelection(null);
+  };
+
+  const onHighlightTap = (hlId: string) => {
+    const hl = highlights.find((h) => h.id === hlId);
+    if (!hl) return;
+    // Use approximate viewport center for the toolbar when tapping an existing mark
+    const el = pageContentRef.current?.querySelector(`[data-highlight-id="${hlId}"]`) as HTMLElement | null;
+    const rect = el?.getBoundingClientRect();
+    setSelection({
+      text: hl.highlighted_text,
+      x: rect ? rect.left + rect.width / 2 : window.innerWidth / 2,
+      y: rect ? Math.max(60, rect.top - 12) : 120,
+      existingId: hlId,
+    });
+  };
+
   const palette = themePalettes[theme];
   const totalPages = pages.length;
   const progress = totalPages > 0 ? ((currentPage + 1) / totalPages) * 100 : 0;
@@ -256,14 +333,14 @@ export default function ReaderView() {
             }}
           >
             <div className="flex items-center justify-between px-4 py-3 max-w-lg mx-auto">
-              <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-sm" style={{ color: "#007AFF" }}>
+              <button aria-label="Back to library" onClick={() => navigate(-1)} className="flex items-center gap-1 text-sm" style={{ color: "#007AFF" }}>
                 <ChevronLeft className="w-5 h-5" strokeWidth={2} />
                 <span>Library</span>
               </button>
               <div className="text-center flex-1 mx-4">
                 <p className="text-xs font-medium truncate" style={{ color: palette.muted }}>{book.title}</p>
               </div>
-              <button onClick={toggleBookmark} className="p-1">
+              <button aria-label={isBookmarked ? "Remove bookmark" : "Add bookmark"} onClick={toggleBookmark} className="p-1">
                 {isBookmarked ? (
                   <BookmarkCheck className="w-5 h-5" style={{ color: "#007AFF" }} strokeWidth={2} />
                 ) : (
@@ -295,6 +372,7 @@ export default function ReaderView() {
         theme={theme}
       >
         <div
+          ref={pageContentRef}
           className="h-full overflow-y-auto overscroll-none"
           style={{
             padding: "3rem 1.75rem 4rem",
@@ -302,9 +380,17 @@ export default function ReaderView() {
             fontSize: `${fontSize}px`,
             lineHeight: lineHeight,
             color: palette.fg,
+            WebkitUserSelect: "text",
+            userSelect: "text",
           }}
         >
-          <p className="whitespace-pre-line">{pages[currentPage]}</p>
+          <p className="whitespace-pre-line">
+            {renderHighlightedText(
+              pages[currentPage] || "",
+              highlights.filter((h) => h.page_number === currentPage),
+              onHighlightTap
+            )}
+          </p>
         </div>
       </PageFlip>
 
@@ -350,19 +436,19 @@ export default function ReaderView() {
 
               {/* Action buttons - Apple Books style */}
               <div className="flex items-center justify-around py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-                <button onClick={() => setTocOpen(true)} className="flex flex-col items-center gap-0.5 p-2">
+                <button aria-label="Contents" onClick={() => setTocOpen(true)} className="flex flex-col items-center gap-0.5 p-2">
                   <List className="w-5 h-5" style={{ color: palette.muted }} strokeWidth={1.5} />
                   <span className="text-[10px]" style={{ color: palette.muted }}>Contents</span>
                 </button>
-                <button onClick={() => { setBmTab("bookmarks"); setBookmarksOpen(true); }} className="flex flex-col items-center gap-0.5 p-2">
+                <button aria-label="Bookmarks" onClick={() => { setBmTab("bookmarks"); setBookmarksOpen(true); }} className="flex flex-col items-center gap-0.5 p-2">
                   <Bookmark className="w-5 h-5" style={{ color: palette.muted }} strokeWidth={1.5} />
                   <span className="text-[10px]" style={{ color: palette.muted }}>Bookmarks</span>
                 </button>
-                <button onClick={() => setSettingsOpen(true)} className="flex flex-col items-center gap-0.5 p-2">
+                <button aria-label="Reader settings" onClick={() => setSettingsOpen(true)} className="flex flex-col items-center gap-0.5 p-2">
                   <Type className="w-5 h-5" style={{ color: palette.muted }} strokeWidth={1.5} />
                   <span className="text-[10px]" style={{ color: palette.muted }}>Settings</span>
                 </button>
-                <button onClick={() => setSearchOpen(true)} className="flex flex-col items-center gap-0.5 p-2">
+                <button aria-label="Search in book" onClick={() => setSearchOpen(true)} className="flex flex-col items-center gap-0.5 p-2">
                   <Search className="w-5 h-5" style={{ color: palette.muted }} strokeWidth={1.5} />
                   <span className="text-[10px]" style={{ color: palette.muted }}>Search</span>
                 </button>
@@ -417,6 +503,24 @@ export default function ReaderView() {
         theme={theme}
         pages={pages}
         onGoToPage={goToPage}
+      />
+
+      <SelectionToolbar
+        x={selection?.x ?? 0}
+        y={selection?.y ?? 0}
+        visible={!!selection}
+        existingHighlightId={selection?.existingId ?? null}
+        onHighlight={addHighlight}
+        onRemove={removeSelectedHighlight}
+        onShare={shareSelection}
+      />
+
+      <ShareQuoteSheet
+        open={shareOpen}
+        onClose={() => setShareOpen(false)}
+        quote={shareQuote}
+        bookTitle={book?.title || ""}
+        bookAuthor={book?.author || ""}
       />
     </div>
   );
