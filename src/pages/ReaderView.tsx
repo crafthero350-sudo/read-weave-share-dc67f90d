@@ -504,6 +504,31 @@ export default function ReaderView() {
         pages={pages}
         onGoToPage={goToPage}
       />
+      <ReaderSearch
+        open={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        theme={theme}
+        pages={pages}
+        onGoToPage={goToPage}
+      />
+
+      <SelectionToolbar
+        x={selection?.x ?? 0}
+        y={selection?.y ?? 0}
+        visible={!!selection}
+        existingHighlightId={selection?.existingId ?? null}
+        onHighlight={addHighlight}
+        onRemove={removeSelectedHighlight}
+        onShare={shareSelection}
+      />
+
+      <ShareQuoteSheet
+        open={shareOpen}
+        onClose={() => setShareOpen(false)}
+        quote={shareQuote}
+        bookTitle={book?.title || ""}
+        bookAuthor={book?.author || ""}
+      />
     </div>
   );
 }
