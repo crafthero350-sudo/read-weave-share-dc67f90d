@@ -8,6 +8,8 @@ import PageFlip from "@/components/reader/PageFlip";
 import ReaderSettingsSheet, { type ReaderTheme } from "@/components/reader/ReaderSettingsSheet";
 import ReaderBookmarksSheet from "@/components/reader/ReaderBookmarksSheet";
 import ReaderTOCSheet from "@/components/reader/ReaderTOCSheet";
+import SelectionToolbar, { renderHighlightedText } from "@/components/reader/SelectionToolbar";
+import ShareQuoteSheet from "@/components/reader/ShareQuoteSheet";
 
 // Theme palettes matching Apple Books
 const themePalettes: Record<ReaderTheme, { bg: string; fg: string; muted: string; border: string }> = {
